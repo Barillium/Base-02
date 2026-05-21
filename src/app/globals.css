@@ -1,0 +1,257 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #111111;
+  --paper: #f2f1ed;
+  --muted: #3f3f3f;
+  --line: #bdb9b1;
+  --accent: #c7352a;
+  --accent-soft: #e26c63;
+  --font-body: "IBM Plex Sans";
+  --font-display: "Barlow Condensed";
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body), "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.52;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-shell {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  flex-direction: column;
+  padding-left: clamp(0.9rem, 2vw, 1.75rem);
+  padding-right: clamp(0.9rem, 2vw, 1.75rem);
+}
+
+/* ── Header: full-width bar ─────────────────────── */
+.header-bar {
+  width: 100%;
+  padding: 1rem clamp(0.9rem, 2vw, 1.75rem);
+}
+
+.header-inner {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 0.75rem 0.9rem;
+}
+
+/* ── Brand (logo + title) ─────── */
+.header-brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: inherit;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.header-logo {
+  height: clamp(2.15rem, 9vw, 2.75rem);
+  width: clamp(2.15rem, 9vw, 2.75rem);
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.header-title {
+  overflow-wrap: anywhere;
+  font-family: var(--font-display), "Arial Narrow", "Helvetica Neue", sans-serif;
+  font-size: clamp(1.25rem, 7vw, 1.65rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 0.92;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* ── Nav ─────── */
+.header-nav {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+/* ── Language switcher ─────── */
+.header-lang {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  align-self: center;
+}
+
+/* ── Desktop (≥768px): single row ─────── */
+@media (min-width: 768px) {
+  .header-bar {
+    padding: 0.72rem clamp(0.9rem, 2vw, 1.75rem);
+  }
+
+  .header-inner {
+    grid-template-columns: minmax(15rem, auto) minmax(0, 1fr) auto;
+    grid-template-rows: auto;
+    gap: 0 1rem;
+  }
+
+  .header-brand {
+    grid-column: 1;
+    grid-row: 1;
+    gap: 0.8rem;
+  }
+
+  .header-logo {
+    height: clamp(2.75rem, 4.5vw, 3.15rem);
+    width: clamp(2.75rem, 4.5vw, 3.15rem);
+  }
+
+  .header-title {
+    font-size: clamp(1.75rem, 2.6vw, 2.15rem);
+    white-space: nowrap;
+  }
+
+  .header-nav {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+  }
+
+  .header-lang {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display), "Arial Narrow", "Helvetica Neue", sans-serif;
+}
+
+.type-meta {
+  font-size: clamp(0.58rem, 1.4vw, 0.68rem);
+  letter-spacing: 0.16em;
+  line-height: 1.22;
+  text-transform: uppercase;
+}
+
+.type-display-hero {
+  font-family: var(--font-display), "Arial Narrow", "Helvetica Neue", sans-serif;
+  font-size: clamp(1.85rem, 9.5vw, 2.35rem);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 0.94;
+  text-transform: uppercase;
+}
+
+.type-display-section {
+  font-family: var(--font-display), "Arial Narrow", "Helvetica Neue", sans-serif;
+  font-size: clamp(1.55rem, 8vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 0.98;
+  text-transform: uppercase;
+}
+
+.type-display-card {
+  font-family: var(--font-display), "Arial Narrow", "Helvetica Neue", sans-serif;
+  font-size: clamp(1.2rem, 6vw, 1.55rem);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 0.98;
+  text-transform: uppercase;
+}
+
+.type-title {
+  font-family: var(--font-display), "Arial Narrow", "Helvetica Neue", sans-serif;
+  font-size: clamp(1.05rem, 4.8vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+
+.type-body-lg {
+  font-size: clamp(0.95rem, 3.4vw, 1.08rem);
+  line-height: 1.55;
+}
+
+.type-body {
+  font-size: clamp(0.88rem, 3vw, 0.98rem);
+  line-height: 1.55;
+}
+
+.page-flow {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.7rem, 6vw, 2.5rem);
+}
+
+.page-flow-compact {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.35rem, 5vw, 1.9rem);
+}
+
+.editorial-fade {
+  animation: editorialFade 0.8s ease both;
+}
+
+@media (min-width: 768px) {
+  .type-display-hero {
+    font-size: clamp(3.15rem, 5.4vw, 4.25rem);
+  }
+
+  .type-display-section {
+    font-size: clamp(2.05rem, 4vw, 3rem);
+  }
+
+  .type-display-card {
+    font-size: clamp(1.45rem, 2.25vw, 1.85rem);
+  }
+
+  .type-title {
+    font-size: clamp(1.25rem, 2vw, 1.55rem);
+  }
+
+  .type-body-lg {
+    font-size: clamp(1rem, 1.25vw, 1.12rem);
+  }
+
+  .type-body {
+    font-size: clamp(0.92rem, 1.05vw, 1rem);
+  }
+}
+
+.ink-panel {
+  background: #0d0d0d;
+  color: #f8f8f8;
+}
+
+@keyframes editorialFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
