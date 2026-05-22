@@ -34,7 +34,7 @@ export async function Header() {
               de: "Hauptmenü",
               en: "Main menu",
             })}
-            listClassName="text-[0.7rem] tracking-[0.14em] gap-x-3.5 gap-y-2 md:text-[0.72rem] md:gap-x-4 md:justify-center xl:gap-x-5"
+            listClassName="text-[0.66rem] tracking-[0.13em] gap-x-3 gap-y-2 md:text-[0.68rem] md:gap-x-3.5 md:justify-center xl:gap-x-4.5"
           />
         </div>
 

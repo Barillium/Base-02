@@ -231,6 +231,15 @@ function getAboutEntries(locale: Locale): Entry[] {
       meta: text(locale, { de: "Unterstützen", en: "Support" }),
     },
     {
+      title: "Awareness",
+      href: "/about/code-of-conduct",
+      description: text(locale, {
+        de: "Grundsätze für respektvolle Räume, diskriminierungssensible Kulturarbeit und gemeinsames Verhalten im Bunker.",
+        en: "Principles for respectful spaces, discrimination-sensitive cultural work, and shared conduct in the bunker.",
+      }),
+      meta: text(locale, { de: "Safe Space", en: "Safe Space" }),
+    },
+    {
       title: text(locale, { de: "Kontakt", en: "Contact" }),
       href: "/about/kontakt",
       description: text(locale, {
@@ -295,7 +304,7 @@ export default async function HomePage() {
 
   return (
     <div className="editorial-fade page-flow">
-      <header className="grid gap-2 pb-5 pt-2 md:gap-2.5 md:pb-6 md:pt-4">
+      <header className="content-stack pb-5 pt-2 md:pb-6 md:pt-4">
         <p className="type-meta text-[var(--muted)]">
           {text(locale, { de: "Kulturzentrum in Aachen", en: "Cultural center in Aachen" })}
         </p>
@@ -307,23 +316,23 @@ export default async function HomePage() {
         </h1>
         <p className="type-body-lg max-w-none text-[var(--ink)]">
           {text(locale, {
-            de: "The Base e.V. ist eine offene Kulturplattform in Aachen für zeitgenössische Kunst, elektronische Musik, Archivarbeit und Community-Formate.",
-            en: "The Base e.V. is an open cultural platform in Aachen for contemporary art, electronic music, archive work, and community formats.",
+            de: "The Base e.V. organisiert im BOA Bunker of Art ein offenes Programm aus zeitgenössischer Kunst, Musik, Workshops und gemeinsamer Kulturpraxis.",
+            en: "The Base e.V. organises an open programme of contemporary art, music, workshops, and shared cultural practice at the BOA Bunker of Art.",
           })}
         </p>
       </header>
 
-      <section className="ink-panel grid gap-5 rounded-sm px-4 py-5 sm:px-5 md:px-7 md:py-8 lg:grid-cols-[minmax(18rem,0.85fr)_minmax(0,1.35fr)]">
-        <div className="space-y-2">
+      <section className="ink-panel content-grid rounded-sm px-4 py-5 sm:px-5 md:px-7 md:py-8">
+        <div className="content-stack-tight">
           <p className="type-meta text-zinc-300">The Base e.V.</p>
-          <h2 className="type-display-section max-w-[15ch] leading-[1.02] md:max-w-[17ch]">
+          <h2 className="type-display-section max-w-[17ch] leading-[1.02] md:max-w-[17ch]">
             {text(locale, {
               de: "Plattform für die Aachener Kunstszene und internationale Positionen",
               en: "Platform for the Aachen art scene and beyond",
             })}
           </h2>
         </div>
-        <div className="space-y-3">
+        <div className="content-stack lg:max-w-4xl">
           <p className="type-body-lg max-w-4xl text-zinc-200">
             {text(locale, {
               de: "The Base versteht den ehemaligen Bunker nicht als Kulisse, sondern als aktiven sozialen und kulturellen Raum. Zwischen Ausstellungen, Konzerten, Workshops und Labelarbeit entsteht ein Ort, der Menschen, Szenen und Ideen in Aachen zusammenführt.",
@@ -387,6 +396,7 @@ export default async function HomePage() {
           de: "Profile, Sets und Rollen der Menschen, die den Ort bespielen und weiterentwickeln.",
           en: "Profiles, sets, and roles of the people who activate and develop the space.",
         })}
+        contentClassName="lg:pt-2"
       >
         {talentEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />
@@ -400,6 +410,7 @@ export default async function HomePage() {
           de: "Raum, Atmosphäre und Infrastruktur für Produktionen sowie dokumentierte Medienarbeiten.",
           en: "Space, atmosphere, and infrastructure for productions plus documented media work.",
         })}
+        contentClassName="lg:pt-2"
       >
         {mediaEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />
@@ -421,10 +432,10 @@ export default async function HomePage() {
 
       <SectionGrid
         eyebrow="About"
-        title={text(locale, { de: "Verein, Engagement und Kontakt", en: "Association, engagement, and contact" })}
+        title={text(locale, { de: "Verein, Awareness und Kontakt", en: "Association, awareness, and contact" })}
         description={text(locale, {
-          de: "Geschichte, Haltung, Mitmachmöglichkeiten und direkte Wege zur Base.",
-          en: "History, position, ways to get involved, and direct contact paths.",
+          de: "Geschichte, Haltung, Awareness, Mitmachmöglichkeiten und direkte Wege zur Base.",
+          en: "History, position, awareness, ways to get involved, and direct contact paths.",
         })}
       >
         {aboutEntries.map((entry) => (

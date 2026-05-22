@@ -7,16 +7,24 @@ export async function Footer() {
   const locale = await getLocale();
 
   return (
-    <footer className="mt-10 py-3 text-[var(--muted)] md:py-3.5">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <SocialLinks size="lg" />
+    <footer className="mt-12 py-4 text-[var(--muted)] md:mt-14 md:py-5">
+      <div className="content-grid gap-y-6">
+        <div className="content-stack-tight">
+          <p className="type-meta text-[var(--muted)]">
+            {text(locale, { de: "Verbinden", en: "Connect" })}
+          </p>
+          <SocialLinks size="lg" />
+        </div>
+
+        <div className="content-stack-tight">
+          <p className="type-meta text-[var(--muted)]">
+            {text(locale, { de: "Updates", en: "Updates" })}
+          </p>
+          <NewsletterForm locale={locale} />
+        </div>
       </div>
 
-      <div className="mt-3 pt-3">
-        <NewsletterForm locale={locale} />
-      </div>
-
-      <div className="type-meta mt-3 flex flex-wrap items-center gap-4 pt-2">
+      <div className="type-meta mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 md:mt-6">
         <Link href="/impressum" className="transition-colors hover:text-[var(--ink)]">
           {text(locale, { de: "Impressum", en: "Imprint" })}
         </Link>

@@ -8,9 +8,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:webpack": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "gh": "node ./scripts/base-gh.mjs"
+    "gh": "node ./scripts/base-gh.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "qa": "npm run lint && npm run build:webpack && PLAYWRIGHT_TEST_BASE_URL=http://127.0.0.1:3000 npm run test:e2e"
   },
   "dependencies": {
     "next": "16.2.6",
@@ -18,6 +23,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

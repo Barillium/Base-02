@@ -4,23 +4,31 @@ type SectionGridProps = {
   eyebrow?: string;
   children: React.ReactNode;
   className?: string;
+  contentClassName?: string;
 };
 
-export function SectionGrid({ title, description, eyebrow, children, className }: SectionGridProps) {
+export function SectionGrid({
+  title,
+  description,
+  eyebrow,
+  children,
+  className,
+  contentClassName,
+}: SectionGridProps) {
   return (
     <section
-      className={`grid gap-5 pt-5 md:gap-6 md:pt-6 lg:grid-cols-[minmax(15rem,0.7fr)_minmax(0,1.8fr)] xl:grid-cols-[minmax(18rem,0.62fr)_minmax(0,1.95fr)] ${className ?? ""}`}
+      className={`content-grid pt-4 md:pt-5 ${className ?? ""}`}
     >
-      <div className="space-y-2">
+      <div className="content-stack-tight lg:pr-5 xl:pr-7">
         {eyebrow ? (
           <p className="type-meta text-[var(--muted)]">{eyebrow}</p>
         ) : null}
-        <h2 className="type-display-section text-[var(--ink)]">
+        <h2 className="type-display-section max-w-[16ch] text-[var(--ink)] md:max-w-[16ch] lg:max-w-[13ch] xl:max-w-[14ch]">
           {title}
         </h2>
-        <p className="type-body max-w-xl text-[var(--muted)]">{description}</p>
+        <p className="type-body max-w-lg text-[var(--muted)]">{description}</p>
       </div>
-      <div>{children}</div>
+      <div className={`min-w-0 lg:pt-1 ${contentClassName ?? ""}`}>{children}</div>
     </section>
   );
 }

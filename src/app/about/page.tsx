@@ -94,25 +94,37 @@ export default async function AboutPage() {
     <div className="editorial-fade page-flow">
       <PageIntro
         eyebrow="About"
-        title="The Base e.V. im BOA Bunker of Art Aachen"
+        title="The Base e.V. im BOA Bunker of Art"
         description={text(locale, {
-          de: "About erklärt, wie The Base e.V. den BOA Bunker of Art als Kulturort organisiert: Verein, Haltung, Awareness, Engagement und direkte Kontaktwege.",
+          de: "About erklärt, wie The Base e.V. den BOA Bunker of Art in Aachen als Kulturort organisiert: Verein, Haltung, Awareness, Engagement und direkte Kontaktwege.",
           en: "About explains how The Base e.V. organises the BOA Bunker of Art as a cultural site: association, position, awareness, engagement, and direct contact paths.",
         })}
-        note={text(locale, {
-          de: "Im Mittelpunkt steht eine offene Infrastruktur für regionale und internationale Künstler:innen, DJs, Kollektive und Kulturinteressierte.",
-          en: "At its core is an open infrastructure for regional and international artists.",
-        })}
+        className="lg:grid-cols-[minmax(22rem,0.95fr)_minmax(0,1.35fr)] xl:grid-cols-[minmax(24rem,0.88fr)_minmax(0,1.48fr)]"
+        titleClassName="lg:max-w-[11ch] lg:text-[clamp(2.75rem,4vw,3.55rem)] xl:max-w-[12ch] xl:text-[clamp(3rem,4.3vw,3.9rem)]"
+        rightClassName="lg:pt-4"
       />
 
-      <section className="grid gap-8 pt-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-        <p className="type-meta text-[var(--muted)]">{text(locale, { de: "Kurzprofil", en: "Profile" })}</p>
-        <p className="type-body-lg max-w-3xl text-[var(--ink)]">
-          {text(locale, {
-            de: "The Base e.V. versteht den BOA Bunker of Art seit der Kunstroute 2020 als lebendige Kulturinfrastruktur in Aachen: ein Ort, an dem Ausstellungen, Konzerte, Workshops, Labelarbeit und Archiv zusammenlaufen. Der Fokus liegt auf Kollaboration, Sichtbarkeit für nicht etablierte Stimmen und einer Community, die den Raum gemeinsam weiterentwickelt.",
-            en: "Since Kunstroute 2020, The Base e.V. understands the BOA Bunker of Art as a living cultural infrastructure: a place where exhibitions, events, workshops, and label work converge. The focus is on collaboration, visibility for emerging voices, and a community that develops the space together.",
-          })}
-        </p>
+      <section className="content-grid pt-2 md:pt-4 lg:grid-cols-[minmax(22rem,0.95fr)_minmax(0,1.35fr)] xl:grid-cols-[minmax(24rem,0.88fr)_minmax(0,1.48fr)]">
+        <div className="content-stack-tight">
+          <p className="type-meta text-[var(--muted)]">{text(locale, { de: "Kurzprofil", en: "Profile" })}</p>
+          <h2 className="type-display-section max-w-[14ch] text-[var(--ink)] lg:max-w-[11ch] xl:max-w-[12ch]">
+            {text(locale, { de: "Kulturort, Verein und Infrastruktur", en: "Site, association, and infrastructure" })}
+          </h2>
+        </div>
+        <div className="content-stack lg:max-w-3xl">
+          <p className="type-body-lg max-w-3xl text-[var(--ink)]">
+            {text(locale, {
+              de: "The Base e.V. versteht den BOA Bunker of Art seit der Kunstroute 2020 als lebendige Kulturinfrastruktur in Aachen: ein Ort, an dem Ausstellungen, Konzerte, Workshops, Labelarbeit und Archiv zusammenlaufen.",
+              en: "Since Kunstroute 2020, The Base e.V. sees the BOA Bunker of Art as a living cultural infrastructure in Aachen: a place where exhibitions, concerts, workshops, label work, and archive practices converge.",
+            })}
+          </p>
+          <p className="type-body max-w-3xl text-[var(--muted)]">
+            {text(locale, {
+              de: "Im Mittelpunkt stehen Kollaboration, Sichtbarkeit für nicht etablierte Stimmen und eine Community, die den Raum gemeinsam weiterentwickelt.",
+              en: "At its core are collaboration, visibility for emerging voices, and a community that develops the space together.",
+            })}
+          </p>
+        </div>
       </section>
 
       <SectionGrid
@@ -122,21 +134,10 @@ export default async function AboutPage() {
           de: "Für alle, die verstehen wollen, warum der Bunker als soziale und kulturelle Infrastruktur weiterlebt.",
           en: "For everyone who wants to understand why the bunker continues as social and cultural infrastructure.",
         })}
+        className="lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.7fr)] xl:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.82fr)]"
+        contentClassName="lg:pt-2"
       >
         {baseEntries.map((entry) => (
-          <Card key={entry.href} locale={locale} {...entry} />
-        ))}
-      </SectionGrid>
-
-      <SectionGrid
-        eyebrow="Safe Space"
-        title="Awareness"
-        description={text(locale, {
-          de: "Für Grundsätze, die Veranstaltungen, Teams und Publikum im gemeinsamen Raum orientieren.",
-          en: "For principles that orient events, teams, and audience within the shared space.",
-        })}
-      >
-        {awarenessEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />
         ))}
       </SectionGrid>
@@ -148,8 +149,25 @@ export default async function AboutPage() {
           de: "Für konkrete Wege, selbst Teil der Plattform zu werden oder sie zu unterstützen.",
           en: "For concrete ways to become part of the platform or support it.",
         })}
+        className="lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.7fr)] xl:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.82fr)]"
+        contentClassName="lg:pt-2"
       >
         {contributionEntries.map((entry) => (
+          <Card key={entry.href} locale={locale} {...entry} />
+        ))}
+      </SectionGrid>
+
+      <SectionGrid
+        eyebrow="Safe Space"
+        title="Awareness"
+        description={text(locale, {
+          de: "Für Grundsätze, die Veranstaltungen, Teams und Publikum im gemeinsamen Raum orientieren.",
+          en: "For principles that orient events, teams, and audience within the shared space.",
+        })}
+        className="lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.7fr)] xl:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.82fr)]"
+        contentClassName="lg:pt-2"
+      >
+        {awarenessEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />
         ))}
       </SectionGrid>
@@ -161,6 +179,8 @@ export default async function AboutPage() {
           de: "Für schnelle Orientierung zu Adresse, Mailkontakt, Social Links und passenden Anliegen.",
           en: "For quick orientation around address, email contact, social links, and the right enquiry type.",
         })}
+        className="lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.7fr)] xl:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.82fr)]"
+        contentClassName="lg:pt-2"
       >
         {contactEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />

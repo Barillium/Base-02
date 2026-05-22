@@ -70,11 +70,14 @@ export default async function PeoplePage() {
     <div className="editorial-fade page-flow">
       <PageIntro
         eyebrow="Talents"
-        title={text(locale, { de: "Künstler:innen, DJ’s und Mitwirkende", en: "Artists, DJs, and contributors" })}
+        title={text(locale, { de: "Künstler:innen, DJs und Mitwirkende", en: "Artists, DJs, and contributors" })}
         description={text(locale, {
           de: "Talents zeigt die Menschen hinter der Plattform: künstlerische Positionen, DJs, Produzent:innen, Kollektive und Teams, die den Ort in Aachen weiterentwickeln.",
           en: "Talents shows the people behind the platform: artistic positions, DJs, producers, collectives, and teams developing the space in Aachen.",
         })}
+        className="lg:grid-cols-[minmax(22rem,0.95fr)_minmax(0,1.35fr)] xl:grid-cols-[minmax(24rem,0.88fr)_minmax(0,1.48fr)]"
+        titleClassName="lg:max-w-[11ch] lg:text-[clamp(2.75rem,4vw,3.55rem)] xl:max-w-[12ch] xl:text-[clamp(3rem,4.3vw,3.9rem)]"
+        rightClassName="lg:pt-4"
       />
 
       <SectionGrid
@@ -84,6 +87,8 @@ export default async function PeoplePage() {
           de: "Für künstlerische Beiträge, die Räume, Materialien und soziale Situationen im Bunker bearbeiten.",
           en: "For artistic contributions that work with spaces, materials, and social situations in the bunker.",
         })}
+        className="lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.7fr)] xl:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.82fr)]"
+        contentClassName="lg:pt-2"
       >
         {artists.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />
@@ -97,6 +102,8 @@ export default async function PeoplePage() {
           de: "Für Sound-Profile aus Clubkultur, experimentellen Sets und kollaborativen Musikformaten.",
           en: "For sound profiles from club culture, experimental sets, and collaborative music formats.",
         })}
+        className="lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.7fr)] xl:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.82fr)]"
+        contentClassName="lg:pt-2"
       >
         {djs.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />
@@ -110,6 +117,8 @@ export default async function PeoplePage() {
           de: "Für alle Rollen, die Kulturarbeit möglich machen, aber nicht immer auf der Bühne stehen.",
           en: "For all roles that make cultural work possible but are not always on stage.",
         })}
+        className="lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.7fr)] xl:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.82fr)]"
+        contentClassName="lg:pt-2"
       >
         {contributors.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />
