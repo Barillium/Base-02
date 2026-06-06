@@ -14,8 +14,8 @@ export default function VinylPage() {
       eyebrow="Shop"
       title="Vinyl"
       description={{
-        de: "Physische Tonträger aus dem Umfeld von The Base Records, verbunden mit Release-Shows, Clubnächten und Soundexperimenten.",
-        en: "Physical records from The Base Records, connected to release shows, club nights, and sound experiments.",
+        de: "Physische Tontraeger aus dem Umfeld von The Base Records, verbunden mit Veroeffentlichungen, Release-Shows und Soundexperimenten.",
+        en: "Physical records from The Base Records, connected to releases, release shows, and sound experiments.",
       }}
       note={{
         de: "Diese Seite bündelt Pressungen und Sondereditionen, die Musik aus dem BOA-Kontext dauerhaft greifbar machen.",

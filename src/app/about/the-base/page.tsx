@@ -27,6 +27,10 @@ function getPrinciples(locale: Locale): string[] {
       de: "Denkt den Raum als soziale Infrastruktur, nicht nur als Event-Location.",
       en: "Treats the space as social infrastructure, not only as an event location.",
     }),
+    text(locale, {
+      de: "Versteht Kultur explizit jenseits von Klassen- und Spartengrenzen.",
+      en: "Understands culture explicitly beyond class and sector boundaries.",
+    }),
   ];
 }
 
@@ -40,22 +44,27 @@ export default async function TheBasePage() {
         eyebrow="About"
         title="The Base"
         description={text(locale, {
-          de: "The Base e.V. entwickelt den BOA Bunker of Art in Aachen als Kulturplattform, in der Ausstellungen, Konzerte, Workshops, Labelarbeit und Archiv zusammenlaufen.",
-          en: "The Base e.V. develops the BOA Bunker of Art in Aachen as a cultural platform where exhibitions, concerts, workshops, label work, and archive practice converge.",
+          de: "The Base e.V. entwickelt den BOA Bunker of Art in Aachen als Kulturplattform, in der Ausstellungen, Konzerte, Workshops, Labelarbeit, Archiv und Community zusammenlaufen.",
+          en: "The Base e.V. develops the BOA Bunker of Art in Aachen as a cultural platform where exhibitions, concerts, workshops, label work, archive practice, and community converge.",
         })}
         note={text(locale, {
-          de: "Wichtig ist der Verein nicht als reine Veranstaltungsstruktur, sondern als Infrastruktur für Begegnung, Produktion und Sichtbarkeit.",
-          en: "The association matters not merely as an event structure, but as infrastructure for encounter, production, and visibility.",
+          de: "Im Profil beschreibt sich der Verein selbst als Ort zur Foerderung von Kultur jenseits von Klassen- und Sektorgrenzen - genau daraus entsteht die Verbindung aus Ausstellung, Open Call und kollaborativer Produktion.",
+          en: "On the profile the association describes itself as promoting culture beyond class and sector boundaries - precisely from that comes the connection between exhibition, open call, and collaborative production.",
         })}
+        className="layout-editorial-intro"
+        titleClassName="lg:max-w-[9.8ch] lg:text-[clamp(2.6rem,3.35vw,3.24rem)] xl:max-w-[10.6ch] xl:text-[clamp(2.82rem,3.5vw,3.5rem)]"
+        rightClassName="lg:max-w-[45rem] lg:pt-4"
       />
 
-      <section className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-        <p className="type-display-card text-[var(--ink)]">{text(locale, { de: "Seit Kunstroute 2020", en: "Since Kunstroute 2020" })}</p>
-        <div className="type-body-lg space-y-5 text-[var(--ink)]">
+      <section className="content-grid layout-editorial-section">
+        <p className="type-display-card text-[var(--ink)] lg:max-w-[9.2ch] xl:max-w-[9.8ch]">
+          {text(locale, { de: "Seit Kunstroute 2020", en: "Since Kunstroute 2020" })}
+        </p>
+        <div className="type-body-lg space-y-5 text-[var(--ink)] lg:max-w-[44rem] lg:pt-3">
           <p>
             {text(locale, {
-              de: "Der geschichtsträchtige Bunker wird nicht überdeckt, sondern bewusst als realer Kontext genutzt. Die neue Gemeinschaft füllt den Ort mit Ausstellungen, Konzerten, Workshops und kollaborativen Produktionen.",
-              en: "The historical bunker is not concealed but intentionally used as a real context. A new community fills the space with exhibitions, concerts, workshops, and collaborative productions.",
+              de: "Der geschichtsträchtige Bunker wird nicht überdeckt, sondern bewusst als realer Kontext genutzt. Die Gemeinschaft füllt den Ort mit Ausstellungen, Konzerten, Open Calls, Workshops, Release-Shows und kollaborativen Produktionen.",
+              en: "The historical bunker is not concealed but intentionally used as a real context. The community fills the space with exhibitions, concerts, open calls, workshops, release shows, and collaborative productions.",
             })}
           </p>
           <p>

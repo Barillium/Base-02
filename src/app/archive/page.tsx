@@ -3,6 +3,9 @@ import { PageIntro } from "@/components/PageIntro";
 import { SectionGrid } from "@/components/SectionGrid";
 import { getLocale, Locale, text } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
+import { maybeSanityFetch } from "@/sanity/lib/fetch";
+import { ARCHIVE_CATALOGUE_QUERY, ARCHIVE_POSTER_QUERY } from "@/sanity/lib/queries";
+import type { SanityArchiveItemPreview } from "@/sanity/types";
 
 export const metadata = pageMetadata({
   title: "Archiv für Kunst, Poster und Projekte im BOA Bunker of Art",
@@ -21,11 +24,11 @@ type Entry = {
 function getCatalogEntries(locale: Locale): Entry[] {
   return [
     {
-      title: text(locale, { de: "Zur Katalogübersicht", en: "Catalogue overview" }),
+      title: text(locale, { de: "Kunstkatalog", en: "Art catalogue" }),
       href: "/archive/kunstkatalog",
       description: text(locale, {
-        de: "Rechercheeinstieg zu Werken, Ausstellungstexten, Credits und künstlerischen Zusammenhängen.",
-        en: "Research entry point for works, exhibition texts, credits, and artistic connections.",
+        de: "Arbeiten, Texte, Credits und Materialien, die einzelne Projekte in ihrem Zusammenhang lesbar machen.",
+        en: "Works, texts, credits, and materials that make individual projects legible in their context.",
       }),
       meta: text(locale, { de: "Katalog", en: "Catalogue" }),
     },
@@ -35,40 +38,97 @@ function getCatalogEntries(locale: Locale): Entry[] {
 function getPosterEntries(locale: Locale): Entry[] {
   return [
     {
-      title: text(locale, { de: "Veranstaltungsarchiv", en: "Event archive" }),
-      href: "/live/events",
+      title: text(locale, { de: "Posterarchiv", en: "Poster archive" }),
+      href: "/archive/poster",
       description: text(locale, {
-        de: "Chronik der Formate, die das Programm im Bunker über einzelne Abende hinaus lesbar machen.",
-        en: "Chronicle of formats that make the bunker programme readable beyond individual evenings.",
+        de: "Grafische Spuren, Ankuendigungen und visuelle Arbeiten aus dem Umfeld der Base.",
+        en: "Graphic traces, announcements, and visual works from the context of The Base.",
       }),
-      meta: text(locale, { de: "Dokumentation", en: "Documentation" }),
+      meta: text(locale, { de: "Poster", en: "Poster" }),
+    },
+  ];
+}
+
+async function getResolvedCatalogEntries(locale: Locale): Promise<Entry[]> {
+  const fallbackEntries = getCatalogEntries(locale);
+  const catalogueItem = await maybeSanityFetch<SanityArchiveItemPreview>({
+    query: ARCHIVE_CATALOGUE_QUERY,
+    tags: ["archiveItem", "archive"],
+    revalidate: 300,
+  });
+
+  if (!catalogueItem) {
+    return fallbackEntries;
+  }
+
+  return [
+    {
+      title: catalogueItem.title,
+      href: "/archive/kunstkatalog",
+      description: catalogueItem.summary,
+      meta: text(locale, { de: "Katalog", en: "Catalogue" }),
+    },
+  ];
+}
+
+async function getResolvedPosterEntries(locale: Locale): Promise<Entry[]> {
+  const fallbackEntries = getPosterEntries(locale);
+  const posterItem = await maybeSanityFetch<SanityArchiveItemPreview>({
+    query: ARCHIVE_POSTER_QUERY,
+    tags: ["archiveItem", "archive"],
+    revalidate: 300,
+  });
+
+  if (!posterItem) {
+    return fallbackEntries;
+  }
+
+  return [
+    {
+      title: posterItem.title,
+      href: "/archive/poster",
+      description: posterItem.summary,
+      meta: text(locale, { de: "Poster", en: "Poster" }),
     },
   ];
 }
 
 export default async function ArchivePage() {
   const locale = await getLocale();
-  const catalogEntries = getCatalogEntries(locale);
-  const posterEntries = getPosterEntries(locale);
+  const [catalogEntries, posterEntries] = await Promise.all([
+    getResolvedCatalogEntries(locale),
+    getResolvedPosterEntries(locale),
+  ]);
 
   return (
     <div className="editorial-fade page-flow">
       <PageIntro
         eyebrow="Archive"
         title={text(locale, { de: "Archiv für Kunst, Poster und Projekte", en: "Archive for art, posters, and projects" })}
+        titleLines={[
+          text(locale, { de: "Archiv für Kunst,", en: "Archive for art," }),
+          text(locale, { de: "Poster und", en: "posters and" }),
+          text(locale, { de: "Projekte", en: "projects" }),
+        ]}
         description={text(locale, {
-          de: "Das Archiv erschließt Material aus Kunst, Musik und Community-Arbeit: als Katalog, visuelle Sammlung und Chronik bisheriger Projekte.",
-          en: "The archive opens up material from art, music, and community work: as catalogue, visual collection, and chronology of previous projects.",
+          de: "Das Archiv versammelt Arbeiten, Spuren, Dokumentation und Rueckblicke aus Ausstellungen, Open Calls und anderen oeffentlichen Zusammenhaengen der Base.",
+          en: "The archive gathers works, traces, documentation, and retrospectives from exhibitions, open calls, and other public contexts of The Base.",
         })}
+        className="layout-editorial-intro"
+        titleClassName="lg:max-w-[10.6ch] lg:text-[clamp(2.62rem,3.38vw,3.3rem)] xl:max-w-[11.5ch] xl:text-[clamp(2.88rem,3.58vw,3.6rem)]"
+        rightClassName="lg:max-w-[45rem] lg:pt-4"
       />
 
       <SectionGrid
         eyebrow={text(locale, { de: "Sammlung", en: "Collection" })}
         title={text(locale, { de: "Katalog", en: "Catalogue" })}
         description={text(locale, {
-          de: "Für alle, die Arbeiten, Künstler:innen, Texte und Projektkontexte gezielt wiederfinden möchten.",
-          en: "For everyone who wants to find works, artists, texts, and project contexts deliberately.",
+          de: "Arbeiten, Texte, Credits und Kontexte, die den Weg einzelner Projekte lesbar machen.",
+          en: "Works, texts, credits, and contexts that make the path of individual projects legible.",
         })}
+        className="layout-editorial-section"
+        titleClassName="lg:max-w-[9.1ch] xl:max-w-[9.8ch]"
+        contentClassName="lg:pt-3"
       >
         {catalogEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />
@@ -77,11 +137,14 @@ export default async function ArchivePage() {
 
       <SectionGrid
         eyebrow={text(locale, { de: "Projekte", en: "Projects" })}
-        title={text(locale, { de: "Vergangene Events", en: "Past events" })}
+        title={text(locale, { de: "Poster", en: "Posters" })}
         description={text(locale, {
-          de: "Für Rückblicke auf Konzerte, Ausstellungen und kollaborative Formate im Bunker of Art.",
-          en: "For retrospectives on concerts, exhibitions, and collaborative formats at the Bunker of Art.",
+          de: "Grafische Spuren, Ankuendigungen und visuelle Arbeiten aus dem Umfeld der Veranstaltungen und Ausstellungen.",
+          en: "Graphic traces, announcements, and visual works from the context of events and exhibitions.",
         })}
+        className="layout-editorial-section"
+        titleClassName="lg:max-w-[9.1ch] xl:max-w-[9.8ch]"
+        contentClassName="lg:pt-3"
       >
         {posterEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />

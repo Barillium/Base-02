@@ -1,4 +1,5 @@
 import { Card } from "@/components/Card";
+import { Eyebrow } from "@/components/Eyebrow";
 import { PageIntro } from "@/components/PageIntro";
 import { SectionGrid } from "@/components/SectionGrid";
 import { getLocale, Locale, text } from "@/lib/i18n";
@@ -95,23 +96,33 @@ export default async function AboutPage() {
       <PageIntro
         eyebrow="About"
         title="The Base e.V. im BOA Bunker of Art"
+        titleLines={[
+          text(locale, { de: "The Base e.V.", en: "The Base e.V." }),
+          text(locale, { de: "im BOA Bunker", en: "at the BOA Bunker" }),
+          text(locale, { de: "of Art", en: "of Art" }),
+        ]}
         description={text(locale, {
-          de: "About erklärt, wie The Base e.V. den BOA Bunker of Art in Aachen als Kulturort organisiert: Verein, Haltung, Awareness, Engagement und direkte Kontaktwege.",
+          de: "About erklärt, wie The Base e.V. den BOA Bunker of Art als Verein, Kulturort und soziale Infrastruktur organisiert: mit Haltung, Awareness, Engagement und direkten Kontaktwegen.",
           en: "About explains how The Base e.V. organises the BOA Bunker of Art as a cultural site: association, position, awareness, engagement, and direct contact paths.",
         })}
-        className="lg:grid-cols-[minmax(22rem,0.95fr)_minmax(0,1.35fr)] xl:grid-cols-[minmax(24rem,0.88fr)_minmax(0,1.48fr)]"
-        titleClassName="lg:max-w-[11ch] lg:text-[clamp(2.75rem,4vw,3.55rem)] xl:max-w-[12ch] xl:text-[clamp(3rem,4.3vw,3.9rem)]"
-        rightClassName="lg:pt-4"
+        className="layout-editorial-intro"
+        titleClassName="max-w-[13.6ch] md:max-w-[13.8ch] lg:max-w-[15.2ch] lg:text-[clamp(2.52rem,3.06vw,3.08rem)] xl:max-w-[16.2ch] xl:text-[clamp(2.74rem,3.28vw,3.3rem)]"
+        rightClassName="lg:max-w-[46rem] lg:pt-4"
       />
 
-      <section className="content-grid pt-2 md:pt-4 lg:grid-cols-[minmax(22rem,0.95fr)_minmax(0,1.35fr)] xl:grid-cols-[minmax(24rem,0.88fr)_minmax(0,1.48fr)]">
-        <div className="content-stack-tight">
-          <p className="type-meta text-[var(--muted)]">{text(locale, { de: "Kurzprofil", en: "Profile" })}</p>
-          <h2 className="type-display-section max-w-[14ch] text-[var(--ink)] lg:max-w-[11ch] xl:max-w-[12ch]">
-            {text(locale, { de: "Kulturort, Verein und Infrastruktur", en: "Site, association, and infrastructure" })}
+      <section className="content-grid layout-editorial-section pt-2 md:pt-4">
+        <div className="content-stack-tight min-w-0 lg:pr-4 xl:pr-6">
+          <Eyebrow>{text(locale, { de: "Kurzprofil", en: "Profile" })}</Eyebrow>
+          <h2
+            aria-label={text(locale, { de: "Kulturort, Verein und Infrastruktur", en: "Site, association, and infrastructure" })}
+            className="type-display-section max-w-[14.8ch] text-[clamp(1.24rem,4.3vw,1.64rem)] text-[var(--ink)] md:max-w-[15.4ch] md:text-[clamp(1.58rem,3.05vw,2rem)] lg:max-w-[16.8ch] lg:text-[clamp(2.18rem,2.42vw,2.7rem)] xl:max-w-[17.2ch]"
+          >
+            <span className="block whitespace-nowrap">{text(locale, { de: "Kulturort,", en: "Site," })}</span>
+            <span className="block whitespace-nowrap">{text(locale, { de: "Verein und", en: "association and" })}</span>
+            <span className="block whitespace-nowrap">{text(locale, { de: "Infrastruktur", en: "infrastructure" })}</span>
           </h2>
         </div>
-        <div className="content-stack lg:max-w-3xl">
+        <div className="content-stack lg:max-w-[44rem] lg:pt-3">
           <p className="type-body-lg max-w-3xl text-[var(--ink)]">
             {text(locale, {
               de: "The Base e.V. versteht den BOA Bunker of Art seit der Kunstroute 2020 als lebendige Kulturinfrastruktur in Aachen: ein Ort, an dem Ausstellungen, Konzerte, Workshops, Labelarbeit und Archiv zusammenlaufen.",
@@ -120,7 +131,7 @@ export default async function AboutPage() {
           </p>
           <p className="type-body max-w-3xl text-[var(--muted)]">
             {text(locale, {
-              de: "Im Mittelpunkt stehen Kollaboration, Sichtbarkeit für nicht etablierte Stimmen und eine Community, die den Raum gemeinsam weiterentwickelt.",
+              de: "Im Mittelpunkt stehen Kollaboration, Sichtbarkeit fuer nicht etablierte Stimmen und ein Verstaendnis von Kultur, das Ausstellung, musikalisches Programm, Labelarbeit und Community nicht voneinander trennt.",
               en: "At its core are collaboration, visibility for emerging voices, and a community that develops the space together.",
             })}
           </p>
@@ -130,12 +141,14 @@ export default async function AboutPage() {
       <SectionGrid
         eyebrow="Base"
         title="The Base"
+        titleLines={[text(locale, { de: "The Base", en: "The Base" })]}
         description={text(locale, {
           de: "Für alle, die verstehen wollen, warum der Bunker als soziale und kulturelle Infrastruktur weiterlebt.",
           en: "For everyone who wants to understand why the bunker continues as social and cultural infrastructure.",
         })}
-        className="lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.7fr)] xl:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.82fr)]"
-        contentClassName="lg:pt-2"
+        className="layout-editorial-section"
+        titleClassName="lg:max-w-[13.2ch] xl:max-w-[14ch]"
+        contentClassName="lg:pt-3"
       >
         {baseEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />
@@ -145,12 +158,14 @@ export default async function AboutPage() {
       <SectionGrid
         eyebrow="About"
         title={text(locale, { de: "Engagement", en: "Engagement" })}
+        titleLines={[text(locale, { de: "Engagement", en: "Engagement" })]}
         description={text(locale, {
-          de: "Für konkrete Wege, selbst Teil der Plattform zu werden oder sie zu unterstützen.",
+          de: "Für konkrete Wege, sich mit Projektideen, Open Calls, freiwilliger Arbeit oder finanzieller Unterstützung einzubringen.",
           en: "For concrete ways to become part of the platform or support it.",
         })}
-        className="lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.7fr)] xl:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.82fr)]"
-        contentClassName="lg:pt-2"
+        className="layout-editorial-section"
+        titleClassName="lg:max-w-[13.2ch] xl:max-w-[14ch]"
+        contentClassName="lg:pt-3"
       >
         {contributionEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />
@@ -160,12 +175,14 @@ export default async function AboutPage() {
       <SectionGrid
         eyebrow="Safe Space"
         title="Awareness"
+        titleLines={[text(locale, { de: "Awareness", en: "Awareness" })]}
         description={text(locale, {
           de: "Für Grundsätze, die Veranstaltungen, Teams und Publikum im gemeinsamen Raum orientieren.",
           en: "For principles that orient events, teams, and audience within the shared space.",
         })}
-        className="lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.7fr)] xl:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.82fr)]"
-        contentClassName="lg:pt-2"
+        className="layout-editorial-section"
+        titleClassName="lg:max-w-[13.2ch] xl:max-w-[14ch]"
+        contentClassName="lg:pt-3"
       >
         {awarenessEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />
@@ -175,12 +192,14 @@ export default async function AboutPage() {
       <SectionGrid
         eyebrow="Direct"
         title={text(locale, { de: "Kontakt", en: "Contact" })}
+        titleLines={[text(locale, { de: "Kontakt", en: "Contact" })]}
         description={text(locale, {
           de: "Für schnelle Orientierung zu Adresse, Mailkontakt, Social Links und passenden Anliegen.",
           en: "For quick orientation around address, email contact, social links, and the right enquiry type.",
         })}
-        className="lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.7fr)] xl:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.82fr)]"
-        contentClassName="lg:pt-2"
+        className="layout-editorial-section"
+        titleClassName="lg:max-w-[13.2ch] xl:max-w-[14ch]"
+        contentClassName="lg:pt-3"
       >
         {contactEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />

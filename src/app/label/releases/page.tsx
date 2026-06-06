@@ -12,14 +12,14 @@ export default function ReleasesPage() {
   return (
     <SimplePage
       eyebrow="Label"
-      title={{ de: "Releases", en: "Releases" }}
+      title={{ de: "Veröffentlichungen", en: "Releases" }}
       description={{
-        de: "Diese Seite sammelt Veröffentlichungen von The Base Records: Tracks, EPs, Mitschnitte und Release-Kontexte aus der elektronischen Musikszene in Aachen.",
-        en: "This page collects releases by The Base Records: tracks, EPs, recordings, and release contexts from Aachen's electronic music scene.",
+        de: "Hier versammeln sich Tracks, EPs, Pressungen, Videos und die Kontexte, in denen sie im Umfeld der Base hoerbar und sichtbar werden.",
+        en: "Tracks, EPs, pressings, videos, and the contexts in which they become audible and visible around The Base gather here.",
       }}
       note={{
-        de: "Jeder Release soll nachvollziehbar bleiben: mit Credits, Bezug zum Live-Programm und Verbindung zu den beteiligten Artists.",
-        en: "Each release is meant to remain traceable: with credits, links to the live programme, and connections to the artists involved.",
+        de: "Im Profil erscheint diese Arbeit nie isoliert, sondern verbunden mit Premieren, Auffuehrungen und audiovisuellen Spuren.",
+        en: "This work never appears in isolation on the profile, but alongside premieres, performances, and audiovisual traces.",
       }}
     />
   );

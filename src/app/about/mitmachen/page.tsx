@@ -17,8 +17,8 @@ function getFormats(locale: Locale): string[] {
       en: "Exhibitions and site-specific installations",
     }),
     text(locale, {
-      de: "Konzerte, Live-Sets, Aftershows und Listening-Formate",
-      en: "Concerts, live sets, aftershows, and listening formats",
+      de: "Konzerte, Live-Sets und Listening-Formate",
+      en: "Concerts, live sets, and listening formats",
     }),
     text(locale, {
       de: "Workshops (z. B. Foto, DJ, Publishing, Community-Praxis)",
@@ -48,11 +48,16 @@ export default async function MitmachenPage() {
           de: "Gesucht sind klare Vorschläge, kooperative Energie und Formate, die den BOA Bunker of Art als offenen Kulturraum ernst nehmen.",
           en: "We are looking for clear proposals, collaborative energy, and formats that take the BOA Bunker of Art seriously as an open cultural space.",
         })}
+        className="layout-editorial-intro"
+        titleClassName="lg:max-w-[10.2ch] lg:text-[clamp(2.6rem,3.35vw,3.24rem)] xl:max-w-[11ch] xl:text-[clamp(2.82rem,3.5vw,3.5rem)]"
+        rightClassName="lg:max-w-[45rem] lg:pt-4"
       />
 
-      <section className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-        <p className="type-display-card text-[var(--ink)]">{text(locale, { de: "Programmformate", en: "Programme formats" })}</p>
-        <ul className="type-body-lg space-y-3 text-[var(--ink)]">
+      <section className="content-grid layout-editorial-section">
+        <p className="type-display-card text-[var(--ink)] lg:max-w-[9.4ch] xl:max-w-[10ch]">
+          {text(locale, { de: "Programmformate", en: "Programme formats" })}
+        </p>
+        <ul className="type-body-lg space-y-3 text-[var(--ink)] lg:max-w-[44rem] lg:pt-3">
           {formats.map((format) => (
             <li key={format} className="flex gap-3">
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />

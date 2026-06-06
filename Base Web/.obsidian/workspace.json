@@ -1,0 +1,202 @@
+{
+  "main": {
+    "id": "dfc787d707ffcede",
+    "type": "split",
+    "children": [
+      {
+        "id": "c76e600860ae5d54",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f4d4504cd996dd72",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "07-Meetings/README.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "README"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "e601629a5e23d698",
+    "type": "split",
+    "children": [
+      {
+        "id": "08e87b14b01120ca",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e23ac42d63023049",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Dateiexplorer"
+            }
+          },
+          {
+            "id": "0f36223e5d4bf88f",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Suchen"
+            }
+          },
+          {
+            "id": "bc4284ba0f61b873",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Lesezeichen"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "7d07d5d50af9e9b4",
+    "type": "split",
+    "children": [
+      {
+        "id": "104550e5aa1aa547",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e1786f2d8afccbc1",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "README.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Rückverweise auf README"
+            }
+          },
+          {
+            "id": "867c1181c449c2f3",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "README.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Ausgehende Links von README öffnen"
+            }
+          },
+          {
+            "id": "145e312086e6de6a",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "3f1c7be3be472be6",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Alle Eigenschaften"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Schnellauswahl öffnen": false,
+      "graph:Graph-Ansicht öffnen": false,
+      "canvas:Neuen Canvas erstellen": false,
+      "templates:Vorlage einfügen": false,
+      "command-palette:Befehlspalette öffnen": false,
+      "markdown-importer:Markdown Importprogramm öffnen": false,
+      "bases:Neue Base erstellen": false
+    }
+  },
+  "active": "f4d4504cd996dd72",
+  "lastOpenFiles": [
+    "99-Templates/task-note.md",
+    "99-Templates/meeting-note.md",
+    "99-Templates/decision-note.md",
+    "00-Context/README.md",
+    "06-Decisions/projektchronik.md",
+    "02-Content/Pages/archive-kunstkatalog.md",
+    "02-Content/Pages/about-the-base.md",
+    "02-Content/Pages/datenschutz.md",
+    "02-Content/Pages/archive-poster.md",
+    "02-Content/Pages/about-mitmachen.md",
+    "03-UX/UI-Elements/social-links.md",
+    "03-UX/UI-Elements/simple-page.md",
+    "03-UX/UI-Elements/newsletter-form.md",
+    "03-UX/UI-Elements/page-intro.md",
+    "03-UX/UI-Elements/mitmachen-form.md",
+    "03-UX/UI-Elements/section-grid.md",
+    "02-Content/Pages/live.md",
+    "02-Content/Pages/label.md",
+    "05-Codex/sanity-integration-plan.md",
+    "02-Content/Pages/talents-kuenstlerinnen.md",
+    "02-Content/Pages/talents-djs.md",
+    "02-Content/Pages/talents.md",
+    "02-Content/Pages/about-awareness.md",
+    "02-Content/Pages/home.md",
+    "02-Content/Pages/archive.md",
+    "03-UX/UI-Elements/navigation.md",
+    "03-UX/UI-Elements",
+    "02-Content/Pages"
+  ]
+}

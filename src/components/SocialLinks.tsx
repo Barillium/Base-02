@@ -70,7 +70,7 @@ export function SocialLinks({ className, size = "md" }: SocialLinksProps) {
   const classes = sizeClasses[size];
 
   return (
-    <div className={`flex items-center gap-2 ${className ?? ""}`}>
+    <div className={`flex flex-wrap items-center gap-2 ${className ?? ""}`}>
       {socials.map((social) => (
         <a
           key={social.name}

@@ -22,6 +22,9 @@ export default async function KontaktPage() {
           de: "Diese Seite sammelt die direkten Kontaktwege für Programmfragen, Presse, Kooperationen, Workshops, Raumanfragen und Besuch im BOA Bunker of Art Aachen.",
           en: "This page brings together direct contact paths for programme questions, press, collaborations, workshops, space requests, and visits to the BOA Bunker of Art Aachen.",
         })}
+        className="layout-editorial-intro"
+        titleClassName="lg:max-w-[9.8ch] lg:text-[clamp(2.58rem,3.32vw,3.2rem)] xl:max-w-[10.6ch] xl:text-[clamp(2.8rem,3.46vw,3.44rem)]"
+        rightClassName="lg:max-w-[44rem] lg:pt-4"
       />
 
       <section className="grid gap-8 md:grid-cols-2">

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const siteName = "The Base e.V.";
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://thebase-ev.de").replace(/\/$/, "");
 export const defaultSeoDescription =
-  "The Base e.V. ist ein Kulturzentrum im BOA Bunker of Art in Aachen mit Ausstellungen, Konzerten, Workshops, Label, Archiv und Community-Formaten.";
+  "The Base e.V. ist ein Kulturzentrum im BOA Bunker of Art in Aachen mit Ausstellungen, Konzerten, Workshops, Archiv und Community-Formaten.";
 
 type PageMetadataInput = {
   title: string;

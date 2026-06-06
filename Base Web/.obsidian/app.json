@@ -1,0 +1,9 @@
+{
+  "alwaysUpdateLinks": true,
+  "newLinkFormat": "relative",
+  "useMarkdownLinks": true,
+  "readableLineLength": false,
+  "showInlineTitle": true,
+  "spellcheck": true,
+  "strictLineBreaks": false
+}

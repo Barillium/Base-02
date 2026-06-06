@@ -33,7 +33,7 @@ export function NewsletterForm({ locale }: NewsletterFormProps) {
   return (
     <form
       onSubmit={submitNewsletter}
-      className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(340px,0.95fr)] md:items-end"
+      className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.95fr)] xl:items-end"
     >
       <label className="grid gap-2">
         <span className="type-meta text-[var(--muted)]">
@@ -46,7 +46,7 @@ export function NewsletterForm({ locale }: NewsletterFormProps) {
           })}
         </span>
       </label>
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
+      <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
         <input
           type="email"
           name="email"
@@ -54,11 +54,11 @@ export function NewsletterForm({ locale }: NewsletterFormProps) {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder={text(locale, { de: "E-Mail-Adresse", en: "Email address" })}
-          className="h-11 w-full border border-[var(--line)] bg-[var(--paper)] px-3 text-[0.9rem] text-[var(--ink)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--ink)]"
+          className="h-11 w-full min-w-0 border border-[var(--line)] bg-[var(--paper)] px-3 text-[0.9rem] text-[var(--ink)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--ink)]"
         />
         <button
           type="submit"
-          className="type-meta flex h-11 items-center justify-center border border-[var(--ink)] bg-[var(--ink)] px-4 text-[var(--paper)] transition-opacity hover:opacity-80"
+          className="type-meta flex h-11 items-center justify-center border border-[var(--ink)] bg-[var(--ink)] px-4 text-[var(--paper)] transition-opacity hover:opacity-80 sm:min-w-[8.25rem]"
         >
           {text(locale, { de: "Anmelden", en: "Sign up" })}
         </button>

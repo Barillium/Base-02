@@ -31,34 +31,11 @@ const navigationByLocale: Record<Locale, NavigationItem[]> = {
       ],
     },
     {
-      title: "Label",
-      href: "/label",
-      children: [{ title: "Releases", href: "/label/releases" }],
-    },
-    {
-      title: "Talents",
-      href: "/people",
-      children: [
-        { title: "Künstler:innen", href: "/people/kuenstlerinnen" },
-        { title: "DJs", href: "/people/djs" },
-      ],
-    },
-    {
       title: "Media",
       href: "/media",
       children: [
         { title: "Medienproduktion", href: "/media/buchung" },
         { title: "Produktionen", href: "/media/produktionen" },
-      ],
-    },
-    {
-      title: "Shop",
-      href: "/shop",
-      children: [
-        { title: "Prints", href: "/shop/prints" },
-        { title: "Merch", href: "/shop/merch" },
-        { title: "Vinyl", href: "/shop/vinyl" },
-        { title: "Diverses", href: "/shop/diverses" },
       ],
     },
     {
@@ -91,34 +68,11 @@ const navigationByLocale: Record<Locale, NavigationItem[]> = {
       ],
     },
     {
-      title: "Label",
-      href: "/label",
-      children: [{ title: "Releases", href: "/label/releases" }],
-    },
-    {
-      title: "Talents",
-      href: "/people",
-      children: [
-        { title: "Artists", href: "/people/kuenstlerinnen" },
-        { title: "DJs", href: "/people/djs" },
-      ],
-    },
-    {
       title: "Media",
       href: "/media",
       children: [
         { title: "Media production", href: "/media/buchung" },
         { title: "Productions", href: "/media/produktionen" },
-      ],
-    },
-    {
-      title: "Shop",
-      href: "/shop",
-      children: [
-        { title: "Prints", href: "/shop/prints" },
-        { title: "Merch", href: "/shop/merch" },
-        { title: "Vinyl", href: "/shop/vinyl" },
-        { title: "Misc", href: "/shop/diverses" },
       ],
     },
     {
