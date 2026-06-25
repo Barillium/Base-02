@@ -14,9 +14,11 @@ import {
   splitDisplayTitle,
   type SanitySectionLayout,
 } from "@/sanity/lib/content";
+import { withInstagramFallbackForEventPreview } from "@/sanity/lib/eventInstagramFallbacks";
 import { urlForImage } from "@/sanity/lib/image";
 import type {
   SanityCtaBlock,
+  SanityEventPreview,
   SanityFeatureListSection,
   SanityGalleryBlockSection,
   SanityHomeHeroSection,
@@ -35,7 +37,26 @@ import type {
 type HomeSectionsProps = {
   sections: SanityHomePage["sections"];
   locale: Locale;
+  currentEvent?: SanityEventPreview | null;
 };
+
+const HOME_QUICK_CURRENT_FALLBACK = {
+  title: {
+    de: "The Roots of All That Exists",
+    en: "The Roots of All That Exists",
+  },
+  href: "https://www.instagram.com/the.base.ev/p/DYcFhaxtS8G/",
+} as const;
+
+const HOME_STATEMENT_TITLE = {
+  de: "Plattform zwischen Ausstellung, Programm und lokaler Szene",
+  en: "Platform between exhibition, programme, and local scene",
+} as const;
+
+const HOME_STATEMENT_LINES = {
+  de: ["Plattform", "zwischen", "Ausstellung,", "Programm und", "lokaler Szene"],
+  en: ["Platform", "between", "exhibition,", "programme and", "local scene"],
+} as const;
 
 function getSpacingClass(value: SanitySectionLayout["spacingTop"] | SanitySectionLayout["spacingBottom"], edge: "pt" | "pb") {
   const map = {
@@ -149,20 +170,45 @@ function renderDisplayLines(displayTitle: string | undefined, fallbackTitle: str
   return splitDisplayTitle(displayTitle) ?? [fallbackTitle];
 }
 
-function QuickLinksSection({ section, locale }: { section: SanityHomeQuickLinksSection; locale: Locale }) {
+function normalizeCopy(value?: string | null) {
+  return value?.trim().toLowerCase();
+}
+
+function QuickLinksSection({
+  section,
+  locale,
+  currentEvent,
+}: {
+  section: SanityHomeQuickLinksSection;
+  locale: Locale;
+  currentEvent?: SanityEventPreview | null;
+}) {
   const items = section.items.filter((item) => item.isVisible !== false).filter((item) => Boolean(resolveHomeItemHref(item)));
+  const currentMeta = text(locale, { de: "Aktuell", en: "Current" });
+  const genericCurrentTitle = text(locale, { de: "Aktuelle Veranstaltung", en: "Current event" });
+  const latestProjectMeta = text(locale, { de: "Letztes Projekt", en: "Latest project" });
+  const latestProjectsMeta = text(locale, { de: "Letzte Projekte", en: "Latest projects" });
+  const resolvedCurrentEvent = currentEvent ? withInstagramFallbackForEventPreview(locale, currentEvent) : null;
+  const currentTitle = resolvedCurrentEvent?.title ?? text(locale, HOME_QUICK_CURRENT_FALLBACK.title);
+  const currentHref = resolvedCurrentEvent?.externalUrl ?? HOME_QUICK_CURRENT_FALLBACK.href;
+  const currentDescription = resolvedCurrentEvent?.summary ?? "";
 
   if (!items.length) {
     return null;
   }
 
   return (
-    <section className={`-mx-[var(--site-gutter)] ${getOuterSectionClass(section.layout)}`}>
+    <section className={`-mx-[var(--site-gutter)] -mb-[clamp(1.15rem,3.5vw,1.95rem)] ${getOuterSectionClass(section.layout)}`}>
       <div className="grid grid-cols-1 border-y border-[var(--line)]/70 lg:grid-cols-3">
         {items.map((item, index) => {
-          const href = resolveHomeItemHref(item);
+          const isCurrentItem =
+            normalizeCopy(item.meta) === normalizeCopy(currentMeta)
+            || normalizeCopy(item.title) === normalizeCopy(genericCurrentTitle);
+          const href = isCurrentItem ? currentHref : resolveHomeItemHref(item);
           const external = isExternalHref(href);
           const dividerClasses = index === 0 ? "" : "border-t border-[var(--line)]/55 lg:border-l lg:border-t-0";
+          const title = isCurrentItem ? currentTitle : item.title;
+          const meta = normalizeCopy(item.meta) === normalizeCopy(latestProjectMeta) ? latestProjectsMeta : item.meta;
 
           return (
             <a
@@ -172,10 +218,11 @@ function QuickLinksSection({ section, locale }: { section: SanityHomeQuickLinksS
               rel={external ? "noreferrer noopener" : undefined}
               className={`home-quick-link group grid min-w-0 px-[var(--site-gutter)] transition-colors hover:bg-black/[0.025] focus-visible:bg-black/[0.025] focus-visible:outline-none ${dividerClasses}`}
             >
-              {item.meta ? <p className="type-meta text-[var(--muted)]">{item.meta}</p> : null}
+              {meta ? <p className="type-meta text-[var(--muted)]">{meta}</p> : null}
               <p className="home-quick-link-title font-display text-[var(--ink)] transition-transform group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5">
-                {item.title}
+                {title}
               </p>
+              {isCurrentItem && currentDescription ? <p className="sr-only">{currentDescription}</p> : null}
               {external ? (
                 <span className="sr-only">
                   {text(locale, { de: "Öffnet in einem neuen Tab", en: "Opens in a new tab" })}
@@ -220,21 +267,33 @@ function HomeHeroSection({ section }: { section: SanityHomeHeroSection }) {
   );
 }
 
-function HomeStatement({ section }: { section: SanityHomeStatementSection }) {
-  const titleLines = renderDisplayLines(section.displayTitle, section.title);
+function HomeStatement({ section, locale }: { section: SanityHomeStatementSection; locale: Locale }) {
+  const fallbackTitle = text(locale, HOME_STATEMENT_TITLE);
+  const resolvedLines = renderDisplayLines(
+    section.displayTitle,
+    section.title || HOME_STATEMENT_TITLE.de,
+  );
+  const usesDefaultGermanHeading =
+    locale === "en"
+    && resolvedLines.length === HOME_STATEMENT_LINES.de.length
+    && resolvedLines.every((line, index) => normalizeCopy(line) === normalizeCopy(HOME_STATEMENT_LINES.de[index]));
+  const titleLines = usesDefaultGermanHeading
+    ? HOME_STATEMENT_LINES.en
+    : renderDisplayLines(section.displayTitle, section.title || fallbackTitle);
+  const titleLabel = usesDefaultGermanHeading ? fallbackTitle : section.title || fallbackTitle;
   const theme = section.layout?.theme ?? "ink";
   const listTone = theme === "ink" ? "text-zinc-300" : "text-[var(--muted)]";
   const bodyTone = theme === "ink" ? "text-zinc-200" : "text-[var(--ink)]";
   const noteTone = theme === "ink" ? "text-zinc-300" : "text-[var(--muted)]";
 
   return (
-    <section className={`-mx-[var(--site-gutter)] ${getOuterSectionClass(section.layout)}`}>
+    <section className={`-mx-[var(--site-gutter)] -mt-[clamp(1.15rem,3.5vw,1.95rem)] ${getOuterSectionClass(section.layout)}`}>
       <div className={`${getSurfaceClass(theme)} px-[var(--site-gutter)] py-8 md:py-10`}>
         <div className="content-grid">
           <div className="content-stack lg:max-w-[24.5rem]">
             <h2
-              aria-label={section.title}
-              className="home-intro-heading font-display text-[2.7rem] leading-[0.96] tracking-[0.03em] uppercase text-current md:text-[3.5rem] lg:max-w-[24.5rem] lg:text-[clamp(3rem,3.2vw,4.15rem)]"
+              aria-label={titleLabel}
+              className="home-intro-heading font-display text-[2.16rem] tracking-[0.026em] uppercase text-current md:text-[2.68rem] lg:max-w-[24.5rem] lg:text-[clamp(2.78rem,2.9vw,3.72rem)]"
             >
               {titleLines.map((line) => (
                 <span key={line} className="block">
@@ -364,7 +423,13 @@ function EditorialTextSection({ section }: { section: SanityHomeTextSection }) {
   );
 }
 
-function ImageBlockSection({ section }: { section: SanityImageBlockSection }) {
+function ImageBlockSection({
+  section,
+  suppressCaption = false,
+}: {
+  section: SanityImageBlockSection;
+  suppressCaption?: boolean;
+}) {
   const imageUrl = resolveFigureUrl(section.image, 1800);
 
   if (!imageUrl) {
@@ -391,7 +456,7 @@ function ImageBlockSection({ section }: { section: SanityImageBlockSection }) {
           <div className={`relative overflow-hidden ${ratioClass}`}>
             <Image src={imageUrl} alt={section.image?.alt || ""} fill sizes="100vw" className="object-cover object-center" />
           </div>
-          {section.image?.caption ? (
+          {!suppressCaption && section.image?.caption ? (
             <figcaption className="type-meta mt-2 text-[var(--muted)]">{section.image.caption}</figcaption>
           ) : null}
         </figure>
@@ -524,18 +589,23 @@ function CtaBlockSection({ section, locale }: { section: SanityCtaBlock; locale:
   );
 }
 
-function renderHomeSection(section: SanityHomeSection, locale: Locale) {
+function renderHomeSection(
+  section: SanityHomeSection,
+  locale: Locale,
+  currentEvent?: SanityEventPreview | null,
+  nextSection?: SanityHomeSection | null,
+) {
   if ("isVisible" in section && section.isVisible === false) {
     return null;
   }
 
   switch (section._type) {
     case "homeQuickLinksSection":
-      return <QuickLinksSection key={section._key} section={section} locale={locale} />;
+      return <QuickLinksSection key={section._key} section={section} locale={locale} currentEvent={currentEvent} />;
     case "homeHero":
       return <HomeHeroSection key={section._key} section={section} />;
     case "homeStatementSection":
-      return <HomeStatement key={section._key} section={section} />;
+      return <HomeStatement key={section._key} section={section} locale={locale} />;
     case "featureListSection":
       return <FeatureListSection key={section._key} section={section} />;
     case "homeSectionIntro":
@@ -543,7 +613,13 @@ function renderHomeSection(section: SanityHomeSection, locale: Locale) {
     case "textSection":
       return <EditorialTextSection key={section._key} section={section} />;
     case "imageBlock":
-      return <ImageBlockSection key={section._key} section={section} />;
+      return (
+        <ImageBlockSection
+          key={section._key}
+          section={section}
+          suppressCaption={nextSection?._type === "homeStatementSection"}
+        />
+      );
     case "galleryBlock":
       return <GalleryBlockSection key={section._key} section={section} />;
     case "videoBlock":
@@ -555,10 +631,16 @@ function renderHomeSection(section: SanityHomeSection, locale: Locale) {
   }
 }
 
-export function HomeSections({ sections, locale }: HomeSectionsProps) {
+export function HomeSections({ sections, locale, currentEvent }: HomeSectionsProps) {
   if (!sections?.length) {
     return null;
   }
 
-  return <>{sections.map((section) => (section ? renderHomeSection(section, locale) : null))}</>;
+  return (
+    <>
+      {sections.map((section, index) =>
+        section ? renderHomeSection(section, locale, currentEvent, sections[index + 1] ?? null) : null,
+      )}
+    </>
+  );
 }

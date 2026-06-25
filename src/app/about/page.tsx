@@ -112,12 +112,15 @@ export default async function AboutPage() {
     tags: ["aboutPage", "about"],
     revalidate: 300,
   });
-  const baseEntries =
-    aboutPage?.baseTeaserSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getBaseEntries(locale);
-  const awarenessEntries =
-    aboutPage?.awarenessTeaserSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getAwarenessEntries(locale);
+  const resolvedBaseEntries = aboutPage?.baseTeaserSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? [];
+  const resolvedAwarenessEntries =
+    aboutPage?.awarenessTeaserSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? [];
+  const resolvedContributionEntries =
+    aboutPage?.inquiryTeaserSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? [];
+  const baseEntries = resolvedBaseEntries.length ? resolvedBaseEntries : getBaseEntries(locale);
+  const awarenessEntries = resolvedAwarenessEntries.length ? resolvedAwarenessEntries : getAwarenessEntries(locale);
   const contributionEntries =
-    aboutPage?.inquiryTeaserSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getContributionEntries(locale);
+    resolvedContributionEntries.length ? resolvedContributionEntries : getContributionEntries(locale);
   const introDescription =
     aboutPage?.description ??
     text(locale, {

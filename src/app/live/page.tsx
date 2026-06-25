@@ -9,9 +9,11 @@ import {
   resolveLinkedDocumentHref,
   splitDisplayTitle,
 } from "@/sanity/lib/content";
+import { withInstagramFallbackForEventPreview } from "@/sanity/lib/eventInstagramFallbacks";
 import { maybeSanityFetch } from "@/sanity/lib/fetch";
-import { LIVE_PAGE_QUERY } from "@/sanity/lib/queries";
-import type { SanityLivePage, SanityTeaserCard } from "@/sanity/types";
+import { formatEventMeta } from "@/sanity/lib/presenters";
+import { LIVE_CURRENT_EVENT_QUERY, LIVE_PAGE_QUERY } from "@/sanity/lib/queries";
+import type { SanityEventPreview, SanityLivePage, SanityTeaserCard } from "@/sanity/types";
 
 const livePageMetadata = {
   title: "Live-Programm in Aachen: Ausstellungen, Konzerte und Workshops",
@@ -97,20 +99,58 @@ function isEntry(entry: Entry | null): entry is Entry {
   return entry !== null;
 }
 
+function isGenericCurrentEntry(entry: Entry, locale: Locale) {
+  return (
+    entry.title === text(locale, { de: "Aktuelle Veranstaltung", en: "Current event" })
+    || entry.meta === text(locale, { de: "Aktuell", en: "Current" })
+  );
+}
+
 export default async function LivePage() {
   const locale = await getLocale();
-  const livePage = await maybeSanityFetch<SanityLivePage>({
-    query: LIVE_PAGE_QUERY,
-    params: { locale },
-    tags: ["livePage", "live"],
-    revalidate: 300,
-  });
-  const currentAndUpcoming =
-    livePage?.currentSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getCurrentAndUpcoming(locale);
-  const pastEvents =
-    livePage?.archiveSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getPastEvents(locale);
-  const ongoingFormats =
-    livePage?.formatsSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getOngoingFormats(locale);
+  const [livePage, currentEvent] = await Promise.all([
+    maybeSanityFetch<SanityLivePage>({
+      query: LIVE_PAGE_QUERY,
+      params: { locale },
+      tags: ["livePage", "live"],
+      revalidate: 300,
+    }),
+    maybeSanityFetch<SanityEventPreview>({
+      query: LIVE_CURRENT_EVENT_QUERY,
+      params: { locale },
+      tags: ["event", "live", "current-event"],
+      revalidate: 300,
+    }),
+  ]);
+  const resolvedCurrentEntries = livePage?.currentSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? [];
+  const resolvedPastEvents = livePage?.archiveSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? [];
+  const resolvedOngoingFormats = livePage?.formatsSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? [];
+  const resolvedCurrentEvent = currentEvent ? withInstagramFallbackForEventPreview(locale, currentEvent) : null;
+  const currentFallbackEntry: Entry = resolvedCurrentEvent
+    ? {
+        title: resolvedCurrentEvent.title,
+        href: resolvedCurrentEvent.externalUrl || THE_BASE_INSTAGRAM_URL,
+        description: resolvedCurrentEvent.summary,
+        meta: formatEventMeta(locale, resolvedCurrentEvent),
+        external: true,
+      }
+    : getCurrentAndUpcoming(locale)[0];
+  const currentAndUpcoming = resolvedCurrentEntries.length
+    ? resolvedCurrentEntries.map((entry, index) =>
+        index === 0 && isGenericCurrentEntry(entry, locale)
+          ? {
+              ...entry,
+              title: currentFallbackEntry.title,
+              href: currentFallbackEntry.href,
+              description: currentFallbackEntry.description,
+              meta: currentFallbackEntry.meta,
+              external: currentFallbackEntry.external,
+            }
+          : entry,
+      )
+    : [currentFallbackEntry];
+  const pastEvents = resolvedPastEvents.length ? resolvedPastEvents : getPastEvents(locale);
+  const ongoingFormats = resolvedOngoingFormats.length ? resolvedOngoingFormats : getOngoingFormats(locale);
 
   return (
     <div className="editorial-fade page-flow">

@@ -25,7 +25,7 @@ export default async function MediaBookingPage() {
 
   return (
     <SimplePage
-      eyebrow={page?.eyebrow ?? "Booking"}
+      eyebrow={page?.eyebrow ?? (locale === "de" ? "Buchung" : "Booking")}
       introClassName="layout-media-intro"
       title={page?.title ?? (locale === "de" ? "Anfragen für Produktionen" : "Production enquiries")}
       titleLines={splitDisplayTitle(page?.displayTitle) ?? (locale === "de" ? ["Anfragen", "für", "Produktionen"] : ["Production", "enquiries"])}

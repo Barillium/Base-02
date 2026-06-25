@@ -125,18 +125,6 @@ function getAboutEntries(locale: Locale): Entry[] {
       meta: text(locale, { de: "Profil", en: "Profile" }),
     },
     {
-      title: text(locale, {
-        de: "Open Call",
-        en: "Open call",
-      }),
-      href: "/mitmachen",
-      description: text(locale, {
-        de: "Anfragen für Ausstellungen, ortsspezifische Arbeiten und andere Formate im Kontext des BOA.",
-        en: "Inquiries for exhibitions, site-specific works, and other formats in the context of the BOA.",
-      }),
-      meta: text(locale, { de: "Open Call", en: "Open call" }),
-    },
-    {
       title: "Awareness",
       href: "/about/code-of-conduct",
       description: text(locale, {
@@ -145,12 +133,31 @@ function getAboutEntries(locale: Locale): Entry[] {
       }),
       meta: text(locale, { de: "Safe Space", en: "Safe Space" }),
     },
+    {
+      title: text(locale, { de: "Kontakt aufnehmen", en: "Get in touch" }),
+      href: "/about/kontakt",
+      description: text(locale, {
+        de: "Direkte Kontaktwege für Anfragen, Austausch und organisatorische Abstimmungen rund um Verein und Kulturort.",
+        en: "Direct contact paths for enquiries, exchange, and organisational coordination around the association and the cultural site.",
+      }),
+      meta: text(locale, { de: "Kontakt", en: "Contact" }),
+    },
+    {
+      title: text(locale, { de: "Fördermitglied werden", en: "Become a supporting member" }),
+      href: "/about/foerdermitgliedschaft",
+      description: text(locale, {
+        de: "Informationen für Menschen und Organisationen, die die Arbeit des Vereins regelmäßig unterstützen möchten.",
+        en: "Information for people and organisations who want to support the association's work on a recurring basis.",
+      }),
+      meta: text(locale, { de: "Unterstützen", en: "Support" }),
+    },
   ];
 }
 
 function getResolvedAboutEntries(locale: Locale, homePage?: SanityHomePage | null): Entry[] {
   const fallbackEntries = getAboutEntries(locale);
   const entries = homePage?.featuredAbout
+    ?.filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
     ?.map((entry) => ({
       title: entry.title,
       href: resolveStaticPageHref(entry.routeKey) || "",
@@ -162,13 +169,51 @@ function getResolvedAboutEntries(locale: Locale, homePage?: SanityHomePage | nul
             ? text(locale, { de: "Safe Space", en: "Safe Space" })
             : entry.routeKey === "about-kontakt"
               ? text(locale, { de: "Kontakt", en: "Contact" })
-              : entry.routeKey === "about-foerdermitgliedschaft"
-                ? text(locale, { de: "Unterstützen", en: "Support" })
-                : text(locale, { de: "Open Call", en: "Open call" }),
+            : entry.routeKey === "about-foerdermitgliedschaft"
+              ? text(locale, { de: "Unterstützen", en: "Support" })
+              : text(locale, { de: "Open Call", en: "Open call" }),
     }))
     .filter((entry) => Boolean(entry.href));
 
-  return entries?.length ? entries : fallbackEntries;
+  if (!entries?.length) {
+    return fallbackEntries;
+  }
+
+  const mergedEntries = [...entries];
+
+  for (const fallbackEntry of fallbackEntries) {
+    if (!mergedEntries.some((entry) => entry.href === fallbackEntry.href)) {
+      mergedEntries.push(fallbackEntry);
+    }
+  }
+
+  return mergedEntries;
+}
+
+function HomeAboutSection({ locale, entries }: { locale: Locale; entries: Entry[] }) {
+  return (
+    <SectionGrid
+      eyebrow="About"
+      title={text(locale, { de: "Verein, Awareness und Kontakt", en: "Association, awareness, and contact" })}
+      titleLines={[
+        text(locale, { de: "Verein,", en: "Association," }),
+        text(locale, { de: "Awareness", en: "awareness" }),
+        text(locale, { de: "und Kontakt", en: "and contact" }),
+      ]}
+      description={text(locale, {
+        de: "Geschichte, Selbstverständnis, Awareness und konkrete Wege in den Verein und den Kulturort hinein.",
+        en: "History, position, awareness, and direct ways into the association and the cultural site.",
+      })}
+      className="layout-editorial-section home-about-section"
+      titleClassName="home-about-title lg:max-w-[10.2ch] xl:max-w-[10.8ch]"
+      descriptionClassName="home-about-description"
+      contentClassName="home-about-content"
+    >
+      {entries.map((entry) => (
+        <Card key={entry.href} locale={locale} {...entry} />
+      ))}
+    </SectionGrid>
+  );
 }
 
 function getMilestones(locale: Locale): string[] {
@@ -204,18 +249,19 @@ export default async function HomePage() {
       revalidate: 300,
     }),
   ]);
+  const aboutEntries = getResolvedAboutEntries(locale, homePage);
 
   if (homePage?.sections?.length) {
     return (
       <div className="editorial-fade page-flow page-flow-home">
         <PageJsonLd {...homePageMetadata} pageType="WebPage" />
-        <HomeSections sections={homePage.sections} locale={locale} />
+        <HomeSections sections={homePage.sections} locale={locale} currentEvent={currentEvent} />
+        <HomeAboutSection locale={locale} entries={aboutEntries} />
       </div>
     );
   }
 
   const quickEntries = getResolvedQuickEntries(locale, homePage, currentEvent);
-  const aboutEntries = getResolvedAboutEntries(locale, homePage);
   const milestones = portableTextToTextLines(homePage?.milestones).length
     ? portableTextToTextLines(homePage?.milestones)
     : getMilestones(locale);
@@ -337,27 +383,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <SectionGrid
-        eyebrow="About"
-        title={text(locale, { de: "Verein, Awareness und Kontakt", en: "Association, awareness, and contact" })}
-        titleLines={[
-          text(locale, { de: "Verein,", en: "Association," }),
-          text(locale, { de: "Awareness", en: "awareness" }),
-          text(locale, { de: "und Kontakt", en: "and contact" }),
-        ]}
-        description={text(locale, {
-          de: "Geschichte, Selbstverständnis, Awareness und konkrete Wege in den Verein und den Kulturort hinein.",
-          en: "History, position, awareness, ways to get involved, and direct contact paths.",
-        })}
-        className="layout-editorial-section home-about-section"
-        titleClassName="home-about-title lg:max-w-[10.2ch] xl:max-w-[10.8ch]"
-        descriptionClassName="home-about-description"
-        contentClassName="home-about-content"
-      >
-        {aboutEntries.map((entry) => (
-          <Card key={entry.href} locale={locale} {...entry} />
-        ))}
-      </SectionGrid>
+      <HomeAboutSection locale={locale} entries={aboutEntries} />
     </div>
   );
 }

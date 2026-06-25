@@ -81,8 +81,8 @@ export default async function MediaPage() {
     tags: ["mediaPage", "media"],
     revalidate: 300,
   });
-  const productionEntries =
-    mediaPage?.mainSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getProductionEntries(locale);
+  const resolvedProductionEntries = mediaPage?.mainSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? [];
+  const productionEntries = resolvedProductionEntries.length ? resolvedProductionEntries : getProductionEntries(locale);
 
   return (
     <div className="editorial-fade page-flow">
