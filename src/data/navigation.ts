@@ -44,7 +44,8 @@ const navigationByLocale: Record<Locale, NavigationItem[]> = {
       children: [
         { title: "The Base", href: "/about/the-base" },
         { title: "Awareness", href: "/about/code-of-conduct" },
-        { title: "Mitmachen", href: "/mitmachen" },
+        { title: "Open Call", href: "/mitmachen" },
+        { title: "Fördermitgliedschaft", href: "/about/foerdermitgliedschaft" },
         { title: "Kontakt", href: "/about/kontakt" },
       ],
     },
@@ -81,7 +82,8 @@ const navigationByLocale: Record<Locale, NavigationItem[]> = {
       children: [
         { title: "The Base", href: "/about/the-base" },
         { title: "Awareness", href: "/about/code-of-conduct" },
-        { title: "Get involved", href: "/mitmachen" },
+        { title: "Open call", href: "/mitmachen" },
+        { title: "Support membership", href: "/about/foerdermitgliedschaft" },
         { title: "Contact", href: "/about/kontakt" },
       ],
     },

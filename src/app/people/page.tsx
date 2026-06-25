@@ -148,7 +148,7 @@ export default async function PeoplePage() {
           text(locale, { de: "Mitwirkende", en: "contributors" }),
         ]}
         description={text(locale, {
-          de: "Talents zeigt die Menschen hinter den sichtbaren Formaten der Base: kuenstlerische Positionen aus Ausstellungen, DJs aus musikalischen Programmen und Teams, die den Ort in Aachen tragen.",
+          de: "Talents zeigt die Menschen hinter den sichtbaren Formaten der Base: künstlerische Positionen aus Ausstellungen, DJs aus musikalischen Programmen und Teams, die den Ort in Aachen tragen.",
           en: "Talents shows the people behind the platform: artistic positions, DJs, producers, collectives, and teams developing the space in Aachen.",
         })}
         className="layout-people-intro"
@@ -176,7 +176,7 @@ export default async function PeoplePage() {
         eyebrow="DJs"
         title="DJs"
         description={text(locale, {
-          de: "Fuer Sound-Profile aus b2b-Konstellationen, Gastbeitraegen und kollaborativen Musikformaten im Umfeld der Base.",
+          de: "Für Sound-Profile aus b2b-Konstellationen, Gastbeiträgen und kollaborativen Musikformaten im Umfeld der Base.",
           en: "For sound profiles from club culture, experimental sets, and collaborative music formats.",
         })}
         className="layout-people-section"

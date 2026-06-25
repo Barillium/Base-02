@@ -1,6 +1,6 @@
 import { text } from "@/lib/i18n-shared";
 import type { Locale } from "@/lib/i18n-shared";
-import type { SanityArchiveItemPreview, SanityEventPreview, SanityFormatPreview } from "@/sanity/types";
+import type { SanityArchiveEntryPreview, SanityEventPreview, SanityProgrammeSeriesPreview } from "@/sanity/types";
 
 function formatDate(locale: Locale, value: string): string {
   return new Intl.DateTimeFormat(locale === "de" ? "de-DE" : "en-US", {
@@ -10,14 +10,12 @@ function formatDate(locale: Locale, value: string): string {
   }).format(new Date(value));
 }
 
-function getEventKindLabel(locale: Locale, kind?: SanityEventPreview["kind"]): string {
+function getEventKindLabel(locale: Locale, kind?: SanityEventPreview["eventType"]): string {
   switch (kind) {
     case "exhibition":
       return text(locale, { de: "Ausstellung", en: "Exhibition" });
     case "concert":
       return text(locale, { de: "Konzert", en: "Concert" });
-    case "club-night":
-      return text(locale, { de: "Veranstaltung", en: "Event" });
     case "workshop":
       return text(locale, { de: "Workshop", en: "Workshop" });
     case "release-show":
@@ -27,7 +25,7 @@ function getEventKindLabel(locale: Locale, kind?: SanityEventPreview["kind"]): s
   }
 }
 
-function getArchiveTypeLabel(locale: Locale, typeLabel?: SanityArchiveItemPreview["typeLabel"]): string {
+function getArchiveTypeLabel(locale: Locale, typeLabel?: SanityArchiveEntryPreview["archiveType"]): string {
   switch (typeLabel) {
     case "catalogue":
       return text(locale, { de: "Katalog", en: "Catalogue" });
@@ -41,27 +39,27 @@ function getArchiveTypeLabel(locale: Locale, typeLabel?: SanityArchiveItemPrevie
 }
 
 export function formatEventMeta(locale: Locale, event: SanityEventPreview): string {
-  const kind = getEventKindLabel(locale, event.kind);
+  const kind = getEventKindLabel(locale, event.eventType);
 
-  if (event.dateStart && event.dateEnd) {
-    return `${formatDate(locale, event.dateStart)} – ${formatDate(locale, event.dateEnd)}  •  ${kind}`;
+  if (event.startDate && event.endDate) {
+    return `${formatDate(locale, event.startDate)} – ${formatDate(locale, event.endDate)}  •  ${kind}`;
   }
 
-  if (event.dateStart) {
-    return `${formatDate(locale, event.dateStart)}  •  ${kind}`;
+  if (event.startDate) {
+    return `${formatDate(locale, event.startDate)}  •  ${kind}`;
   }
 
   return kind;
 }
 
-export function formatFormatMeta(locale: Locale, format: SanityFormatPreview): string {
+export function formatSeriesMeta(locale: Locale, format: SanityProgrammeSeriesPreview): string {
   return format.status === "active"
     ? text(locale, { de: "Laufendes Format", en: "Ongoing format" })
     : text(locale, { de: "Format", en: "Format" });
 }
 
-export function formatArchiveMeta(locale: Locale, item: SanityArchiveItemPreview): string {
-  const label = getArchiveTypeLabel(locale, item.typeLabel);
+export function formatArchiveMeta(locale: Locale, item: SanityArchiveEntryPreview): string {
+  const label = getArchiveTypeLabel(locale, item.archiveType);
 
   if (item.date) {
     return `${formatDate(locale, item.date)}  •  ${label}`;

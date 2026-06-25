@@ -11,7 +11,22 @@ Sie ist auf den aktuellen Projektstand zugeschnitten:
 - TypeScript
 - Tailwind CSS v4
 - Deployment auf Cloudflare Workers ueber OpenNext
-- redaktionelle, inhaltsgetriebene Website mit Bereichen wie `Live`, `Archive`, `Talents`, `About`, `Label`, `Media`, `Shop`
+- redaktionelle, inhaltsgetriebene Website mit den oeffentlich aktiven Bereichen `Live`, `Archive`, `Media` und `About`
+
+Wichtig fuer den aktuellen Scope:
+
+- `Label`, `Talents` und `Shop` sind derzeit **nicht** Teil der aktiven oeffentlichen Website-Struktur
+- wenn sie in dieser Notiz auftauchen, dann nur als spaetere oder historische Erweiterungsoptionen, nicht als aktuelle Navigations- oder QA-Annahme
+
+## Aktueller Implementierungsstand
+
+Der Plan ist nicht mehr nur vorbereitend, sondern in Teilen bereits umgesetzt:
+
+- eingebettetes Studio unter `/studio` ist aktiv
+- `siteSettings`, `homePage`, `event`, `programmeSeries`, `archiveEntry`, `mediaProject` und `staticPage` sind als Schema-Typen im Repo vorhanden
+- die Homepage liest bereits `homePage`-Inhalte bevorzugt aus `Sanity`
+- `Live`, `Archive`, `Media / Produktionen` sowie mehrere feste `About`-Seiten koennen bereits strukturierte Inhalte aus `Sanity` lesen
+- Revalidation und Fallback-Logik bleiben Teil des Setups, damit die Site auch ohne vollstaendige Redaktionsbefuellung stabil bleibt
 
 ## Kurzfazit
 
@@ -46,7 +61,7 @@ Sanity ist stark, wenn Inhalte nicht nur Texte, sondern strukturierte Datensaetz
 
 ### 2. Inhalte sollen sich aendern koennen, ohne dauernd in den Code zu muessen
 
-Gerade `Live`, `Archive`, `Talents` und Teile von `About` profitieren davon, wenn Aenderungen nicht immer ueber manuelle Code-Edits laufen.
+Gerade `Live`, `Archive`, `Media` und Teile von `About` profitieren davon, wenn Aenderungen nicht immer ueber manuelle Code-Edits laufen.
 
 ### 3. Redaktionslogik passt gut zu App Router
 
@@ -94,13 +109,13 @@ Bleibt der interne Projektraum fuer:
 
 Wird nur fuer Website-Inhalte benutzt:
 
-- aktuelle Ausstellung
+- aktuelle Veranstaltung
 - vergangene Veranstaltungen
 - laufende Formate
-- Artists / DJs / Mitwirkende
 - Archivobjekte
+- Media-Inhalte
 - About-Inhalte
-- ggf. spaeter Label / Media / Shop
+- ggf. spaeter weitere, derzeit nicht aktive Bereiche
 
 ## Was ich nicht empfehlen wuerde
 
@@ -249,7 +264,7 @@ Fuer Poster, Doku, Projektspuren, Archivmaterial:
 
 #### 10. `release`
 
-Fuer Label-Inhalte:
+Falls Label-Inhalte spaeter wieder oeffentlich relevant werden:
 
 - Titel
 - Slug
@@ -638,125 +653,5 @@ Revalidation oder Webhook-Handling einbauen.
 
 Editorial Pflegeprozess festlegen:
 
-- wer pflegt was
-- wann ist etwas Entwurf
-- wann ist etwas live
-- wie werden Bilder und Credits gepflegt
-
----
-
-## Was wir aus dem Code in Sanity ziehen wuerden
-
-### Homepage
-
-- Schnellzugaenge
-
-### Live
-
-- aktuelle Ausstellung
-- vergangene Veranstaltungen
-- laufende Formate
-
-### Talents
-
-- Artists
-- DJs
-- Mitwirkende
-
-### Archive
-
-- Katalogeintraege
-- Poster-Eintraege
-- Dokumentation
-
-### About
-
-- Kurzprofil
-- Intro
-- Engagement
-- Awareness
-
-Nicht alles muss sofort migriert werden. Vieles kann schrittweise aus dem bestehenden Code in strukturierte Inhalte ueberfuehrt werden.
-
----
-
-## Risiken und typische Fehler
-
-### 1. Zu viele Inhaltstypen sofort
-
-Fuehrt zu:
-
-- unnoetig komplexem Studio
-- Pflegefrust
-- schlechter Akzeptanz
-
-### 2. Zu freies Modell
-
-Wenn alles nur Rich Text ist, verliert ihr die Vorteile von Sanity.
-
-### 3. Zu starres Modell
-
-Wenn jede Kleinigkeit ein eigener Datentyp wird, wird Pflege unnoetig schwer.
-
-### 4. Obsidian und Sanity doppelt pflegen
-
-Deshalb klar trennen:
-
-- Obsidian = intern
-- Sanity = publizierbar
-
-### 5. Zu frueh alles live umstellen
-
-Besser:
-
-- klein anfangen
-- bewaehrte Bereiche zuerst
-- Schritt fuer Schritt migrieren
-
----
-
-## Empfehlung fuer den Start in diesem Projekt
-
-Wenn wir das wirklich umsetzen, waere meine konkrete Startreihenfolge:
-
-1. Sanity-Projekt anlegen
-2. `next-sanity` integrieren
-3. `homeQuickLink` Schema bauen
-4. Homepage-Schnellzugaenge aus Sanity lesen
-5. `event` + `format` bauen
-6. `Live` migrieren
-7. `archiveItem` bauen
-8. `Archive` migrieren
-9. `artist` / `dj` / `contributor` bauen
-10. `Talents` migrieren
-
-Das ist die kleinste sinnvolle Einfuehrung mit dem groessten Nutzen.
-
----
-
-## Quellen
-
-Offizielle Dokumentation:
-
-- Sanity + Next.js: https://www.sanity.io/docs/nextjs/introduction
-- Sanity JS Client: https://www.sanity.io/docs/apis-and-sdks/js-client-getting-started
-- Sanity Next.js Integrationsuebersicht: https://www.sanity.io/docs/nextjs
-- Sanity Webhooks / Revalidation: https://www.sanity.io/guides/sanity-webhooks-and-on-demand-revalidation-in-nextjs
-- Obsidian Datenspeicherung: https://help.obsidian.md/data-storage
-
----
-
-## Naechste sinnvolle Fortsetzung
-
-Wenn wir weitergehen, sollte die naechste Datei in Obsidian sein:
-
-- `05-Codex/sanity-schema-blueprint.md`
-
-Darin wuerden wir konkret festlegen:
-
-- exakte Document Types
-- alle Felder
-- Feldtypen
-- Relationen
-- Validierungsregeln
-- welche Website-Seite welche Query braucht
+- welche Personen wirklich eigenstaendige Profile brauchen
+- welche nur in Event- oder Formatkontexten genannt werden

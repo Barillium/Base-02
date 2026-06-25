@@ -5,7 +5,16 @@ const studioModuleStub = "./src/stubs/next-sanity-studio.tsx";
 const embeddedStudioStub = "./src/components/studio/EmbeddedStudio.disabled.tsx";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["127.0.0.1"],
   devIndicators: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+      },
+    ],
+  },
   turbopack: disableEmbeddedStudio
     ? {
         resolveAlias: {

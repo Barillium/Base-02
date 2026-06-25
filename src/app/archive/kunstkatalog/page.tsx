@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/seo";
 import { maybeSanityFetch } from "@/sanity/lib/fetch";
 import { ARCHIVE_CATALOGUE_ITEMS_QUERY } from "@/sanity/lib/queries";
 import { formatArchiveMeta } from "@/sanity/lib/presenters";
-import type { SanityArchiveItemPreview } from "@/sanity/types";
+import type { SanityArchiveEntryPreview } from "@/sanity/types";
 
 export const metadata = pageMetadata({
   title: "Kunstkatalog von The Base e.V. Aachen",
@@ -25,9 +25,10 @@ type Entry = {
 };
 
 async function getResolvedEntries(locale: Locale): Promise<Entry[]> {
-  const items = await maybeSanityFetch<SanityArchiveItemPreview[]>({
+  const items = await maybeSanityFetch<SanityArchiveEntryPreview[]>({
     query: ARCHIVE_CATALOGUE_ITEMS_QUERY,
-    tags: ["archiveItem", "archive", "catalogue"],
+    params: { locale },
+    tags: ["archiveEntry", "archive", "catalogue"],
     revalidate: 300,
   });
 
@@ -36,14 +37,14 @@ async function getResolvedEntries(locale: Locale): Promise<Entry[]> {
   }
 
   const mappedEntries = items
-    .filter((item) => Boolean(item.externalUrl))
+    .filter((item) => Boolean(item.slug || item.externalUrl))
     .map((item) => ({
       title: item.title,
-      href: item.externalUrl as string,
+      href: item.slug ? `/archive/${item.slug}` : (item.externalUrl as string),
       description: item.summary,
       meta: formatArchiveMeta(locale, item),
-      external: true as const,
-      ctaLabel: text(locale, { de: "Zum Post", en: "View post" }),
+      external: item.slug ? undefined : (true as const),
+      ctaLabel: text(locale, { de: "Zur Seite", en: "Open page" }),
     }));
 
   return mappedEntries;
@@ -62,7 +63,7 @@ export default async function KunstkatalogPage() {
         en: "Works, texts, credits, and materials that make individual exhibitions and projects legible in their context.",
       }}
       note={{
-        de: "Solange hier noch keine Arbeiten und Texte versammelt sind, bleibt die Seite bewusst zurueckhaltend.",
+        de: "Solange hier noch keine Arbeiten und Texte versammelt sind, bleibt die Seite bewusst zurückhaltend.",
         en: "As long as no works and texts are gathered here yet, the page intentionally stays restrained.",
       }}
     >

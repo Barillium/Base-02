@@ -10,7 +10,7 @@ export const metadata = pageMetadata({
 export default function ImpressumPage() {
   return (
     <div className="editorial-fade page-flow-compact">
-      <section className="rounded-sm bg-[#1d1f24] px-6 py-8 text-zinc-100 md:px-10 md:py-12">
+      <section className="full-bleed-panel bg-[#1d1f24] px-6 py-8 text-zinc-100 md:px-10 md:py-12">
         <h1 className="type-display-hero">
           Impressum
         </h1>

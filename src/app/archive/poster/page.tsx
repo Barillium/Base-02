@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/seo";
 import { maybeSanityFetch } from "@/sanity/lib/fetch";
 import { ARCHIVE_POSTER_ITEMS_QUERY } from "@/sanity/lib/queries";
 import { formatArchiveMeta } from "@/sanity/lib/presenters";
-import type { SanityArchiveItemPreview } from "@/sanity/types";
+import type { SanityArchiveEntryPreview } from "@/sanity/types";
 
 export const metadata = pageMetadata({
   title: "Poster-Archiv für Events und Ausstellungen",
@@ -25,9 +25,10 @@ type Entry = {
 };
 
 async function getResolvedEntries(locale: Locale): Promise<Entry[]> {
-  const items = await maybeSanityFetch<SanityArchiveItemPreview[]>({
+  const items = await maybeSanityFetch<SanityArchiveEntryPreview[]>({
     query: ARCHIVE_POSTER_ITEMS_QUERY,
-    tags: ["archiveItem", "archive", "poster"],
+    params: { locale },
+    tags: ["archiveEntry", "archive", "poster"],
     revalidate: 300,
   });
 
@@ -36,14 +37,14 @@ async function getResolvedEntries(locale: Locale): Promise<Entry[]> {
   }
 
   const mappedEntries = items
-    .filter((item) => Boolean(item.externalUrl))
+    .filter((item) => Boolean(item.slug || item.externalUrl))
     .map((item) => ({
       title: item.title,
-      href: item.externalUrl as string,
+      href: item.slug ? `/archive/${item.slug}` : (item.externalUrl as string),
       description: item.summary,
       meta: formatArchiveMeta(locale, item),
-      external: true as const,
-      ctaLabel: text(locale, { de: "Zum Post", en: "View post" }),
+      external: item.slug ? undefined : (true as const),
+      ctaLabel: text(locale, { de: "Zur Seite", en: "Open page" }),
     }));
 
   return mappedEntries;
@@ -58,7 +59,7 @@ export default async function PosterPage() {
       eyebrow="Archive"
       title={{ de: "Poster", en: "Posters" }}
       description={{
-        de: "Grafische Spuren, Ankuendigungen und visuelle Arbeiten aus dem Umfeld von Ausstellungen, Open Calls und Veranstaltungen.",
+        de: "Grafische Spuren, Ankündigungen und visuelle Arbeiten aus dem Umfeld von Ausstellungen, Open Calls und Veranstaltungen.",
         en: "Graphic traces, announcements, and visual works from the context of exhibitions, open calls, and public events.",
       }}
       note={{

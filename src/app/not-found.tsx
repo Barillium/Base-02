@@ -27,7 +27,7 @@ export default async function NotFound() {
               About
             </Link>
             <Link href="/mitmachen" className="transition-colors hover:text-[var(--ink)]">
-              {text(locale, { de: "Mitmachen", en: "Get involved" })}
+              {text(locale, { de: "Open Call", en: "Open call" })}
             </Link>
           </div>
         </div>

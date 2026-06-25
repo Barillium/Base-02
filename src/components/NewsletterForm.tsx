@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useId, useState } from "react";
 
 import { Locale, text } from "@/lib/i18n-shared";
 
@@ -12,6 +12,8 @@ const newsletterAddress = "info@thebase-ev.de";
 
 export function NewsletterForm({ locale }: NewsletterFormProps) {
   const [email, setEmail] = useState("");
+  const emailFieldId = useId();
+  const emailHintId = useId();
 
   function submitNewsletter(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,13 +35,13 @@ export function NewsletterForm({ locale }: NewsletterFormProps) {
   return (
     <form
       onSubmit={submitNewsletter}
-      className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.95fr)] xl:items-end"
+      className="newsletter-form grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.95fr)] xl:items-end"
     >
-      <label className="grid gap-2">
+      <label htmlFor={emailFieldId} className="grid gap-2">
         <span className="type-meta text-[var(--muted)]">
           {text(locale, { de: "Newsletter", en: "Newsletter" })}
         </span>
-        <span className="type-body text-[var(--ink)]">
+        <span id={emailHintId} className="type-body text-[var(--ink)]">
           {text(locale, {
             de: "Updates zu Ausstellungen, Konzerten und Workshops.",
             en: "Updates on exhibitions, concerts, and workshops.",
@@ -48,17 +50,20 @@ export function NewsletterForm({ locale }: NewsletterFormProps) {
       </label>
       <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
         <input
+          id={emailFieldId}
           type="email"
           name="email"
           required
+          autoComplete="email"
+          aria-describedby={emailHintId}
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder={text(locale, { de: "E-Mail-Adresse", en: "Email address" })}
-          className="h-11 w-full min-w-0 border border-[var(--line)] bg-[var(--paper)] px-3 text-[0.9rem] text-[var(--ink)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--ink)]"
+          className="newsletter-form-input h-11 w-full min-w-0 px-0 text-[0.9rem] text-[var(--ink)] outline-none placeholder:text-[var(--muted)]"
         />
         <button
           type="submit"
-          className="type-meta flex h-11 items-center justify-center border border-[var(--ink)] bg-[var(--ink)] px-4 text-[var(--paper)] transition-opacity hover:opacity-80 sm:min-w-[8.25rem]"
+          className="newsletter-submit type-meta flex h-11 items-center justify-center px-0 sm:min-w-[8.25rem]"
         >
           {text(locale, { de: "Anmelden", en: "Sign up" })}
         </button>

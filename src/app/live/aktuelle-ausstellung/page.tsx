@@ -4,6 +4,7 @@ import { SimplePage } from "@/components/SimplePage";
 import { getLocale, Locale, text } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 import { maybeSanityFetch } from "@/sanity/lib/fetch";
+import { withInstagramFallbackForEventPreview } from "@/sanity/lib/eventInstagramFallbacks";
 import { LIVE_CURRENT_EVENT_QUERY } from "@/sanity/lib/queries";
 import { formatEventMeta } from "@/sanity/lib/presenters";
 import type { SanityEventPreview } from "@/sanity/types";
@@ -15,34 +16,51 @@ export const metadata = pageMetadata({
   path: "/live/aktuelle-ausstellung",
 });
 
+const THE_BASE_INSTAGRAM_URL = "https://www.instagram.com/the.base.ev/";
+
 type Entry = {
   title: string;
   href: string;
   description: string;
   meta: string;
-  external: true;
+  external?: true;
   ctaLabel: string;
 };
 
 async function getResolvedEntries(locale: Locale): Promise<Entry[]> {
   const currentEvent = await maybeSanityFetch<SanityEventPreview>({
     query: LIVE_CURRENT_EVENT_QUERY,
+    params: { locale },
     tags: ["event", "live", "current-event"],
     revalidate: 300,
   });
 
-  if (!currentEvent?.externalUrl) {
-    return [];
+  if (!currentEvent) {
+    return [
+      {
+        title: text(locale, { de: "Aktuelle Veranstaltung", en: "Current event" }),
+        href: THE_BASE_INSTAGRAM_URL,
+        description: text(locale, {
+          de: "Die aktuelle Veranstaltung wird über Instagram veröffentlicht und laufend aktualisiert.",
+          en: "The current event is published and updated via Instagram.",
+        }),
+        meta: text(locale, { de: "Instagram", en: "Instagram" }),
+        external: true,
+        ctaLabel: text(locale, { de: "Zur Veranstaltung", en: "Open event" }),
+      },
+    ];
   }
+
+  const resolvedEvent = withInstagramFallbackForEventPreview(locale, currentEvent);
 
   return [
     {
-      title: currentEvent.title,
-      href: currentEvent.externalUrl,
-      description: currentEvent.summary,
-      meta: formatEventMeta(locale, currentEvent),
+      title: resolvedEvent.title,
+      href: resolvedEvent.externalUrl || THE_BASE_INSTAGRAM_URL,
+      description: resolvedEvent.summary,
+      meta: formatEventMeta(locale, resolvedEvent),
       external: true,
-      ctaLabel: text(locale, { de: "Mehr dazu", en: "Learn more" }),
+      ctaLabel: text(locale, { de: "Zur Veranstaltung", en: "Open event" }),
     },
   ];
 }
@@ -52,12 +70,12 @@ export default async function AktuelleAusstellungPage() {
   const entries = await getResolvedEntries(locale);
   const note = entries.length
     ? {
-        de: "Der aktuelle Eintrag verweist auf die externe Ankündigung. Titel, Zeitraum und Kurzbeschreibung werden aus Sanity gezogen.",
-        en: "The current entry points to the external announcement. Title, date range, and summary are pulled from Sanity.",
+        de: "Der aktuelle Eintrag bündelt Titel, Zeitraum und Kurzbeschreibung an einem Ort und führt direkt zur Instagram-Veröffentlichung der Veranstaltung.",
+        en: "The current entry brings title, date range, and summary together in one place and leads directly to the event's Instagram publication.",
       }
     : {
-        de: "Solange im CMS noch kein aktueller Eintrag angelegt ist, bleibt diese Seite bewusst reduziert und zeigt nur ihre strukturelle Rolle.",
-        en: "As long as no current entry exists in the CMS yet, this page intentionally stays reduced and only shows its structural role.",
+        de: "Solange noch kein aktueller Eintrag veröffentlicht ist, bleibt diese Seite bewusst reduziert.",
+        en: "As long as no current entry has been published yet, this page intentionally stays reduced.",
       };
 
   return (
@@ -67,9 +85,10 @@ export default async function AktuelleAusstellungPage() {
         de: "Aktuelle Veranstaltung",
         en: "Current event",
       }}
+      introClassName="layout-live-intro"
       description={{
-        de: "Diese Seite ist für die jeweils aktuelle Veranstaltung vorbereitet. Titel, Termine, Kontext und weiterführende Links werden hier aus Sanity gepflegt.",
-        en: "This page is prepared for the current event. Title, dates, context, and supporting links are maintained here from Sanity.",
+        de: "Diese Seite bündelt die jeweils aktuelle Veranstaltung mit Titel, Zeitraum, Kontext und weiterführendem Link.",
+        en: "This page brings together the current event with title, date range, context, and supporting link.",
       }}
       note={note}
     >
@@ -77,10 +96,10 @@ export default async function AktuelleAusstellungPage() {
         eyebrow={text(locale, { de: "Event", en: "Event" })}
         title={text(locale, { de: "Eintrag", en: "Entry" })}
         description={text(locale, {
-          de: "Sobald ein Eintrag im CMS angelegt ist, erscheint er hier als strukturierter Datensatz statt als fest eingetragener Seiteninhalt.",
-          en: "Once an entry exists in the CMS, it will appear here as a structured dataset instead of fixed page content.",
+          de: "Sobald ein aktueller Eintrag veröffentlicht ist, erscheint er hier mit Kurzbeschreibung und weiterführendem Verweis.",
+          en: "As soon as a current entry is published, it will appear here with summary and supporting reference.",
         })}
-        className="layout-editorial-section"
+        className="layout-live-section"
         titleClassName="lg:max-w-[9.3ch] xl:max-w-[10ch]"
         contentClassName="lg:pt-3"
       >
@@ -91,8 +110,8 @@ export default async function AktuelleAusstellungPage() {
             <p className="type-meta">{text(locale, { de: "Noch kein Eintrag", en: "No entry yet" })}</p>
             <p className="type-body mt-2">
               {text(locale, {
-                de: "Die aktuelle Veranstaltung kann hier eingepflegt werden, sobald in Sanity ein entsprechendes `event`-Dokument mit Status und Verlinkung angelegt ist.",
-                en: "The current event can be added here once a matching `event` document with status and link has been created in Sanity.",
+                de: "Die aktuelle Veranstaltung wird hier sichtbar, sobald ein entsprechender Eintrag veröffentlicht ist.",
+                en: "The current event will appear here once a matching entry has been published.",
               })}
             </p>
           </div>

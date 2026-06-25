@@ -2,7 +2,7 @@
 
 ## Zweck
 
-Diese Notiz beschreibt die **konkrete Reihenfolge**, in der Inhalte in `Sanity` für die The Base Website eingepflegt werden sollten.
+Diese Notiz beschreibt die **konkrete Reihenfolge**, in der Inhalte in `Sanity` fuer die The Base Website eingepflegt werden sollten.
 
 Sie folgt dem Plan aus [sanity-integration-plan.md](</Users/stanynyssen/Documents/Base 002 3/Base Web/05-Codex/sanity-integration-plan.md>) und dem aktuellen technischen Stand im Projekt:
 
@@ -16,6 +16,21 @@ Das Ziel ist:
 - **nicht alles auf einmal**
 - zuerst die Inhalte pflegen, die sofort sichtbar und strukturell wichtig sind
 - danach weitere Inhaltstypen schrittweise ergaenzen
+
+Wichtig fuer den aktuellen oeffentlichen Scope:
+
+- aktive Website-Bereiche sind derzeit `Live`, `Archive`, `Media` und `About`
+- `Label`, `Talents` und `Shop` sind aktuell keine aktiven Navigations- oder QA-Bereiche
+- wenn diese Bereiche in aelteren Beispielen oder Notizen auftauchen, gelten sie hier nur als spaetere oder archivierte Optionen
+
+## Stand jetzt bereits umgesetzt
+
+- `siteSettings` ist technisch angebunden und wird auf `Kontakt` bereits gelesen
+- `homePage` ist angebunden und steuert Homepage-Bausteine bevorzugt aus `Sanity`
+- `event` und `programmeSeries` speisen bereits Teile von `Live`
+- `archiveEntry` speist bereits Teile von `Archive`
+- `mediaProject` speist optional `Media / Produktionen`
+- `staticPage` ist fuer mehrere feste `About`- und `Media`-Unterseiten vorbereitet
 
 ---
 
@@ -257,7 +272,7 @@ Beispiele waeren spaeter:
 
 ### Wichtig
 
-Ein `format` soll nicht einfach ein einzelnes Event doppeln.  
+Ein `format` soll nicht einfach ein einzelnes Event doppeln.
 Ein Format beschreibt die **wiederkehrende Linie**, nicht nur einen einzelnen Termin.
 
 ---
@@ -307,7 +322,7 @@ Zum Beispiel:
 
 ### Redaktionsregel
 
-Archivtexte sollen nicht wie Eventteaser klingen.  
+Archivtexte sollen nicht wie Eventteaser klingen.
 Sie sollen eher beschreiben, **was dieses Objekt im Archiv darstellt**.
 
 ---

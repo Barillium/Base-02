@@ -24,7 +24,7 @@ function getReleases(locale: Locale): Entry[] {
       title: text(locale, { de: "Tracks, Pressungen und Kontexte", en: "Tracks, pressings, and contexts" }),
       href: "/label/releases",
       description: text(locale, {
-        de: "Veroeffentlichungen, Credits und die Momente, in denen Klang, Pressung und Auffuehrung zusammenkommen.",
+        de: "Veröffentlichungen, Credits und die Momente, in denen Klang, Pressung und Aufführung zusammenkommen.",
         en: "Releases, credits, and the moments where sound, pressing, and performance come together.",
       }),
       meta: text(locale, { de: "Sound", en: "Sound" }),
@@ -61,7 +61,7 @@ export default async function LabelPage() {
           text(locale, { de: "Records", en: "Records" }),
         ]}
         description={text(locale, {
-          de: "The Base Records verbindet Klang aus Aachen mit den Raeumen und Programmen der Base: Pressungen, Videos, Release-Shows und Spuren, die nicht getrennt vom uebrigen Programm entstehen.",
+          de: "The Base Records verbindet Klang aus Aachen mit den Räumen und Programmen der Base: Pressungen, Videos, Release-Shows und Spuren, die nicht getrennt vom übrigen Programm entstehen.",
           en: "The Base Records connects sound from Aachen with the rooms and programmes of The Base: pressings, videos, release shows, and traces that do not emerge separately from the rest of the programme.",
         })}
         className="layout-label-intro"
@@ -74,7 +74,7 @@ export default async function LabelPage() {
         title={text(locale, { de: "Veröffentlichungen", en: "Releases" })}
         titleLines={[text(locale, { de: "Veröffentlichungen", en: "Releases" })]}
         description={text(locale, {
-          de: "Ein Einstieg in Veroeffentlichungen, Pressungen, Videos und die Kontexte, in denen sie oeffentlich werden.",
+          de: "Ein Einstieg in Veröffentlichungen, Pressungen, Videos und die Kontexte, in denen sie öffentlich werden.",
           en: "An entry point into releases, pressings, videos, and the contexts in which they become public.",
         })}
         className="layout-label-section"

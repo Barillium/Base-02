@@ -1,18 +1,26 @@
 import { Card } from "@/components/Card";
+import { PageJsonLd } from "@/components/PageJsonLd";
 import { PageIntro } from "@/components/PageIntro";
 import { SectionGrid } from "@/components/SectionGrid";
 import { getLocale, Locale, text } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
+import {
+  resolveLinkFieldHref,
+  resolveLinkedDocumentHref,
+  splitDisplayTitle,
+} from "@/sanity/lib/content";
 import { maybeSanityFetch } from "@/sanity/lib/fetch";
-import { ARCHIVE_CATALOGUE_QUERY, ARCHIVE_POSTER_QUERY } from "@/sanity/lib/queries";
-import type { SanityArchiveItemPreview } from "@/sanity/types";
+import { ARCHIVE_PAGE_QUERY } from "@/sanity/lib/queries";
+import type { SanityArchivePage, SanityTeaserCard } from "@/sanity/types";
 
-export const metadata = pageMetadata({
+const archivePageMetadata = {
   title: "Archiv für Kunst, Poster und Projekte im BOA Bunker of Art",
   description:
     "Archiv von The Base e.V. Aachen mit Kunstkatalog, Poster-Archiv und Veranstaltungsdokumentation aus dem BOA Bunker of Art.",
   path: "/archive",
-});
+} as const;
+
+export const metadata = pageMetadata(archivePageMetadata);
 
 type Entry = {
   title: string;
@@ -41,7 +49,7 @@ function getPosterEntries(locale: Locale): Entry[] {
       title: text(locale, { de: "Posterarchiv", en: "Poster archive" }),
       href: "/archive/poster",
       description: text(locale, {
-        de: "Grafische Spuren, Ankuendigungen und visuelle Arbeiten aus dem Umfeld der Base.",
+        de: "Grafische Spuren, Ankündigungen und visuelle Arbeiten aus dem Umfeld der Base.",
         en: "Graphic traces, announcements, and visual works from the context of The Base.",
       }),
       meta: text(locale, { de: "Poster", en: "Poster" }),
@@ -49,84 +57,70 @@ function getPosterEntries(locale: Locale): Entry[] {
   ];
 }
 
-async function getResolvedCatalogEntries(locale: Locale): Promise<Entry[]> {
-  const fallbackEntries = getCatalogEntries(locale);
-  const catalogueItem = await maybeSanityFetch<SanityArchiveItemPreview>({
-    query: ARCHIVE_CATALOGUE_QUERY,
-    tags: ["archiveItem", "archive"],
-    revalidate: 300,
-  });
+function resolveTeaserCardEntry(card: SanityTeaserCard): Entry | null {
+  const href = resolveLinkFieldHref(card.link) || resolveLinkedDocumentHref(card.linkedDocument) || "";
 
-  if (!catalogueItem) {
-    return fallbackEntries;
+  if (!href) {
+    return null;
   }
 
-  return [
-    {
-      title: catalogueItem.title,
-      href: "/archive/kunstkatalog",
-      description: catalogueItem.summary,
-      meta: text(locale, { de: "Katalog", en: "Catalogue" }),
-    },
-  ];
+  return {
+    title: card.title,
+    href,
+    description: card.description,
+    meta: card.meta ?? "",
+  };
 }
 
-async function getResolvedPosterEntries(locale: Locale): Promise<Entry[]> {
-  const fallbackEntries = getPosterEntries(locale);
-  const posterItem = await maybeSanityFetch<SanityArchiveItemPreview>({
-    query: ARCHIVE_POSTER_QUERY,
-    tags: ["archiveItem", "archive"],
-    revalidate: 300,
-  });
-
-  if (!posterItem) {
-    return fallbackEntries;
-  }
-
-  return [
-    {
-      title: posterItem.title,
-      href: "/archive/poster",
-      description: posterItem.summary,
-      meta: text(locale, { de: "Poster", en: "Poster" }),
-    },
-  ];
+function isEntry(entry: Entry | null): entry is Entry {
+  return entry !== null;
 }
 
 export default async function ArchivePage() {
   const locale = await getLocale();
-  const [catalogEntries, posterEntries] = await Promise.all([
-    getResolvedCatalogEntries(locale),
-    getResolvedPosterEntries(locale),
-  ]);
+  const archivePage = await maybeSanityFetch<SanityArchivePage>({
+    query: ARCHIVE_PAGE_QUERY,
+    params: { locale },
+    tags: ["archivePage", "archive"],
+    revalidate: 300,
+  });
+  const catalogEntries =
+    archivePage?.catalogueSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getCatalogEntries(locale);
+  const posterEntries =
+    archivePage?.posterSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getPosterEntries(locale);
 
   return (
     <div className="editorial-fade page-flow">
+      <PageJsonLd {...archivePageMetadata} pageType="CollectionPage" />
+
       <PageIntro
-        eyebrow="Archive"
-        title={text(locale, { de: "Archiv für Kunst, Poster und Projekte", en: "Archive for art, posters, and projects" })}
-        titleLines={[
+        eyebrow={archivePage?.eyebrow ?? "Archive"}
+        title={archivePage?.title ?? text(locale, { de: "Archiv für Kunst, Poster und Projekte", en: "Archive for art, posters, and projects" })}
+        titleLines={splitDisplayTitle(archivePage?.displayTitle) ?? [
           text(locale, { de: "Archiv für Kunst,", en: "Archive for art," }),
           text(locale, { de: "Poster und", en: "posters and" }),
           text(locale, { de: "Projekte", en: "projects" }),
         ]}
-        description={text(locale, {
-          de: "Das Archiv versammelt Arbeiten, Spuren, Dokumentation und Rueckblicke aus Ausstellungen, Open Calls und anderen oeffentlichen Zusammenhaengen der Base.",
+        description={archivePage?.description ?? text(locale, {
+          de: "Das Archiv versammelt Arbeiten, Spuren, Dokumentation und Rückblicke aus Ausstellungen, Open Calls und anderen öffentlichen Zusammenhängen der Base.",
           en: "The archive gathers works, traces, documentation, and retrospectives from exhibitions, open calls, and other public contexts of The Base.",
         })}
-        className="layout-editorial-intro"
-        titleClassName="lg:max-w-[10.6ch] lg:text-[clamp(2.62rem,3.38vw,3.3rem)] xl:max-w-[11.5ch] xl:text-[clamp(2.88rem,3.58vw,3.6rem)]"
-        rightClassName="lg:max-w-[45rem] lg:pt-4"
+        note={archivePage?.note}
+        layout={archivePage?.introLayout}
+        className="layout-overview-intro"
+        titleClassName="lg:max-w-[10.6ch] lg:text-[clamp(2.36rem,3vw,2.94rem)] xl:max-w-[11.5ch] xl:text-[clamp(2.56rem,3.18vw,3.2rem)]"
+        rightClassName="layout-overview-copy-start lg:max-w-[45rem] lg:pt-4"
       />
 
       <SectionGrid
-        eyebrow={text(locale, { de: "Sammlung", en: "Collection" })}
-        title={text(locale, { de: "Katalog", en: "Catalogue" })}
-        description={text(locale, {
+        eyebrow={archivePage?.catalogueSection?.eyebrow ?? text(locale, { de: "Sammlung", en: "Collection" })}
+        title={archivePage?.catalogueSection?.title ?? text(locale, { de: "Katalog", en: "Catalogue" })}
+        titleLines={splitDisplayTitle(archivePage?.catalogueSection?.displayTitle)}
+        description={archivePage?.catalogueSection?.description ?? text(locale, {
           de: "Arbeiten, Texte, Credits und Kontexte, die den Weg einzelner Projekte lesbar machen.",
           en: "Works, texts, credits, and contexts that make the path of individual projects legible.",
         })}
-        className="layout-editorial-section"
+        className="layout-overview-section"
         titleClassName="lg:max-w-[9.1ch] xl:max-w-[9.8ch]"
         contentClassName="lg:pt-3"
       >
@@ -136,13 +130,14 @@ export default async function ArchivePage() {
       </SectionGrid>
 
       <SectionGrid
-        eyebrow={text(locale, { de: "Projekte", en: "Projects" })}
-        title={text(locale, { de: "Poster", en: "Posters" })}
-        description={text(locale, {
-          de: "Grafische Spuren, Ankuendigungen und visuelle Arbeiten aus dem Umfeld der Veranstaltungen und Ausstellungen.",
+        eyebrow={archivePage?.posterSection?.eyebrow ?? text(locale, { de: "Projekte", en: "Projects" })}
+        title={archivePage?.posterSection?.title ?? text(locale, { de: "Poster", en: "Posters" })}
+        titleLines={splitDisplayTitle(archivePage?.posterSection?.displayTitle)}
+        description={archivePage?.posterSection?.description ?? text(locale, {
+          de: "Grafische Spuren, Ankündigungen und visuelle Arbeiten aus dem Umfeld der Veranstaltungen und Ausstellungen.",
           en: "Graphic traces, announcements, and visual works from the context of events and exhibitions.",
         })}
-        className="layout-editorial-section"
+        className="layout-overview-section"
         titleClassName="lg:max-w-[9.1ch] xl:max-w-[9.8ch]"
         contentClassName="lg:pt-3"
       >

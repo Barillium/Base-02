@@ -19,6 +19,8 @@ Nach groesseren Aenderungen moeglichst diese Bereiche mit aktualisieren:
 - welche Seite stark ueberarbeitet wurde
 - welche Designregel neu gilt
 - was bewusst nicht angefasst wurde
+- welche projektlokalen Agenten eingerichtet sind
+- wie Agenten mit Vault, Codebasis und Redaktion zusammenspielen
 
 ## Aktueller Hinweis
 
@@ -28,3 +30,11 @@ Dieser Obsidian-Bereich ist nicht produktionskritisch, soll aber den Verlauf des
 
 - `sanity-integration-plan.md`
 - `sanity-editorial-entry-order.md`
+- `obsidian-agent-structure.md`
+- `Agents/README.md`
+
+## Graph-Verbindungen
+
+- [[05-Codex/obsidian-agent-structure|Obsidian Agent Structure]]
+- [[05-Codex/Agents/README|Agents]]
+- [[05-Codex/sanity-integration-plan|Sanity Integration Plan]]

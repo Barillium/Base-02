@@ -4,6 +4,7 @@ import { SectionGrid } from "@/components/SectionGrid";
 import { getLocale, Locale, text } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 import { maybeSanityFetch } from "@/sanity/lib/fetch";
+import { withInstagramFallbackForEventPreview } from "@/sanity/lib/eventInstagramFallbacks";
 import { LIVE_PAST_EVENTS_QUERY } from "@/sanity/lib/queries";
 import { formatEventMeta } from "@/sanity/lib/presenters";
 import type { SanityEventPreview } from "@/sanity/types";
@@ -15,18 +16,21 @@ export const metadata = pageMetadata({
   path: "/live/events",
 });
 
+const THE_BASE_INSTAGRAM_URL = "https://www.instagram.com/the.base.ev/";
+
 type Entry = {
   title: string;
   href: string;
   description: string;
   meta: string;
-  external: true;
+  external?: true;
   ctaLabel: string;
 };
 
 async function getResolvedEntries(locale: Locale): Promise<Entry[]> {
   const pastEvents = await maybeSanityFetch<SanityEventPreview[]>({
     query: LIVE_PAST_EVENTS_QUERY,
+    params: { locale },
     tags: ["event", "live", "event-archive"],
     revalidate: 300,
   });
@@ -36,15 +40,19 @@ async function getResolvedEntries(locale: Locale): Promise<Entry[]> {
   }
 
   const mappedEntries = pastEvents
-    .filter((event) => Boolean(event.externalUrl))
-    .map((event) => ({
-      title: event.title,
-      href: event.externalUrl as string,
-      description: event.summary,
-      meta: formatEventMeta(locale, event),
-      external: true as const,
-      ctaLabel: text(locale, { de: "Zum Post", en: "View post" }),
-    }));
+    .filter((event) => Boolean(event.slug || event.externalUrl))
+    .map((event) => {
+      const resolvedEvent = withInstagramFallbackForEventPreview(locale, event);
+
+      return {
+        title: resolvedEvent.title,
+        href: resolvedEvent.externalUrl || THE_BASE_INSTAGRAM_URL,
+        description: resolvedEvent.summary,
+        meta: formatEventMeta(locale, resolvedEvent),
+        external: true as const,
+        ctaLabel: text(locale, { de: "Zur Veranstaltung", en: "Open event" }),
+      };
+    });
 
   return mappedEntries;
 }
@@ -54,30 +62,29 @@ export default async function EventsPage() {
   const entries = await getResolvedEntries(locale);
   const note = entries.length
     ? {
-        de: "Das Archiv fuehrt vergangene Veranstaltungen als einzelne Eintraege mit Datum, Typ und weiterfuehrendem Link zusammen.",
+        de: "Das Archiv führt vergangene Veranstaltungen als einzelne Einträge mit Datum, Typ und weiterführendem Link zusammen.",
         en: "The archive gathers past events as individual entries with date, type, and supporting link.",
       }
     : {
-        de: "Solange im CMS noch keine Eintraege angelegt sind, bleibt diese Seite bewusst allgemein und zeigt nur ihre spaetere Struktur.",
-        en: "As long as no entries exist in the CMS yet, this page intentionally stays general and only shows its future structure.",
+        de: "Solange noch keine Einträge veröffentlicht sind, bleibt diese Seite bewusst allgemein.",
+        en: "As long as no entries have been published yet, this page intentionally stays general.",
       };
 
   return (
     <div className="editorial-fade page-flow">
       <PageIntro
         eyebrow="Live"
-        title={text(locale, { de: "Rueckblicke", en: "Retrospectives" })}
+        title={text(locale, { de: "Rückblicke", en: "Retrospectives" })}
         titleLines={[
-          text(locale, { de: "Rueck-", en: "Retro" }),
-          text(locale, { de: "blicke", en: "spectives" }),
+          text(locale, { de: "Rückblicke", en: "Retrospectives" }),
         ]}
         description={text(locale, {
-          de: "Rueckblicke auf Ausstellungen, Konzerte, Release-Shows und andere Momente, die fuer den Ort und sein Umfeld praegend waren.",
+          de: "Rückblicke auf Ausstellungen, Konzerte, Release-Shows und andere Momente, die für den Ort und sein Umfeld prägend waren.",
           en: "Retrospectives on exhibitions, concerts, release shows, and other moments that have shaped the space and its context.",
         })}
         note={text(locale, note)}
-        className="layout-editorial-intro"
-        titleClassName="max-w-none text-[clamp(1.68rem,5.6vw,2.1rem)] md:max-w-none md:text-[clamp(1.96rem,4.9vw,2.42rem)] lg:max-w-[12.6ch] lg:text-[clamp(2.48rem,3.06vw,3.08rem)] xl:max-w-[13.4ch] xl:text-[clamp(2.74rem,3.3vw,3.34rem)]"
+        className="layout-live-intro"
+        titleClassName="max-w-none text-[clamp(1.6rem,5.2vw,1.98rem)] md:max-w-none md:text-[clamp(1.86rem,4.5vw,2.28rem)] lg:max-w-[12.6ch] lg:text-[clamp(2.36rem,2.9vw,2.92rem)] xl:max-w-[13.4ch] xl:text-[clamp(2.56rem,3.1vw,3.12rem)]"
         rightClassName="lg:max-w-[45rem] lg:pt-4"
       />
       <SectionGrid
@@ -85,11 +92,11 @@ export default async function EventsPage() {
         title={text(locale, { de: "Eventarchiv", en: "Event archive" })}
         titleLines={[text(locale, { de: "Eventarchiv", en: "Event archive" })]}
         description={text(locale, {
-          de: "Hier stehen vergangene Veranstaltungen, Ausstellungen und Formate als einzelne Eintraege mit Datum, Kontext und weiterfuehrendem Link.",
+          de: "Hier stehen vergangene Veranstaltungen, Ausstellungen und Formate als einzelne Einträge mit Datum, Kontext und weiterführendem Link.",
           en: "Past events, exhibitions, and formats appear here as individual entries with date, context, and supporting link.",
         })}
-        className="layout-live-events-section"
-        titleClassName="max-w-none text-[clamp(1.54rem,5vw,1.96rem)] md:max-w-[13.8ch] md:text-[clamp(1.46rem,3.4vw,1.76rem)] lg:max-w-[16.2ch] lg:text-[clamp(1.34rem,1.56vw,1.6rem)] xl:max-w-[17ch] xl:text-[clamp(1.46rem,1.62vw,1.7rem)]"
+        className="layout-live-section"
+        titleClassName="max-w-none text-[clamp(1.46rem,4.74vw,1.84rem)] md:max-w-[13.8ch] md:text-[clamp(1.38rem,3.12vw,1.64rem)] lg:max-w-[16.2ch] lg:text-[clamp(1.26rem,1.42vw,1.48rem)] xl:max-w-[17ch] xl:text-[clamp(1.36rem,1.5vw,1.58rem)]"
         contentClassName="lg:pt-3"
       >
         {entries.length ? (
@@ -99,8 +106,8 @@ export default async function EventsPage() {
             <p className="type-meta">{text(locale, { de: "Noch keine Einträge", en: "No entries yet" })}</p>
             <p className="type-body mt-2">
               {text(locale, {
-                de: "Vergangene Veranstaltungen können hier eingepflegt werden, sobald in Sanity die ersten `event`-Dokumente mit Status `past` angelegt sind.",
-                en: "Past events can be added here once the first `event` documents with status `past` have been created in Sanity.",
+                de: "Vergangene Veranstaltungen erscheinen hier, sobald erste Rückblicke veröffentlicht sind.",
+                en: "Past events appear here once the first retrospectives have been published.",
               })}
             </p>
           </div>

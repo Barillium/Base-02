@@ -1,22 +1,36 @@
 import { Card } from "@/components/Card";
 import { Eyebrow } from "@/components/Eyebrow";
+import { PageJsonLd } from "@/components/PageJsonLd";
 import { PageIntro } from "@/components/PageIntro";
+import { PortableTextContent } from "@/components/PortableTextContent";
 import { SectionGrid } from "@/components/SectionGrid";
 import { getLocale, Locale, text } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
+import { maybeSanityFetch } from "@/sanity/lib/fetch";
+import { ABOUT_PAGE_QUERY } from "@/sanity/lib/queries";
+import {
+  portableTextToTextLines,
+  resolveLinkFieldHref,
+  resolveLinkedDocumentHref,
+  splitDisplayTitle,
+} from "@/sanity/lib/content";
+import type { SanityAboutPage, SanityTeaserCard } from "@/sanity/types";
 
-export const metadata = pageMetadata({
+const aboutPageMetadata = {
   title: "About The Base e.V. im BOA Bunker of Art Aachen",
   description:
     "About The Base e.V. Aachen: Kulturverein im BOA Bunker of Art mit Profil, Awareness, Engagement und Kontaktwegen.",
   path: "/about",
-});
+} as const;
+
+export const metadata = pageMetadata(aboutPageMetadata);
 
 type Entry = {
   title: string;
   href: string;
   description: string;
   meta: string;
+  ctaLabel?: string;
 };
 
 function getBaseEntries(locale: Locale): Entry[] {
@@ -25,7 +39,7 @@ function getBaseEntries(locale: Locale): Entry[] {
       title: text(locale, { de: "Profil und Geschichte", en: "Profile and history" }),
       href: "/about/the-base",
       description: text(locale, {
-        de: "Einordnung des Vereins, seiner Geschichte und der Rolle des ehemaligen Bunkers als Kulturraum.",
+        de: "Zur Geschichte des Vereins und zur Entwicklung des ehemaligen Bunkers als Kulturort.",
         en: "Context for the association, its history, and the role of the former bunker as a cultural space.",
       }),
       meta: text(locale, { de: "Profil", en: "Profile" }),
@@ -36,20 +50,20 @@ function getBaseEntries(locale: Locale): Entry[] {
 function getContributionEntries(locale: Locale): Entry[] {
   return [
     {
-      title: text(locale, { de: "Zum Mitmachen", en: "Get involved" }),
+      title: text(locale, { de: "Open Call", en: "Open call" }),
       href: "/mitmachen",
       description: text(locale, {
-        de: "Wege für Projektideen, Open Calls, Workshops und freiwilliges Engagement bei The Base.",
-        en: "Paths for project ideas, open calls, workshops, and voluntary engagement at The Base.",
+        de: "Anfragen für Ausstellungen, ortsspezifische Arbeiten und andere Formate im BOA-Kontext.",
+        en: "Inquiry for exhibitions, site-specific works, and other formats that could be developed or presented in the BOA context.",
       }),
-      meta: text(locale, { de: "Engagement", en: "Engagement" }),
+      meta: text(locale, { de: "Open Call", en: "Open call" }),
     },
     {
-      title: text(locale, { de: "Förderer werden", en: "Become a supporter" }),
-      href: "/about/mitmachen",
+      title: text(locale, { de: "Fördermitglied werden", en: "Become a supporting member" }),
+      href: "/about/foerdermitgliedschaft",
       description: text(locale, {
-        de: "Informationen für Menschen, die Kulturarbeit in Aachen finanziell oder ideell unterstützen möchten.",
-        en: "Information for people who want to support cultural work in Aachen financially or ideologically.",
+        de: "Informationen zur Fördermitgliedschaft für Menschen und Organisationen, die die Arbeit des Vereins in Aachen regelmäßig unterstützen möchten.",
+        en: "Information on support membership for people and organisations who want to support the association's work in Aachen on a recurring basis.",
       }),
       meta: text(locale, { de: "Unterstützen", en: "Support" }),
     },
@@ -70,139 +84,167 @@ function getAwarenessEntries(locale: Locale): Entry[] {
   ];
 }
 
-function getContactEntries(locale: Locale): Entry[] {
-  return [
-    {
-      title: text(locale, { de: "Ansprechpersonen und Wege", en: "Contacts and access" }),
-      href: "/about/kontakt",
-      description: text(locale, {
-        de: "Kontakt für Programm, Presse, Kooperationen, Raumfragen und allgemeine Anliegen.",
-        en: "Contact for programme, press, collaborations, space requests, and general enquiries.",
-      }),
-      meta: text(locale, { de: "Kontakt", en: "Contact" }),
-    },
-  ];
+function resolveTeaserCardEntry(card: SanityTeaserCard): Entry | null {
+  const href = resolveLinkFieldHref(card.link) || resolveLinkedDocumentHref(card.linkedDocument) || "";
+
+  if (!href) {
+    return null;
+  }
+
+  return {
+    title: card.title,
+    href,
+    description: card.description,
+    meta: card.meta ?? "",
+    ctaLabel: card.ctaLabel,
+  };
+}
+
+function isEntry(entry: Entry | null): entry is Entry {
+  return entry !== null;
 }
 
 export default async function AboutPage() {
   const locale = await getLocale();
-  const baseEntries = getBaseEntries(locale);
-  const awarenessEntries = getAwarenessEntries(locale);
-  const contributionEntries = getContributionEntries(locale);
-  const contactEntries = getContactEntries(locale);
+  const aboutPage = await maybeSanityFetch<SanityAboutPage>({
+    query: ABOUT_PAGE_QUERY,
+    params: { locale },
+    tags: ["aboutPage", "about"],
+    revalidate: 300,
+  });
+  const baseEntries =
+    aboutPage?.baseTeaserSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getBaseEntries(locale);
+  const awarenessEntries =
+    aboutPage?.awarenessTeaserSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getAwarenessEntries(locale);
+  const contributionEntries =
+    aboutPage?.inquiryTeaserSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? getContributionEntries(locale);
+  const introDescription =
+    aboutPage?.description ??
+    text(locale, {
+      de: "The Base e.V. ist ein gemeinnütziger Kulturverein und interdisziplinäres Kollektiv in Aachen. Im BOA Bunker of Art organisiert der Verein einen sozialen und kulturellen Raum für Austausch, künstlerische Praxis und öffentliche Formate.",
+      en: "The Base e.V. is a non-profit cultural association and interdisciplinary collective in Aachen. It organises the BOA Bunker of Art as a social and cultural space for exchange, artistic practice, and public formats.",
+    });
+  const introNote = aboutPage?.note;
+  const profileParagraphs = portableTextToTextLines(aboutPage?.profileText).length
+    ? portableTextToTextLines(aboutPage?.profileText)
+    : [
+        text(locale, {
+          de: "The Base e.V. wurde 2015 in Aachen gegründet und arbeitet als Kollektiv junger Kulturarbeiter:innen, Gestalter:innen und Organisator:innen mit dem Ziel, unabhängige kulturelle Strukturen vor Ort zu stärken.",
+          en: "The Base e.V. was founded in Aachen in 2015 and works as a collective of young cultural practitioners, creatives, and organisers with the aim of strengthening independent cultural structures locally.",
+        }),
+        text(locale, {
+          de: "Ein zentrales Projekt ist BOA, ein seit September 2020 entwickelter Kulturraum in einem ehemaligen Hochbunker, in dem regionale, nationale und internationale Positionen sowie junge und etablierte Praktiker:innen aufeinandertreffen.",
+          en: "A central project is BOA, a cultural space developed since September 2020 inside a former bunker, where regional, national, and international positions meet alongside emerging and established practitioners.",
+        }),
+        text(locale, {
+          de: "Im Mittelpunkt stehen offene, niedrigschwellige Formate an der Schnittstelle von Kunst, Musik, Design und sozialer Praxis; der Bunker wird dabei nicht nur genutzt, sondern als historisch und städtisch geprägter Ort bewusst weitergedacht.",
+          en: "At its core are open, low-threshold formats at the intersection of art, music, design, and social practice; the bunker is not merely used as a venue, but consciously developed further as a historically and urbanly marked place.",
+        }),
+      ];
 
   return (
     <div className="editorial-fade page-flow">
+      <PageJsonLd {...aboutPageMetadata} pageType="AboutPage" />
+
       <PageIntro
-        eyebrow="About"
-        title="The Base e.V. im BOA Bunker of Art"
-        titleLines={[
+        eyebrow={aboutPage?.eyebrow ?? "About"}
+        title={aboutPage?.title ?? "The Base e.V. im BOA Bunker of Art"}
+        titleLines={splitDisplayTitle(aboutPage?.displayTitle) ?? [
           text(locale, { de: "The Base e.V.", en: "The Base e.V." }),
-          text(locale, { de: "im BOA Bunker", en: "at the BOA Bunker" }),
+          text(locale, { de: "im BOA", en: "at the BOA" }),
+          text(locale, { de: "Bunker", en: "Bunker" }),
           text(locale, { de: "of Art", en: "of Art" }),
         ]}
-        description={text(locale, {
-          de: "About erklärt, wie The Base e.V. den BOA Bunker of Art als Verein, Kulturort und soziale Infrastruktur organisiert: mit Haltung, Awareness, Engagement und direkten Kontaktwegen.",
-          en: "About explains how The Base e.V. organises the BOA Bunker of Art as a cultural site: association, position, awareness, engagement, and direct contact paths.",
-        })}
-        className="layout-editorial-intro"
-        titleClassName="max-w-[13.6ch] md:max-w-[13.8ch] lg:max-w-[15.2ch] lg:text-[clamp(2.52rem,3.06vw,3.08rem)] xl:max-w-[16.2ch] xl:text-[clamp(2.74rem,3.28vw,3.3rem)]"
-        rightClassName="lg:max-w-[46rem] lg:pt-4"
+        description={introDescription}
+        note={introNote}
+        layout={aboutPage?.introLayout}
+        className="layout-overview-intro"
+        titleClassName="about-overview-hero max-w-[11.8ch] md:max-w-[12.6ch] lg:max-w-[15.2ch] lg:text-[clamp(2.28rem,2.74vw,2.82rem)] xl:max-w-[16.2ch] xl:text-[clamp(2.44rem,2.9vw,2.96rem)]"
+        rightClassName="layout-overview-copy-start lg:max-w-[46rem] lg:pt-4"
       />
 
-      <section className="content-grid layout-editorial-section pt-2 md:pt-4">
+      <section className="content-grid layout-overview-section pt-2 md:pt-4">
         <div className="content-stack-tight min-w-0 lg:pr-4 xl:pr-6">
-          <Eyebrow>{text(locale, { de: "Kurzprofil", en: "Profile" })}</Eyebrow>
+          <Eyebrow>{aboutPage?.profileEyebrow ?? text(locale, { de: "Kurzprofil", en: "Profile" })}</Eyebrow>
           <h2
-            aria-label={text(locale, { de: "Kulturort, Verein und Infrastruktur", en: "Site, association, and infrastructure" })}
-            className="type-display-section max-w-[14.8ch] text-[clamp(1.24rem,4.3vw,1.64rem)] text-[var(--ink)] md:max-w-[15.4ch] md:text-[clamp(1.58rem,3.05vw,2rem)] lg:max-w-[16.8ch] lg:text-[clamp(2.18rem,2.42vw,2.7rem)] xl:max-w-[17.2ch]"
+            aria-label={aboutPage?.profileTitle ?? text(locale, { de: "Kulturort, Verein und Infrastruktur", en: "Site, association, and infrastructure" })}
+            className="type-display-section max-w-[14.8ch] text-[clamp(1.18rem,4.06vw,1.56rem)] text-[var(--ink)] md:max-w-[15.4ch] md:text-[clamp(1.48rem,2.82vw,1.88rem)] lg:max-w-[16.8ch] lg:text-[clamp(2.04rem,2.24vw,2.48rem)] xl:max-w-[17.2ch]"
           >
-            <span className="block whitespace-nowrap">{text(locale, { de: "Kulturort,", en: "Site," })}</span>
-            <span className="block whitespace-nowrap">{text(locale, { de: "Verein und", en: "association and" })}</span>
-            <span className="block whitespace-nowrap">{text(locale, { de: "Infrastruktur", en: "infrastructure" })}</span>
+            {(splitDisplayTitle(aboutPage?.profileTitle) ?? [
+              text(locale, { de: "Kulturort,", en: "Site," }),
+              text(locale, { de: "Verein und", en: "association and" }),
+              text(locale, { de: "Infrastruktur", en: "infrastructure" }),
+            ]).map((line) => (
+              <span key={line} className="block whitespace-nowrap">
+                {line}
+              </span>
+            ))}
           </h2>
         </div>
-        <div className="content-stack lg:max-w-[44rem] lg:pt-3">
-          <p className="type-body-lg max-w-3xl text-[var(--ink)]">
-            {text(locale, {
-              de: "The Base e.V. versteht den BOA Bunker of Art seit der Kunstroute 2020 als lebendige Kulturinfrastruktur in Aachen: ein Ort, an dem Ausstellungen, Konzerte, Workshops, Labelarbeit und Archiv zusammenlaufen.",
-              en: "Since Kunstroute 2020, The Base e.V. sees the BOA Bunker of Art as a living cultural infrastructure in Aachen: a place where exhibitions, concerts, workshops, label work, and archive practices converge.",
-            })}
-          </p>
-          <p className="type-body max-w-3xl text-[var(--muted)]">
-            {text(locale, {
-              de: "Im Mittelpunkt stehen Kollaboration, Sichtbarkeit fuer nicht etablierte Stimmen und ein Verstaendnis von Kultur, das Ausstellung, musikalisches Programm, Labelarbeit und Community nicht voneinander trennt.",
-              en: "At its core are collaboration, visibility for emerging voices, and a community that develops the space together.",
-            })}
-          </p>
+        <div className="layout-overview-copy-start content-stack lg:max-w-[44rem] lg:pt-3">
+          {aboutPage?.profileText?.length ? (
+            <PortableTextContent
+              blocks={aboutPage.profileText}
+              layout={aboutPage.profileTextLayout}
+            />
+          ) : (
+            profileParagraphs.map((paragraph) => (
+              <p key={paragraph} className="type-body-lg max-w-3xl text-[var(--ink)]">
+                {paragraph}
+              </p>
+            ))
+          )}
         </div>
       </section>
 
       <SectionGrid
-        eyebrow="Base"
-        title="The Base"
-        titleLines={[text(locale, { de: "The Base", en: "The Base" })]}
-        description={text(locale, {
-          de: "Für alle, die verstehen wollen, warum der Bunker als soziale und kulturelle Infrastruktur weiterlebt.",
+        eyebrow={aboutPage?.baseTeaserSection?.eyebrow ?? "Base"}
+        title={aboutPage?.baseTeaserSection?.title ?? "The Base"}
+        titleLines={splitDisplayTitle(aboutPage?.baseTeaserSection?.displayTitle) ?? [text(locale, { de: "The Base", en: "The Base" })]}
+        description={aboutPage?.baseTeaserSection?.description ?? text(locale, {
+          de: "Zur Geschichte des Vereins und zur Rolle des Bunkers als kulturelle und soziale Infrastruktur in Aachen.",
           en: "For everyone who wants to understand why the bunker continues as social and cultural infrastructure.",
         })}
-        className="layout-editorial-section"
+        className="layout-overview-section"
         titleClassName="lg:max-w-[13.2ch] xl:max-w-[14ch]"
         contentClassName="lg:pt-3"
       >
         {baseEntries.map((entry) => (
-          <Card key={entry.href} locale={locale} {...entry} />
+          <Card key={entry.href} locale={locale} {...entry} ctaLabel={entry.ctaLabel} />
         ))}
       </SectionGrid>
 
       <SectionGrid
-        eyebrow="About"
-        title={text(locale, { de: "Engagement", en: "Engagement" })}
-        titleLines={[text(locale, { de: "Engagement", en: "Engagement" })]}
-        description={text(locale, {
-          de: "Für konkrete Wege, sich mit Projektideen, Open Calls, freiwilliger Arbeit oder finanzieller Unterstützung einzubringen.",
-          en: "For concrete ways to become part of the platform or support it.",
+        eyebrow={aboutPage?.inquiryTeaserSection?.eyebrow ?? "About"}
+        title={aboutPage?.inquiryTeaserSection?.title ?? text(locale, { de: "Anfragen", en: "Inquiries" })}
+        titleLines={splitDisplayTitle(aboutPage?.inquiryTeaserSection?.displayTitle) ?? [text(locale, { de: "Anfragen", en: "Inquiries" })]}
+        description={aboutPage?.inquiryTeaserSection?.description ?? text(locale, {
+          de: "Für Ausstellungsvorschläge, andere Formate und Menschen, die den Ort ideell oder finanziell unterstützen möchten.",
+          en: "For exhibition proposals, artistic formats, open calls, and people who want to support the site ideologically or financially.",
         })}
-        className="layout-editorial-section"
+        className="layout-overview-section"
         titleClassName="lg:max-w-[13.2ch] xl:max-w-[14ch]"
         contentClassName="lg:pt-3"
       >
         {contributionEntries.map((entry) => (
-          <Card key={entry.href} locale={locale} {...entry} />
+          <Card key={entry.href} locale={locale} {...entry} ctaLabel={entry.ctaLabel} />
         ))}
       </SectionGrid>
 
       <SectionGrid
-        eyebrow="Safe Space"
-        title="Awareness"
-        titleLines={[text(locale, { de: "Awareness", en: "Awareness" })]}
-        description={text(locale, {
-          de: "Für Grundsätze, die Veranstaltungen, Teams und Publikum im gemeinsamen Raum orientieren.",
+        eyebrow={aboutPage?.awarenessTeaserSection?.eyebrow ?? "Safe Space"}
+        title={aboutPage?.awarenessTeaserSection?.title ?? "Awareness"}
+        titleLines={splitDisplayTitle(aboutPage?.awarenessTeaserSection?.displayTitle) ?? [text(locale, { de: "Awareness", en: "Awareness" })]}
+        description={aboutPage?.awarenessTeaserSection?.description ?? text(locale, {
+          de: "Für Grundsätze, die Publikum, Teams und Beteiligten im gemeinsamen Raum Orientierung geben.",
           en: "For principles that orient events, teams, and audience within the shared space.",
         })}
-        className="layout-editorial-section"
+        className="layout-overview-section"
         titleClassName="lg:max-w-[13.2ch] xl:max-w-[14ch]"
         contentClassName="lg:pt-3"
       >
         {awarenessEntries.map((entry) => (
-          <Card key={entry.href} locale={locale} {...entry} />
-        ))}
-      </SectionGrid>
-
-      <SectionGrid
-        eyebrow="Direct"
-        title={text(locale, { de: "Kontakt", en: "Contact" })}
-        titleLines={[text(locale, { de: "Kontakt", en: "Contact" })]}
-        description={text(locale, {
-          de: "Für schnelle Orientierung zu Adresse, Mailkontakt, Social Links und passenden Anliegen.",
-          en: "For quick orientation around address, email contact, social links, and the right enquiry type.",
-        })}
-        className="layout-editorial-section"
-        titleClassName="lg:max-w-[13.2ch] xl:max-w-[14ch]"
-        contentClassName="lg:pt-3"
-      >
-        {contactEntries.map((entry) => (
-          <Card key={entry.href} locale={locale} {...entry} />
+          <Card key={entry.href} locale={locale} {...entry} ctaLabel={entry.ctaLabel} />
         ))}
       </SectionGrid>
     </div>

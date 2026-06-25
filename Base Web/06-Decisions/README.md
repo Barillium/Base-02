@@ -21,6 +21,11 @@ Wichtige Entscheidungen mit kurzem Grund festhalten.
 - fuer dieses Repo wurde ein eigenes neues Sanity-Projekt angelegt, damit Website-Struktur und redaktionelle Bearbeitung nicht versehentlich in eines der vorhandenen Test-/Altprojekte laufen
 - die `Live`-Uebersicht zeigt fuer `Eventarchiv` und `Laufende Formate` bewusst Uebersichtslinks statt einzelner Beispielposts
 - der aktuelle `Live`-Einstieg ist sprachlich von `Aktuelle Ausstellung` auf `Aktuelle Veranstaltung` verallgemeinert, damit auch Konzerte oder andere Formate sauber darunter fallen
+- die Homepage liest kuratierte Schnellzugaenge, Milestones und `About`-Verweise bevorzugt aus `Sanity`, bleibt aber ueber Fallback-Texte editorial stabil
+- `Media / Produktionen` und mehrere feste `About`-Seiten werden nicht als freie Seitenlogik modelliert, sondern als gezielte `mediaProject`- und `staticPage`-Inhalte gepflegt
+- das Studio folgt in seiner Desk-Struktur bewusst den aktiven oeffentlichen Bereichen `Setup`, `Live`, `Archive`, `Media` und `About / Fixed Pages`
+- Legacy-Routen bleiben vorerst im Code sichtbar, werden aber in Navigation, Scope und Vault klar von den aktiven Bereichen getrennt
+- die Agentenstruktur des Projekts wird im Vault doppelt lesbar gehalten: als formaler `.codex`-Agent und als dokumentierte Rollen aus `AGENTS.md`
 
 ## Verwandte Notiz
 
@@ -32,9 +37,9 @@ Wichtige Entscheidungen mit kurzem Grund festhalten.
 - Grund
 - betroffene Dateien oder Bereiche
 - Datum
+
 ## Graph-Verbindungen
 
 - [[06-Decisions/projektchronik|Projektchronik]]
 - [[05-Codex/sanity-integration-plan|Sanity Integration Plan]]
 - [[04-Tasks/README|Tasks]]
-

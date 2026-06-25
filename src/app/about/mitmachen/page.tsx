@@ -1,12 +1,17 @@
 import { MitmachenForm } from "@/components/MitmachenForm";
 import { PageIntro } from "@/components/PageIntro";
+import { PortableTextContent } from "@/components/PortableTextContent";
 import { getLocale, Locale, text } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
+import { splitDisplayTitle } from "@/sanity/lib/content";
+import { maybeSanityFetch } from "@/sanity/lib/fetch";
+import { STATIC_PAGE_QUERY } from "@/sanity/lib/queries";
+import type { SanityStaticPage } from "@/sanity/types";
 
 export const metadata = pageMetadata({
-  title: "Mitmachen bei The Base e.V.: Open Calls und Kulturarbeit in Aachen",
+  title: "Open Call bei The Base e.V.: Ausstellungen und Formate in Aachen",
   description:
-    "Mitmachen bei The Base e.V. Aachen: Open Calls, Workshops, Ausstellungen, DJ-Formate und freiwillige Kulturarbeit im BOA.",
+    "Open Call bei The Base e.V. Aachen: Anfragen für Ausstellungen, ortsspezifische Arbeiten und andere Formate im BOA Bunker of Art.",
   path: "/mitmachen",
 });
 
@@ -21,59 +26,82 @@ function getFormats(locale: Locale): string[] {
       en: "Concerts, live sets, and listening formats",
     }),
     text(locale, {
-      de: "Workshops (z. B. Foto, DJ, Publishing, Community-Praxis)",
-      en: "Workshops (e.g. photo, DJ, publishing, community practice)",
+      de: "Workshops (z. B. Foto, Sound, Vermittlung, Community-Praxis)",
+      en: "Workshops (e.g. photo, sound, mediation, community practice)",
     }),
     text(locale, {
-      de: "Open calls für neue und experimentelle Positionen",
-      en: "Open calls for new and experimental positions",
+      de: "Neue und experimentelle Positionen",
+      en: "New and experimental positions",
     }),
   ];
 }
 
 export default async function MitmachenPage() {
   const locale = await getLocale();
-  const formats = getFormats(locale);
+  const page = await maybeSanityFetch<SanityStaticPage>({
+    query: STATIC_PAGE_QUERY,
+    params: { locale, routeKey: "mitmachen" },
+    tags: ["staticPage", "about"],
+    revalidate: 300,
+  });
+  const formats = page?.keyPoints?.length ? page.keyPoints : getFormats(locale);
 
   return (
     <div className="editorial-fade page-flow-compact">
       <PageIntro
-        eyebrow="About"
-        title={text(locale, { de: "Mitmachen", en: "Get involved" })}
-        description={text(locale, {
-          de: "Mitmachen bündelt Wege für Künstler:innen, DJs, Kollektive, Workshop-Leiter:innen und freiwillige Teams, die eigene Ideen in Aachen einbringen wollen.",
-          en: "Get involved brings together entry points for artists, DJs, collectives, workshop hosts, and volunteer teams who want to contribute ideas in Aachen.",
-        })}
-        note={text(locale, {
-          de: "Gesucht sind klare Vorschläge, kooperative Energie und Formate, die den BOA Bunker of Art als offenen Kulturraum ernst nehmen.",
-          en: "We are looking for clear proposals, collaborative energy, and formats that take the BOA Bunker of Art seriously as an open cultural space.",
-        })}
-        className="layout-editorial-intro"
-        titleClassName="lg:max-w-[10.2ch] lg:text-[clamp(2.6rem,3.35vw,3.24rem)] xl:max-w-[11ch] xl:text-[clamp(2.82rem,3.5vw,3.5rem)]"
-        rightClassName="lg:max-w-[45rem] lg:pt-4"
+        eyebrow={page?.eyebrow ?? "About"}
+        title={page?.title ?? text(locale, { de: "Open Call", en: "Open call" })}
+        titleLines={splitDisplayTitle(page?.displayTitle)}
+        description={
+          page?.description ??
+          text(locale, {
+            de: "Diese Seite bündelt Anfragen von Künstler:innen, Kollektiven und Produzent:innen, die Ausstellungen, ortsspezifische Arbeiten oder andere Formate im BOA-Kontext vorschlagen möchten.",
+            en: "This page gathers inquiries from artists, collectives, and producers who want to propose exhibitions, site-specific works, or other formats in the BOA context.",
+          })
+        }
+        note={
+          page?.note ??
+          text(locale, {
+            de: "Gesucht sind klare Vorhaben, nachvollziehbare Kontexte und Formate, die den BOA Bunker of Art als offenen Kulturort ernst nehmen.",
+            en: "We are looking for clear proposals, legible contexts, and formats that take the BOA Bunker of Art seriously as an open cultural site.",
+          })
+        }
+        layout={page?.introLayout}
+        className="layout-mitmachen-intro"
+        titleClassName="lg:max-w-[10.2ch] lg:text-[clamp(2.46rem,3.14vw,3.06rem)] xl:max-w-[11ch] xl:text-[clamp(2.66rem,3.28vw,3.28rem)]"
+        rightClassName="layout-mitmachen-right-edge lg:max-w-[43rem] lg:pt-4"
       />
 
-      <section className="content-grid layout-editorial-section">
-        <p className="type-display-card text-[var(--ink)] lg:max-w-[9.4ch] xl:max-w-[10ch]">
+      <section className="content-grid layout-about-section">
+        <p className="layout-mitmachen-left-offset type-display-card text-[var(--ink)] lg:max-w-[9.4ch] xl:max-w-[10ch]">
           {text(locale, { de: "Programmformate", en: "Programme formats" })}
         </p>
-        <ul className="type-body-lg space-y-3 text-[var(--ink)] lg:max-w-[44rem] lg:pt-3">
+        <ul className="editorial-bullet-list type-body-lg text-[var(--ink)] lg:max-w-[43rem] lg:pt-2">
           {formats.map((format) => (
-            <li key={format} className="flex gap-3">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
+            <li key={format} className="editorial-bullet-item">
+              <span className="editorial-bullet-dot" />
               <span>{format}</span>
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="pt-8">
-        <p className="type-body-lg max-w-3xl text-[var(--ink)]">
-          {text(locale, {
-            de: "Wenn du ein Projekt, eine Idee, einen Workshop oder ein kollektives Format einbringen willst, melde dich mit kurzer Beschreibung, Referenzen und gewünschtem Zeitraum. Wichtig ist nicht institutionelle Routine, sondern eine klare Haltung und Lust auf Zusammenarbeit.",
-            en: "If you want to contribute a project, idea, or collective format, send a short description, references, and your preferred time frame. What matters is not institutional routine but a clear position and willingness to collaborate.",
-          })}
-        </p>
+      <section className="content-grid layout-about-section pt-2 md:pt-4">
+        <div aria-hidden="true" className="hidden lg:block" />
+        {page?.body?.length ? (
+          <PortableTextContent
+            blocks={page.body}
+            layout={page.bodyLayout}
+            className="layout-mitmachen-right-edge lg:max-w-[43rem] lg:pt-1"
+          />
+        ) : (
+          <p className="layout-mitmachen-right-edge type-body-lg text-[var(--ink)] lg:max-w-[43rem] lg:pt-1">
+            {text(locale, {
+              de: "Wenn du eine Ausstellung, eine installative Arbeit, ein musikalisches Format oder einen anderen Vorschlag einreichen möchtest, melde dich mit kurzer Beschreibung, Bezug zum Ort und gewünschtem Zeitraum. Wichtig sind ein nachvollziehbares Vorhaben und Offenheit für Zusammenarbeit im kulturellen Kontext der Base.",
+              en: "If you want to submit an exhibition, an installation, a musical format, or another proposal, send a short description, its connection to the site, and your preferred time frame. What matters is a legible proposal and openness to collaboration within The Base's cultural context.",
+            })}
+          </p>
+        )}
       </section>
 
       <MitmachenForm locale={locale} />

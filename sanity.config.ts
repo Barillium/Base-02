@@ -3,9 +3,11 @@ import { deskTool } from "sanity/desk";
 
 import { deskStructure } from "@/sanity/deskStructure";
 import { schemaTypes } from "@/sanity/schemaTypes";
+import { singletonSchemaTypes } from "@/sanity/schemaTypes/schemaHelpers";
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "";
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
+const singletonTypes = new Set<string>(singletonSchemaTypes);
 
 export default defineConfig({
   name: "default",
@@ -18,7 +20,15 @@ export default defineConfig({
       structure: deskStructure,
     }),
   ],
+  document: {
+    actions: (previousActions, context) =>
+      singletonTypes.has(context.schemaType)
+        ? previousActions.filter((action) => action.action !== "duplicate")
+        : previousActions,
+  },
   schema: {
     types: schemaTypes,
+    templates: (previousTemplates) =>
+      previousTemplates.filter((template) => !singletonTypes.has(template.schemaType)),
   },
 });

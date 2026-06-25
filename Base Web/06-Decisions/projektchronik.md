@@ -5,6 +5,7 @@
 Diese Notiz sammelt die groesseren Aenderungen am Projekt in zeitlicher Reihenfolge.
 
 Wichtig:
+
 - Die Chronik ist **rekonstruiert** aus Git-Historie, Arbeitsverlauf und vorhandenen Projektdateien.
 - Sie ist als Arbeitsgedaechtnis gedacht, nicht als juristisch exakte Release-Dokumentation.
 - Wenn kuenftig groessere Aenderungen passieren, sollte diese Notiz mit Datum fortgefuehrt werden.
@@ -161,6 +162,39 @@ Wichtig:
 - UI-/UX-Notizen fuer die zentralen Komponenten angelegt
 - sichtbare Seitentexte in den Notizen erfasst
 - Setup-Dokumentation an den echten Vault-Namen `Base Web` angepasst
+
+---
+
+## 2026-06-11
+
+### Sanity-Stand deutlich naeher an der echten Website
+
+- Homepage liest kuratierte `Sanity`-Inhalte fuer Schnellzugaenge, Statement, Milestones und `About`-Verweise
+- `Live` liest aktuelle Veranstaltung, vergangene Events und laufende Formate ueber vorhandene Queries
+- `Archive` liest Katalog- und Poster-Eintraege aus `Sanity`
+- `Media / Produktionen` und feste Seiten unter `About` und `Media / Buchung` koennen strukturierte Inhalte direkt aus `Sanity` lesen
+
+### Dokumentation und Vault-Nachpflege
+
+- zentrale Vault-Notizen auf den aktuellen aktiven Scope `Live / Archive / Media / About` nachgezogen
+- Seitennotizen fuer die aktiven Hauptrouten von veralteten Textlisten bereinigt
+- aktuelle Trennung zwischen oeffentlichen Hauptbereichen und Legacy-Routen explizit dokumentiert
+
+---
+
+## 2026-06-12
+
+### Agentenstruktur im Vault ausgebaut
+
+- eigener Ordner `05-Codex/Agents/` im `Base Web`-Vault angelegt
+- formaler Projekt-Agent `obsidian-knowledge-manager` dort mit Detailnote und Ursprungsprompt dokumentiert
+- zusaetzlich die in `AGENTS.md` beschriebenen Projektrollen als eigene Vault-Notizen angelegt
+
+### Struktur- und MOC-Pflege
+
+- Root-MOC und Codex-Notizen um den Agentenordner ergaenzt
+- Agentenstruktur deutlicher von allgemeinen Skills und situativen Rollen abgegrenzt
+- offene Frage notiert, ob einzelne Rollen spaeter auch formal als `.codex/agents` eingerichtet werden sollen
 
 ---
 

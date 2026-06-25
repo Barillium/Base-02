@@ -55,10 +55,10 @@ export function LanguageSwitcher({ locale, className }: LanguageSwitcherProps) {
             aria-pressed={active}
             onClick={() => switchLocale(option)}
             disabled={isPending}
-            className={`type-meta min-w-[2.75rem] px-[0.78rem] py-[0.52rem] !text-[0.66rem] transition-colors md:min-w-[3rem] md:px-[0.9rem] md:py-[0.56rem] ${
+            className={`language-switcher-button type-meta min-w-[2.9rem] px-[0.82rem] py-[0.54rem] !text-[0.7rem] transition-colors md:min-w-[3.05rem] md:px-[0.94rem] md:py-[0.58rem] lg:min-w-[2.7rem] lg:px-[0.8rem] lg:py-[0.48rem] lg:!text-[0.78rem] ${
               active
-                ? "bg-[var(--ink)] text-[var(--paper)]"
-                : "bg-[var(--paper)] text-[var(--muted)] hover:bg-[var(--ink)] hover:text-[var(--paper)]"
+                ? "bg-[var(--ink)]"
+                : "bg-[var(--paper)] hover:bg-[var(--ink)]"
             } ${isPending ? "opacity-60" : ""}`}
           >
             {option.toUpperCase()}

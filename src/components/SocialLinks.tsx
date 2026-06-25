@@ -1,6 +1,10 @@
+import type { Locale } from "@/lib/i18n-shared";
+
 type SocialLinksProps = {
   className?: string;
+  locale?: Locale;
   size?: "sm" | "md" | "lg";
+  tone?: "muted" | "accent";
 };
 
 const sizeClasses = {
@@ -66,8 +70,12 @@ const socials = [
   },
 ] as const;
 
-export function SocialLinks({ className, size = "md" }: SocialLinksProps) {
+export function SocialLinks({ className, locale = "de", size = "md", tone = "muted" }: SocialLinksProps) {
   const classes = sizeClasses[size];
+  const toneClass =
+    tone === "accent"
+      ? "text-[var(--accent)] hover:border-[var(--ink)] hover:bg-[var(--paper)] hover:text-[var(--accent)]"
+      : "text-[var(--muted)] hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--paper)]";
 
   return (
     <div className={`flex flex-wrap items-center gap-2 ${className ?? ""}`}>
@@ -77,8 +85,12 @@ export function SocialLinks({ className, size = "md" }: SocialLinksProps) {
           href={social.href}
           target="_blank"
           rel="noreferrer noopener"
-          aria-label={social.name}
-          className={`inline-flex ${classes.button} items-center justify-center rounded-full border border-[var(--line)] bg-[var(--paper)] text-[var(--muted)] transition-all duration-300 hover:-translate-y-[1px] hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--paper)]`}
+          aria-label={
+            locale === "de"
+              ? `${social.name} von The Base e.V. (öffnet in neuem Tab)`
+              : `The Base e.V. on ${social.name} (opens in a new tab)`
+          }
+          className={`inline-flex ${classes.button} items-center justify-center rounded-full border border-[var(--line)] bg-[var(--paper)] transition-all duration-300 hover:-translate-y-[1px] ${toneClass}`}
         >
           <social.icon className={classes.icon} />
         </a>

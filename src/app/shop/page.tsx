@@ -52,7 +52,7 @@ function getVinyl(locale: Locale): Entry[] {
       title: text(locale, { de: "Pressungen und Editions", en: "Pressings and editions" }),
       href: "/shop/vinyl",
       description: text(locale, {
-        de: "Tontraeger aus dem Label-Umfeld, die Veroeffentlichungen, Release-Shows und Soundexperimente physisch fortschreiben.",
+        de: "Tonträger aus dem Label-Umfeld, die Veröffentlichungen, Release-Shows und Soundexperimente physisch fortschreiben.",
         en: "Records from the label context that carry releases, release shows, and sound experiments into physical form.",
       }),
       meta: "Audio",

@@ -1,9 +1,12 @@
 # Home
+
 ## Verknuepfte Notizen
 
+- [[00-Context/aktive-bereiche|Aktive Bereiche]]
+- [[00-Context/Verbindungen/orientierung|Orientierung]]
 - [[02-Content/Pages/live|Live]]
 - [[02-Content/Pages/archive|Archive]]
-- [[02-Content/Pages/talents|Talents]]
+- [[02-Content/Pages/media|Media]]
 - [[02-Content/Pages/about|About]]
 - [[03-UX/UI-Elements/header|Header]]
 - [[03-UX/UI-Elements/navigation|Navigation]]
@@ -11,84 +14,64 @@
 - [[03-UX/UI-Elements/footer|Footer]]
 
 ## Route
+
 - `/`
 
 ## Quelldatei
+
 - `src/app/page.tsx`
 
 ## Rolle der Seite
+
 Die Startseite ist ein kurzer, editorialer Einstieg in The Base e.V. Sie soll nicht alles erklaeren, sondern Orientierung geben und die wichtigsten Bereiche mit ruhiger Prioritaet oeffnen.
 
 ## Inhaltlicher Fokus
+
 - Schnellzugriffe auf aktuelle oder priorisierte Inhalte
-- Ein knapper Kontextblock zur Rolle des Vereins
-- kuratierte Einstiege in die zentralen Bereiche der Site
+- ein knapper Kontextblock zur Rolle des Vereins
+- kuratierte Einstiege in `Archive` und `About`
 
 ## Tonalitaet
+
 Direkt, lokal, kulturell verortet. Keine Werbesprache.
 
-## Verbundene Bereiche
-- `live.md`
-- `archive.md`
-- `talents.md`
-- `about.md`
-
 ## Pflegehinweis
-Die Startseite sollte eher kuratieren als vollstaendig abbilden.
+
+Die Startseite sollte eher kuratieren als vollstaendig abbilden. Inhalte duerfen aus `Sanity` kommen, aber die Seite soll dabei nicht zur Sitemap oder Datenbankuebersicht werden.
+
+## Aktueller Implementierungsstand
+
+- Quick Links kommen bevorzugt aus `homePage.quickLinks`
+- Statement, Note und Milestones kommen bevorzugt aus `homePage`
+- die `About`-Cards koennen ueber `homePage.featuredAbout` kuratiert werden
+- fuer `Archive` werden Katalog- und Poster-Einstiege ueber vorhandene `archiveEntry`-Queries angereichert
+- wenn in `Sanity` nichts gepflegt ist, bleiben lokale Fallback-Texte aktiv
 
 ## Aktuell erfasste Seitentexte
 
 Stand: aus dem aktuellen Seitencode abgeleitete sichtbare Texte in deutscher Sprache.
-Hinweis: Einzelne Listen- oder Karteneintraege koennen zur Laufzeit aus Sanity kommen und diese Fallback-Texte teilweise ueberschreiben.
+Hinweis: Einzelne Listen- oder Karteneintraege koennen zur Laufzeit aus `Sanity` kommen und diese Fallback-Texte teilweise ueberschreiben.
 
 - Aktuelle Veranstaltung
 - Die naechste sichtbare Arbeit, Ausstellung oder musikalische Einladung im Programm.
 - Aktuell
 - Laufende Formate
 - Wiederkehrende Reihen und offene Programmlinien.
-- Nächster Termin
+- Naechster Termin
 - Vergangene Veranstaltungen
-- Rückblick auf dokumentierte Veranstaltungen und Projekte.
+- Rueckblick auf dokumentierte Veranstaltungen und Projekte.
 - Letztes Projekt
-- Kunstkatalog
-- Werke, Credits, Texte und Kontextmaterialien aus Ausstellungen und installativen Projekten im BOA.
-- Recherche
-- Poster
-- Plakate, Open Calls, Jubiläumsgrafiken und andere visuelle Spuren der öffentlichen Kommunikation.
-- Grafik
-- Künstler:innen
-- Ausstellungspositionen, Installationen und Beiträge, die im BOA öffentlich sichtbar werden.
-- Ausstellung
-- DJs, Gaeste und Kollektive aus musikalischen Reihen, b2b-Konstellationen und elektronischen Programmen.
-- Sound
-- Mitwirkende
-- Kuration, Technik, Awareness, Produktion und freiwillige Arbeit hinter dem laufenden Betrieb.
-- Struktur
-- Entstehung, Selbstverständnis und die Rolle des BOA als Kulturort und Infrastruktur.
-- Profil
-- Zum Mitmachen
-- Projektideen, Open Calls und freiwillige Mitarbeit für Ausstellungen, Formate und laufende Kulturarbeit.
-- Engagement
-- Grundsätze für respektvolle Räume, diskriminierungssensible Praxis und gemeinsames Verhalten im BOA.
-- Safe Space
-- Seit 2020 als offene Plattform im Bunker of Art aktiv
-- Verbindet Ausstellung, Konzert, Veroeffentlichung und Archiv statt klassischer Spartentrennung
-- Macht lokale Kollaborationen, Open Calls und dokumentierte Formate öffentlich sichtbar
 - Plattform zwischen Ausstellung, Programm und lokaler Szene
 - The Base versteht den ehemaligen Bunker nicht als Kulisse, sondern als aktiven sozialen und kulturellen Raum. Zwischen Ausstellungen wie Total Local, musikalischen Programmen und Release-Kontexten entsteht ein Ort, der Szenen, Teams und kuenstlerische Positionen in Aachen zusammenfuehrt.
-- Archive
+- Seit 2020 als offene Plattform im Bunker of Art aktiv
+- Verbindet Ausstellung, Konzert, Veroeffentlichung und Archiv statt klassischer Spartentrennung
+- Macht lokale Kollaborationen, Open Calls und dokumentierte Formate oeffentlich sichtbar
 - Archiv
 - Arbeiten, Spuren, Dokumentation und Rueckblicke.
-- Künstler:innen, DJs und Mitwirkende
-- DJs und
-- Positionen aus Aachen und internationale Kontexte, getragen von den Menschen hinter Ausstellungen, musikalischen Programmen und Zusammenarbeit.
-- Verein, Awareness und Kontakt
-- Verein, Awareness
-- und Kontakt
-- Geschichte, Selbstverständnis, Awareness und konkrete Wege in den Verein und den Kulturort hinein.
-- DJs
 - The Base
+- Entstehung, Selbstverstaendnis und die Rolle des BOA als Kulturort und Infrastruktur.
+- Open Call
+- Anfragen fuer Ausstellungen, ortsspezifische Arbeiten und andere Formate im Kontext des BOA.
 - Awareness
-- Talents
-- About
-
+- Grundsaetze fuer respektvolle Raeume, diskriminierungssensible Praxis und gemeinsames Verhalten im BOA.
+- Verein, Awareness und Kontakt

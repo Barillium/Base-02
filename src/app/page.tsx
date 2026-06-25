@@ -1,25 +1,38 @@
+import Image from "next/image";
+
 import { Card } from "@/components/Card";
-import { Eyebrow } from "@/components/Eyebrow";
+import { HomeSections } from "@/components/HomeSections";
+import { PageJsonLd } from "@/components/PageJsonLd";
 import { SectionGrid } from "@/components/SectionGrid";
 import { getLocale, Locale, text } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
-import { maybeSanityFetch } from "@/sanity/lib/fetch";
 import {
-  ARCHIVE_CATALOGUE_QUERY,
-  ARCHIVE_POSTER_QUERY,
-  HOME_QUICK_LINKS_QUERY,
-} from "@/sanity/lib/queries";
-import type {
-  SanityArchiveItemPreview,
-  SanityHomeQuickLink,
-} from "@/sanity/types";
+  portableTextToTextLines,
+  resolveLinkedDocumentHref,
+  resolveStaticPageHref,
+} from "@/sanity/lib/content";
+import { maybeSanityFetch } from "@/sanity/lib/fetch";
+import { withInstagramFallbackForEventPreview } from "@/sanity/lib/eventInstagramFallbacks";
+import { HOME_PAGE_QUERY, LIVE_CURRENT_EVENT_QUERY } from "@/sanity/lib/queries";
+import type { SanityEventPreview, SanityHomePage } from "@/sanity/types";
 
-export const metadata = pageMetadata({
+const homePageMetadata = {
   title: "Kulturzentrum in Aachen für Kunst, Musik und Workshops",
   description:
     "The Base e.V. im BOA Bunker of Art Aachen verbindet Ausstellungen, Konzerte, Workshops, Archiv und Community-Arbeit.",
   path: "/",
-});
+} as const;
+
+const THE_BASE_INSTAGRAM_URL = "https://www.instagram.com/the.base.ev/";
+const CURRENT_EVENT_FALLBACK = {
+  title: {
+    de: "The Roots of All That Exists",
+    en: "The Roots of All That Exists",
+  },
+  href: "https://www.instagram.com/the.base.ev/p/DYcFhaxtS8G/",
+} as const;
+
+export const metadata = pageMetadata(homePageMetadata);
 
 type Entry = {
   title: string;
@@ -28,13 +41,13 @@ type Entry = {
   meta: string;
 };
 
-function getQuickEntries(locale: Locale): Entry[] {
+function getQuickEntries(locale: Locale, currentEvent?: Pick<Entry, "title" | "href">): Entry[] {
   return [
     {
-      title: text(locale, { de: "Aktuelle Veranstaltung", en: "Current event" }),
-      href: "https://www.instagram.com/p/DYcFhaxtS8G/",
+      title: currentEvent?.title ?? text(locale, CURRENT_EVENT_FALLBACK.title),
+      href: currentEvent?.href ?? CURRENT_EVENT_FALLBACK.href,
       description: text(locale, {
-        de: "Die naechste sichtbare Arbeit, Ausstellung oder musikalische Einladung im Programm.",
+        de: "Die nächste sichtbare Arbeit, Ausstellung oder musikalische Einladung im Programm.",
         en: "The next visible work, exhibition, or musical invitation in the programme.",
       }),
       meta: text(locale, { de: "Aktuell", en: "Current" }),
@@ -55,93 +68,49 @@ function getQuickEntries(locale: Locale): Entry[] {
         de: "Rückblick auf dokumentierte Veranstaltungen und Projekte.",
         en: "Retrospective of documented events and projects.",
       }),
-      meta: text(locale, { de: "Letztes Projekt", en: "Latest project" }),
+      meta: text(locale, { de: "Letzte Projekte", en: "Latest projects" }),
     },
   ];
 }
 
-async function getResolvedQuickEntries(locale: Locale): Promise<Entry[]> {
-  const fallbackEntries = getQuickEntries(locale);
-  const quickLinks = await maybeSanityFetch<SanityHomeQuickLink[]>({
-    query: HOME_QUICK_LINKS_QUERY,
-    tags: ["homeQuickLink", "home"],
-    revalidate: 300,
-  });
+function getResolvedQuickEntries(
+  locale: Locale,
+  homePage: SanityHomePage | null,
+  currentEvent: SanityEventPreview | null,
+): Entry[] {
+  const currentMeta = text(locale, { de: "Aktuell", en: "Current" });
+  const genericCurrentTitle = text(locale, { de: "Aktuelle Veranstaltung", en: "Current event" });
+  const latestProjectsMeta = text(locale, { de: "Letzte Projekte", en: "Latest projects" });
+  const resolvedCurrentEvent = currentEvent ? withInstagramFallbackForEventPreview(locale, currentEvent) : null;
+  const fallbackCurrentEvent = {
+    title: resolvedCurrentEvent?.title ?? text(locale, CURRENT_EVENT_FALLBACK.title),
+    href: resolvedCurrentEvent?.externalUrl ?? CURRENT_EVENT_FALLBACK.href,
+  };
+  const fallbackEntries = getQuickEntries(locale, fallbackCurrentEvent);
+
+  const quickLinks = homePage?.quickLinks
+    ?.map((entry) => ({
+      title:
+        entry.meta === currentMeta
+          ? resolvedCurrentEvent?.title || (entry.title === genericCurrentTitle ? fallbackCurrentEvent.title : entry.title)
+          : entry.title,
+      href:
+        entry.meta === currentMeta
+          ? resolvedCurrentEvent?.externalUrl || entry.externalUrl || fallbackCurrentEvent.href || THE_BASE_INSTAGRAM_URL
+          : entry.externalUrl || entry.internalPath || resolveLinkedDocumentHref(entry.linkedDocument) || "",
+      description:
+        entry.meta === currentMeta
+          ? resolvedCurrentEvent?.summary || entry.description || ""
+          : entry.description ?? "",
+      meta: entry.meta === text(locale, { de: "Letztes Projekt", en: "Latest project" }) ? latestProjectsMeta : entry.meta,
+    }))
+    .filter((entry) => Boolean(entry.href));
 
   if (!quickLinks?.length) {
     return fallbackEntries;
   }
 
-  return quickLinks.map((entry) => ({
-    title: entry.title,
-    href: entry.href,
-    description: entry.description ?? "",
-    meta: entry.meta,
-  }));
-}
-
-function getArchiveEntries(locale: Locale): Entry[] {
-  return [
-    {
-      title: text(locale, {
-        de: "Kunstkatalog",
-        en: "Art catalogue",
-      }),
-      href: "/archive/kunstkatalog",
-      description: text(locale, {
-        de: "Werke, Credits, Texte und Kontextmaterialien aus Ausstellungen und installativen Projekten im BOA.",
-        en: "Works, texts, and project traces from exhibitions since the early BOA years",
-      }),
-      meta: text(locale, { de: "Recherche", en: "Research" }),
-    },
-    {
-      title: text(locale, {
-        de: "Poster",
-        en: "Posters",
-      }),
-      href: "/archive/poster",
-      description: text(locale, {
-        de: "Plakate, Open Calls, Jubiläumsgrafiken und andere visuelle Spuren der öffentlichen Kommunikation.",
-        en: "Posters, visual campaigns, and graphic traces of past exhibitions, concerts, and workshops.",
-      }),
-      meta: text(locale, { de: "Grafik", en: "Graphic" }),
-    },
-  ];
-}
-
-async function getResolvedArchiveEntries(locale: Locale): Promise<Entry[]> {
-  const fallbackEntries = getArchiveEntries(locale);
-  const [catalogueItem, posterItem] = await Promise.all([
-    maybeSanityFetch<SanityArchiveItemPreview>({
-      query: ARCHIVE_CATALOGUE_QUERY,
-      tags: ["archiveItem", "archive", "home"],
-      revalidate: 300,
-    }),
-    maybeSanityFetch<SanityArchiveItemPreview>({
-      query: ARCHIVE_POSTER_QUERY,
-      tags: ["archiveItem", "archive", "home"],
-      revalidate: 300,
-    }),
-  ]);
-
-  return [
-    catalogueItem
-      ? {
-          title: fallbackEntries[0].title,
-          href: "/archive/kunstkatalog",
-          description: catalogueItem.summary,
-          meta: fallbackEntries[0].meta,
-        }
-      : fallbackEntries[0],
-    posterItem
-      ? {
-          title: fallbackEntries[1].title,
-          href: "/archive/poster",
-          description: fallbackEntries[1].description,
-          meta: fallbackEntries[1].meta,
-        }
-      : fallbackEntries[1],
-  ];
+  return quickLinks;
 }
 
 function getAboutEntries(locale: Locale): Entry[] {
@@ -157,15 +126,15 @@ function getAboutEntries(locale: Locale): Entry[] {
     },
     {
       title: text(locale, {
-        de: "Zum Mitmachen",
-        en: "Get involved",
+        de: "Open Call",
+        en: "Open call",
       }),
       href: "/mitmachen",
       description: text(locale, {
-        de: "Projektideen, Open Calls und freiwillige Mitarbeit für Ausstellungen, Formate und laufende Kulturarbeit.",
-        en: "Artists and culture-interested people can build contacts here, present their work, and grow through exchange with others",
+        de: "Anfragen für Ausstellungen, ortsspezifische Arbeiten und andere Formate im Kontext des BOA.",
+        en: "Inquiries for exhibitions, site-specific works, and other formats in the context of the BOA.",
       }),
-      meta: text(locale, { de: "Engagement", en: "Engagement" }),
+      meta: text(locale, { de: "Open Call", en: "Open call" }),
     },
     {
       title: "Awareness",
@@ -179,6 +148,29 @@ function getAboutEntries(locale: Locale): Entry[] {
   ];
 }
 
+function getResolvedAboutEntries(locale: Locale, homePage?: SanityHomePage | null): Entry[] {
+  const fallbackEntries = getAboutEntries(locale);
+  const entries = homePage?.featuredAbout
+    ?.map((entry) => ({
+      title: entry.title,
+      href: resolveStaticPageHref(entry.routeKey) || "",
+      description: entry.description ?? "",
+      meta:
+        entry.routeKey === "about-the-base"
+          ? text(locale, { de: "Profil", en: "Profile" })
+          : entry.routeKey === "about-code-of-conduct"
+            ? text(locale, { de: "Safe Space", en: "Safe Space" })
+            : entry.routeKey === "about-kontakt"
+              ? text(locale, { de: "Kontakt", en: "Contact" })
+              : entry.routeKey === "about-foerdermitgliedschaft"
+                ? text(locale, { de: "Unterstützen", en: "Support" })
+                : text(locale, { de: "Open Call", en: "Open call" }),
+    }))
+    .filter((entry) => Boolean(entry.href));
+
+  return entries?.length ? entries : fallbackEntries;
+}
+
 function getMilestones(locale: Locale): string[] {
   return [
     text(locale, {
@@ -186,7 +178,7 @@ function getMilestones(locale: Locale): string[] {
       en: "Active as an open platform in the Bunker of Art since 2020",
     }),
     text(locale, {
-      de: "Verbindet Ausstellung, Konzert, Veroeffentlichung und Archiv statt klassischer Spartentrennung",
+      de: "Verbindet Ausstellung, Konzert, Veröffentlichung und Archiv statt klassischer Spartentrennung",
       en: "Connects exhibition, concert, release, and archive instead of following traditional genre boundaries",
     }),
     text(locale, {
@@ -198,94 +190,169 @@ function getMilestones(locale: Locale): string[] {
 
 export default async function HomePage() {
   const locale = await getLocale();
-  const [quickEntries, archiveEntries] = await Promise.all([
-    getResolvedQuickEntries(locale),
-    getResolvedArchiveEntries(locale),
+  const [homePage, currentEvent] = await Promise.all([
+    maybeSanityFetch<SanityHomePage>({
+      query: HOME_PAGE_QUERY,
+      params: { locale },
+      tags: ["homePage", "home"],
+      revalidate: 300,
+    }),
+    maybeSanityFetch<SanityEventPreview>({
+      query: LIVE_CURRENT_EVENT_QUERY,
+      params: { locale },
+      tags: ["event", "live", "current-event"],
+      revalidate: 300,
+    }),
   ]);
-  const aboutEntries = getAboutEntries(locale);
-  const milestones = getMilestones(locale);
+
+  if (homePage?.sections?.length) {
+    return (
+      <div className="editorial-fade page-flow page-flow-home">
+        <PageJsonLd {...homePageMetadata} pageType="WebPage" />
+        <HomeSections sections={homePage.sections} locale={locale} />
+      </div>
+    );
+  }
+
+  const quickEntries = getResolvedQuickEntries(locale, homePage, currentEvent);
+  const aboutEntries = getResolvedAboutEntries(locale, homePage);
+  const milestones = portableTextToTextLines(homePage?.milestones).length
+    ? portableTextToTextLines(homePage?.milestones)
+    : getMilestones(locale);
+  const introTitleLines = [
+    text(locale, { de: "Plattform", en: "Platform" }),
+    text(locale, { de: "zwischen", en: "between" }),
+    text(locale, { de: "Ausstellung,", en: "exhibition," }),
+    text(locale, { de: "Programm und", en: "programme and" }),
+    text(locale, { de: "lokaler Szene", en: "local scene" }),
+  ];
+  const statement =
+    homePage?.statement ??
+    text(locale, {
+      de: "The Base e.V. ist ein 2015 in Aachen gegründeter Kulturverein und ein interdisziplinäres Kollektiv junger Kulturarbeiter:innen, Gestalter:innen und Organisator:innen. Der Verein entwickelt zugängliche Formate zwischen Kunst, Musik, Design und sozialer Praxis und stärkt unabhängige kulturelle Strukturen in der Stadt.",
+      en: "The Base e.V. is a cultural association founded in Aachen in 2015 and an interdisciplinary collective of young cultural workers, designers, and organisers. The association develops accessible formats between art, music, design, and social practice and strengthens independent cultural structures in the city.",
+    });
+  const note = homePage?.note;
+  const fallbackNote = text(locale, {
+    de: "Im Mittelpunkt stehen ungenutzte urbane Räume, neue kulturelle Allianzen und Formate, die unterschiedliche Publika in Aachen zusammenbringen.",
+    en: "At the centre are unused urban spaces, new cultural alliances, and formats that bring different publics together in Aachen.",
+  });
 
   return (
-    <div className="editorial-fade page-flow">
-      <section className="grid grid-cols-1 gap-3 pb-2 pt-2 sm:grid-cols-2 sm:items-stretch sm:gap-4 md:pt-4 xl:grid-cols-3">
-        {quickEntries.map((entry) => {
-          const isExternal = /^https?:\/\//.test(entry.href);
+    <div className="editorial-fade page-flow page-flow-home">
+      <PageJsonLd {...homePageMetadata} pageType="WebPage" />
 
-          return (
-          <a
-            key={entry.href}
-            href={entry.href}
-            target={isExternal ? "_blank" : undefined}
-            rel={isExternal ? "noreferrer" : undefined}
-            className="group grid min-w-0 gap-1.5 rounded-sm border border-[var(--line)]/65 px-3 py-3 transition-colors hover:bg-black/[0.04] focus-visible:bg-black/[0.04] focus-visible:outline-none md:h-full"
-          >
-            <p className="type-meta text-[var(--muted)]">{entry.meta}</p>
-            <p className="type-title text-[var(--ink)] transition-transform group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5">
-              {entry.title}
-            </p>
-          </a>
-          );
-        })}
-      </section>
-
-      <section className="ink-panel content-grid rounded-sm px-4 py-5 sm:px-5 md:px-7 md:py-8">
-        <div className="content-stack-tight">
-          <Eyebrow className="text-zinc-300">The Base e.V.</Eyebrow>
-          <h2 className="type-display-section max-w-[17ch] leading-[1.02] md:max-w-[17ch]">
-            {text(locale, {
-              de: "Plattform zwischen Ausstellung, Programm und lokaler Szene",
-              en: "Platform between exhibition, programme, and local scene",
-            })}
-          </h2>
-        </div>
-        <div className="content-stack lg:max-w-4xl">
-          <p className="type-body-lg max-w-4xl text-zinc-200">
-            {text(locale, {
-              de: "The Base versteht den ehemaligen Bunker nicht als Kulisse, sondern als aktiven sozialen und kulturellen Raum. Zwischen Ausstellungen wie Total Local, musikalischen Programmen und Release-Kontexten entsteht ein Ort, der Szenen, Teams und kuenstlerische Positionen in Aachen zusammenfuehrt.",
-              en: "The Base does not treat the former bunker as a backdrop, but as an active social and cultural space. Between exhibitions such as Total Local, musical programmes, and release contexts, a place emerges that brings scenes, teams, and artistic positions together in Aachen.",
-            })}
-          </p>
-          <ul className="type-body space-y-1.5 text-zinc-300">
-            {milestones.map((point) => (
-              <li key={point} className="flex gap-3">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
-                <span>{point}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <SectionGrid
-        eyebrow={text(locale, { de: "Archive", en: "Archive" })}
-        title={text(locale, { de: "Archiv", en: "Archive" })}
-        description={text(locale, {
-          de: "Arbeiten, Spuren, Dokumentation und Rueckblicke.",
-          en: "Works, traces, documentation, and retrospectives.",
-        })}
-        className="layout-editorial-section"
-        titleClassName="lg:max-w-[9.2ch] xl:max-w-[10ch]"
-        contentClassName="lg:pt-3"
+      <section
+        aria-labelledby="home-entry-points-heading"
+        className="-mx-[var(--site-gutter)] -mb-[clamp(1.15rem,3.5vw,1.95rem)] pt-0"
       >
-        {archiveEntries.map((entry) => (
-          <Card key={entry.href} locale={locale} {...entry} />
-        ))}
-      </SectionGrid>
+        <h2 id="home-entry-points-heading" className="sr-only">
+          {text(locale, { de: "Ausgewählte Einstiege", en: "Selected entry points" })}
+        </h2>
+        <div className="grid grid-cols-1 border-y border-[var(--line)]/70 lg:grid-cols-3">
+          {quickEntries.map((entry, index) => {
+            const isExternal = /^https?:\/\//.test(entry.href);
+            const dividerClasses =
+              index === 0
+                ? ""
+                : "border-t border-[var(--line)]/55 lg:border-l lg:border-t-0";
+
+            return (
+              <a
+                key={entry.href}
+                href={entry.href}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noreferrer noopener" : undefined}
+                className={`home-quick-link group grid min-w-0 px-[var(--site-gutter)] transition-colors hover:bg-black/[0.025] focus-visible:bg-black/[0.025] focus-visible:outline-none ${dividerClasses}`}
+              >
+                <p className="type-meta text-[var(--muted)]">{entry.meta}</p>
+                <p className="home-quick-link-title font-display text-[var(--ink)] transition-transform group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5">
+                  {entry.title}
+                </p>
+                {isExternal ? (
+                  <span className="sr-only">
+                    {text(locale, { de: "Öffnet in einem neuen Tab", en: "Opens in a new tab" })}
+                  </span>
+                ) : null}
+              </a>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="-mx-[var(--site-gutter)]">
+        <div
+          aria-label={text(locale, {
+            de: "Ausstellungsraum im BOA Bunker of Art",
+            en: "Exhibition space at the BOA Bunker of Art",
+          })}
+          className="relative aspect-[6/5] w-full overflow-hidden sm:aspect-[16/11] lg:aspect-[1901/700]"
+        >
+          <Image
+            src="/home/Firefly.jpg"
+            alt="Innenraum im BOA Bunker of Art"
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
+
+        <div
+          aria-labelledby="home-introduction-heading"
+          className="ink-panel px-[var(--site-gutter)] py-8 md:py-10"
+        >
+          <div className="content-grid">
+            <div className="content-stack lg:max-w-[24.5rem]">
+              <h1
+                id="home-introduction-heading"
+                aria-label={text(locale, {
+                  de: "Plattform zwischen Ausstellung, Programm und lokaler Szene",
+                  en: "Platform between exhibition, programme, and local scene",
+                })}
+                className="home-intro-heading font-display text-[2.16rem] leading-[1.04] tracking-[0.026em] text-[#f8f8f8] uppercase md:text-[2.68rem] lg:max-w-[24.5rem] lg:text-[clamp(2.78rem,2.9vw,3.72rem)]"
+              >
+                {introTitleLines.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+              </h1>
+            </div>
+
+            <div className="content-stack home-intro-copy lg:pt-1">
+              <p className="type-body-lg max-w-[48rem] text-zinc-200">{statement}</p>
+              <p className="type-body-lg max-w-[48rem] text-zinc-300">{note ?? fallbackNote}</p>
+              <ul className="type-body max-w-[48rem] space-y-1.5 text-zinc-300">
+                {milestones.map((point) => (
+                  <li key={point} className="flex gap-3">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <SectionGrid
         eyebrow="About"
         title={text(locale, { de: "Verein, Awareness und Kontakt", en: "Association, awareness, and contact" })}
         titleLines={[
-          text(locale, { de: "Verein, Awareness", en: "Association, awareness" }),
+          text(locale, { de: "Verein,", en: "Association," }),
+          text(locale, { de: "Awareness", en: "awareness" }),
           text(locale, { de: "und Kontakt", en: "and contact" }),
         ]}
         description={text(locale, {
           de: "Geschichte, Selbstverständnis, Awareness und konkrete Wege in den Verein und den Kulturort hinein.",
           en: "History, position, awareness, ways to get involved, and direct contact paths.",
         })}
-        className="layout-editorial-section"
-        titleClassName="lg:max-w-[9.4ch] xl:max-w-[10.2ch]"
-        contentClassName="lg:pt-3"
+        className="layout-editorial-section home-about-section"
+        titleClassName="home-about-title lg:max-w-[10.2ch] xl:max-w-[10.8ch]"
+        descriptionClassName="home-about-description"
+        contentClassName="home-about-content"
       >
         {aboutEntries.map((entry) => (
           <Card key={entry.href} locale={locale} {...entry} />

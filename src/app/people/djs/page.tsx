@@ -30,7 +30,7 @@ function getEntries(locale: Locale): Entry[] {
       title: text(locale, { de: "The Base @ Open Ground", en: "The Base @ Open Ground" }),
       href: "https://www.instagram.com/the.base.ev/p/DXFJJbajTgY/",
       description: text(locale, {
-        de: "Oeffentlicher Veranstaltungskontext, in dem die DJ- und Live-Acts der Base in einen ueberregionalen musikalischen Zusammenhang treten.",
+        de: "Öffentlicher Veranstaltungskontext, in dem die DJ- und Live-Acts der Base in einen überregionalen musikalischen Zusammenhang treten.",
         en: "A public event context in which The Base's DJs and live acts enter a wider musical setting.",
       }),
       meta: text(locale, { de: "Gastspiel", en: "Guest appearance" }),
@@ -68,7 +68,7 @@ export default async function DJsPage() {
       eyebrow="Talents"
       title="DJs"
       description={{
-        de: "Diese Seite sammelt DJs, Live-Acts und Kollektive, die elektronische und experimentelle Musikprogramme bei The Base praegen - von Gastspielen bis zu lokalen Kollaborationen.",
+        de: "Diese Seite sammelt DJs, Live-Acts und Kollektive, die elektronische und experimentelle Musikprogramme bei The Base prägen - von Gastspielen bis zu lokalen Kollaborationen.",
         en: "This page collects DJs, live acts, and collectives shaping electronic and experimental music programmes at The Base - from guest appearances to local collaborations.",
       }}
       note={{

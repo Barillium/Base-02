@@ -9,6 +9,7 @@ type SectionGridProps = {
   className?: string;
   contentClassName?: string;
   titleClassName?: string;
+  descriptionClassName?: string;
 };
 
 export function SectionGrid({
@@ -20,6 +21,7 @@ export function SectionGrid({
   className,
   contentClassName,
   titleClassName,
+  descriptionClassName,
 }: SectionGridProps) {
   const resolvedTitle = titleLines?.length ? titleLines : null;
 
@@ -31,7 +33,7 @@ export function SectionGrid({
         {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
         <h2
           aria-label={resolvedTitle ? title : undefined}
-          className={`type-display-section max-w-[16ch] text-[var(--ink)] md:max-w-[16ch] lg:max-w-[13ch] xl:max-w-[14ch] ${titleClassName ?? ""}`}
+          className={`type-display-section max-w-[16.4ch] text-[var(--ink)] md:max-w-[16.6ch] lg:max-w-[14ch] xl:max-w-[15ch] ${titleClassName ?? ""}`}
         >
           {resolvedTitle
             ? resolvedTitle.map((line) => (
@@ -41,7 +43,7 @@ export function SectionGrid({
               ))
             : title}
         </h2>
-        <p className="type-body max-w-lg text-[var(--muted)]">{description}</p>
+        <p className={`type-body max-w-lg text-[var(--muted)] ${descriptionClassName ?? ""}`}>{description}</p>
       </div>
       <div className={`min-w-0 lg:pt-1 ${contentClassName ?? ""}`}>{children}</div>
     </section>

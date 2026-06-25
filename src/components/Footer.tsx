@@ -13,13 +13,10 @@ export async function Footer() {
           <p className="type-meta text-[var(--muted)]">
             {text(locale, { de: "Verbinden", en: "Connect" })}
           </p>
-          <SocialLinks size="lg" />
+          <SocialLinks locale={locale} size="lg" tone="accent" />
         </div>
 
         <div className="content-stack-tight">
-          <p className="type-meta text-[var(--muted)]">
-            {text(locale, { de: "Updates", en: "Updates" })}
-          </p>
           <NewsletterForm locale={locale} />
         </div>
       </div>
