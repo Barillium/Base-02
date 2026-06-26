@@ -7,6 +7,10 @@
   },
   "scripts": {
     "build": "next build",
+    "cf:build": "DISABLE_EMBEDDED_STUDIO=1 opennextjs-cloudflare build",
+    "cf:deploy": "wrangler deploy",
+    "cf:preview": "DISABLE_EMBEDDED_STUDIO=1 opennextjs-cloudflare preview",
+    "cf:upload": "DISABLE_EMBEDDED_STUDIO=1 opennextjs-cloudflare upload",
     "dev": "next dev",
     "build:webpack": "next build --webpack",
     "start": "next start",
@@ -18,9 +22,9 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "qa": "npm run lint && npm run build:webpack && PLAYWRIGHT_TEST_BASE_URL=http://127.0.0.1:3000 npm run test:e2e",
-    "preview": "DISABLE_EMBEDDED_STUDIO=1 opennextjs-cloudflare build && DISABLE_EMBEDDED_STUDIO=1 opennextjs-cloudflare preview",
-    "deploy": "DISABLE_EMBEDDED_STUDIO=1 opennextjs-cloudflare build && DISABLE_EMBEDDED_STUDIO=1 opennextjs-cloudflare deploy",
-    "upload": "DISABLE_EMBEDDED_STUDIO=1 opennextjs-cloudflare build && DISABLE_EMBEDDED_STUDIO=1 opennextjs-cloudflare upload",
+    "preview": "npm run cf:build && npm run cf:preview",
+    "deploy": "npm run cf:build && npm run cf:deploy",
+    "upload": "npm run cf:build && npm run cf:upload",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
