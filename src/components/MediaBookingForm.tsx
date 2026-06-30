@@ -269,13 +269,13 @@ export function MediaBookingForm({ locale }: MediaBookingFormProps) {
 
         {error ? <p role="alert" className="type-body text-[var(--accent)]">{error}</p> : null}
 
-        <div className="editorial-form-actions editorial-form-actions-refined media-booking-actions-split">
-          <p className="type-body text-[var(--muted)] media-booking-actions-note">
+        <div className="editorial-form-actions editorial-form-actions-refined editorial-form-actions-split">
+          <p className="type-body text-[var(--muted)] editorial-form-actions-note">
             {text(locale, { de: "Alle Felder sind Pflichtfelder.", en: "All fields are required." })}
           </p>
           <button
             type="submit"
-            className="editorial-form-submit type-meta media-booking-actions-cta"
+            className="editorial-form-submit type-meta editorial-form-actions-cta"
           >
             {text(locale, {
               de: "Produktionsanfrage per E-Mail senden",

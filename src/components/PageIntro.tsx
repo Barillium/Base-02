@@ -54,7 +54,7 @@ export function PageIntro({
             : title}
         </h1>
       </div>
-      <div className={`content-stack min-w-0 pt-1 lg:max-w-[45rem] lg:pt-4 xl:max-w-[48rem] ${alignmentClass} ${isCenteredBlock ? "mx-auto" : ""} ${rightClassName ?? ""}`}>
+      <div className={`content-stack min-w-0 pt-1 lg:max-w-[45rem] lg:pt-4 xl:max-w-[48rem] ${alignmentClass} ${isCenteredBlock ? "mx-auto" : "layout-copy-start"} ${rightClassName ?? ""}`}>
         <p className="type-body-lg max-w-3xl text-[var(--ink)]">{description}</p>
         {note ? <p className="type-body max-w-3xl text-[var(--muted)]">{note}</p> : null}
       </div>

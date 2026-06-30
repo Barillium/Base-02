@@ -45,7 +45,7 @@ export function SectionGrid({
         </h2>
         <p className={`type-body max-w-lg text-[var(--muted)] ${descriptionClassName ?? ""}`}>{description}</p>
       </div>
-      <div className={`min-w-0 lg:pt-1 ${contentClassName ?? ""}`}>{children}</div>
+      <div className={`layout-copy-start min-w-0 lg:pt-1 ${contentClassName ?? ""}`}>{children}</div>
     </section>
   );
 }

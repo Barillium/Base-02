@@ -16,7 +16,7 @@ export async function Footer() {
           <SocialLinks locale={locale} size="lg" tone="accent" />
         </div>
 
-        <div className="content-stack-tight">
+        <div className="content-stack-tight layout-copy-start lg:max-w-[44rem] xl:max-w-[46rem]">
           <NewsletterForm locale={locale} />
         </div>
       </div>

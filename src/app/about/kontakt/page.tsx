@@ -54,8 +54,8 @@ export default async function KontaktPage() {
         rightClassName="lg:max-w-[44rem] lg:pt-4"
       />
 
-      <section className="grid gap-8 md:grid-cols-2">
-        <address className="space-y-3 pt-6 not-italic">
+      <section className="content-grid layout-about-section pt-2 md:pt-3">
+        <address className="content-stack-tight min-w-0 not-italic lg:pr-4 xl:pr-6">
           <p className="type-meta text-[var(--muted)]">{text(locale, { de: "Adresse", en: "Address" })}</p>
           {(addressLines?.length ? addressLines : ["BOA / Bunker of Art", "Scheibenstraße 34, 52070 Aachen"]).map((line) => (
             <p key={line} className="type-body-lg text-[var(--ink)]">
@@ -64,7 +64,7 @@ export default async function KontaktPage() {
           ))}
         </address>
 
-        <address className="space-y-3 pt-6 not-italic">
+        <address className="content-stack layout-copy-start min-w-0 not-italic lg:max-w-[44rem] lg:pt-2">
           <p className="type-meta text-[var(--muted)]">{text(locale, { de: "Kontakt", en: "Contact" })}</p>
           <a href={`mailto:${siteSettings?.contactEmail ?? "info@thebase-ev.de"}`} className="type-body-lg text-[var(--accent)]">
             {siteSettings?.contactEmail ?? "info@thebase-ev.de"}
@@ -90,9 +90,14 @@ export default async function KontaktPage() {
             </>
           )}
         </address>
+      </section>
 
-        <div className="space-y-3 pt-6">
+      <section className="content-grid layout-about-section pt-1 md:pt-2">
+        <div className="content-stack-tight min-w-0 lg:pr-4 xl:pr-6">
           <p className="type-meta text-[var(--muted)]">{text(locale, { de: "Hinweis", en: "Note" })}</p>
+        </div>
+
+        <div className="content-stack layout-copy-start min-w-0 lg:max-w-[44rem] lg:pt-1">
           <p className="type-body-lg text-[var(--ink)]">
             {page?.note ??
               text(locale, {

@@ -56,7 +56,7 @@ export async function SimplePage({
       {bodyBlocks?.length ? (
         <section className="content-grid layout-editorial-section">
           <div aria-hidden="true" className="hidden lg:block" />
-          <PortableTextContent blocks={bodyBlocks} layout={bodyLayout} className="lg:max-w-[44rem] lg:pt-2" />
+          <PortableTextContent blocks={bodyBlocks} layout={bodyLayout} className="layout-copy-start lg:max-w-[44rem] lg:pt-2" />
         </section>
       ) : null}
       {children}

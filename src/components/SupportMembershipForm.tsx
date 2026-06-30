@@ -336,17 +336,17 @@ export function SupportMembershipForm({ locale }: SupportMembershipFormProps) {
           </p>
         ) : null}
 
-        <div className="editorial-form-actions editorial-form-actions-refined">
+        <div className="editorial-form-actions editorial-form-actions-refined editorial-form-actions-split">
+          <p className="type-body text-[var(--muted)] editorial-form-actions-note">* {text(locale, { de: "Pflichtfelder", en: "Required fields" })}</p>
           <button
             type="submit"
-            className="editorial-form-submit type-meta"
+            className="editorial-form-submit type-meta editorial-form-actions-cta"
           >
             {text(locale, {
               de: "Anfrage per E-Mail senden",
               en: "Send request by email",
             })}
           </button>
-          <p className="type-body text-[var(--muted)]">* {text(locale, { de: "Pflichtfelder", en: "Required fields" })}</p>
         </div>
       </form>
     </section>

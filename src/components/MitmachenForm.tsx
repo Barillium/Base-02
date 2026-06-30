@@ -260,17 +260,17 @@ export function MitmachenForm({ locale }: MitmachenFormProps) {
 
         {error ? <p role="alert" className="type-body text-[var(--accent)]">{error}</p> : null}
 
-        <div className="editorial-form-actions editorial-form-actions-refined">
+        <div className="editorial-form-actions editorial-form-actions-refined editorial-form-actions-split">
+          <p className="type-body text-[var(--muted)] editorial-form-actions-note">* {text(locale, { de: "Pflichtfelder", en: "Required fields" })}</p>
           <button
             type="submit"
-            className="editorial-form-submit type-meta"
+            className="editorial-form-submit type-meta editorial-form-actions-cta"
           >
             {text(locale, {
               de: "Per E-Mail senden",
               en: "Send by email",
             })}
           </button>
-          <p className="type-body text-[var(--muted)]">* {text(locale, { de: "Pflichtfelder", en: "Required fields" })}</p>
         </div>
       </form>
     </section>

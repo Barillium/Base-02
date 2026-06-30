@@ -62,7 +62,7 @@ export default async function TheBasePage() {
       en: "At the centre are the promotion of cultural projects, open formats, and the encounter of different people and scenes in Aachen.",
     });
   return (
-    <div className="editorial-fade page-flow-compact">
+    <div className="editorial-fade page-flow-compact about-base-flow">
       <section className="content-grid about-base-intro-grid">
         <div className="content-stack-tight min-w-0">
           <h1
@@ -82,7 +82,7 @@ export default async function TheBasePage() {
           <p className="type-body max-w-[42rem] text-[var(--muted)] xl:max-w-[44rem]">{note}</p>
         </div>
 
-        <div className="min-w-0 pt-0.5 lg:pt-2">
+        <div className="min-w-0 pt-0 lg:pt-1">
           <p
             aria-label={text(locale, { de: "Seit der Kunstroute 2020 im BOA", en: "Since Kunstroute 2020 at BOA" })}
             className="type-title font-display max-w-[14ch] uppercase leading-[0.92] text-[var(--ink)] lg:max-w-[12.4ch] xl:max-w-[13.2ch]"
@@ -120,16 +120,18 @@ export default async function TheBasePage() {
         </div>
       </section>
 
-      <section className="ink-panel full-bleed-panel about-base-principles-panel px-6 py-8 md:px-8 md:py-10 lg:mt-1">
-        <p className="type-meta mb-4 text-zinc-400">{text(locale, { de: "Leitlinien", en: "Principles" })}</p>
-        <ul className="grid gap-4 md:grid-cols-2">
+      <section className="ink-panel full-bleed-panel about-base-principles-panel px-6 py-8 md:px-8 md:py-10">
+        <div className="content-grid layout-about-section gap-y-4">
+          <p className="type-meta text-zinc-400 lg:pt-1">{text(locale, { de: "Leitlinien", en: "Principles" })}</p>
+          <ul className="layout-copy-start grid gap-4 md:grid-cols-2">
           {principles.map((principle) => (
             <li key={principle} className="type-body flex gap-3 text-zinc-200">
               <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[var(--accent)]" />
               <span>{principle}</span>
             </li>
           ))}
-        </ul>
+          </ul>
+        </div>
       </section>
     </div>
   );

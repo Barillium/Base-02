@@ -191,7 +191,7 @@ export function PortableTextContent({ blocks, layout, className }: PortableTextC
   const segments = buildSegments(blocks);
 
   return (
-    <div className={`space-y-5 ${alignmentClass} ${positionClass} ${className ?? ""}`}>
+    <div className={`min-w-0 w-full space-y-5 ${alignmentClass} ${positionClass} ${className ?? ""}`}>
       {segments.map((segment) =>
         segment.type === "list" ? (
           <div key={segment._key}>{renderList(segment)}</div>
