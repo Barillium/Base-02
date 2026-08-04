@@ -10,7 +10,7 @@ Sie ist auf den aktuellen Projektstand zugeschnitten:
 - React 19
 - TypeScript
 - Tailwind CSS v4
-- Deployment auf Cloudflare Workers ueber OpenNext
+- neutraler Next.js-Betrieb ohne vorausgesetzte Hosting-spezifische Adapter
 - redaktionelle, inhaltsgetriebene Website mit den oeffentlich aktiven Bereichen `Live`, `Archive`, `Media` und `About`
 
 Wichtig fuer den aktuellen Scope:

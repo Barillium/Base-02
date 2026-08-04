@@ -3,50 +3,66 @@ import { LegacyEventDocumentInput } from "@/sanity/components/LegacyEventDocumen
 
 export const eventType = defineType({
   name: "event",
-  title: "Live Event",
+  title: "Veranstaltung",
   type: "document",
   components: {
     input: LegacyEventDocumentInput,
   },
+  validation: (rule) =>
+    rule.custom((value) => {
+      if (!value || typeof value !== "object") {
+        return true;
+      }
+
+      const event = value as {
+        startDate?: string;
+        endDate?: string;
+      };
+
+      if (event.startDate && event.endDate && event.endDate < event.startDate) {
+        return "Das Enddatum darf nicht vor dem Startdatum liegen.";
+      }
+
+      return true;
+    }),
   groups: [
-    { name: "editorial", title: "Content", default: true },
-    { name: "sections", title: "Sections" },
+    { name: "editorial", title: "Inhalt", default: true },
     { name: "layout", title: "Layout" },
     { name: "classification", title: "Website" },
-    { name: "schedule", title: "Date and Place" },
-    { name: "relationships", title: "Related Content" },
-    { name: "media", title: "Media" },
+    { name: "schedule", title: "Datum und Ort" },
+    { name: "relationships", title: "Verknüpfungen" },
+    { name: "media", title: "Medien" },
     { name: "seo", title: "SEO" },
   ],
   fields: [
     defineField({
       name: "title",
-      title: "Event title",
+      title: "Veranstaltungstitel",
       type: "localizedString",
       group: "editorial",
-      description: "Public event title as it should appear on the website.",
+      description: "Öffentlicher Titel der Veranstaltung auf der Website.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "displayTitle",
-      title: "Large heading (optional)",
+      title: "Große Überschrift (optional)",
       type: "localizedText",
       group: "editorial",
-      description: "Optional title with manual line breaks for large headings.",
+      description: "Optionaler Titel mit manuellen Zeilenumbrüchen für große Überschriften.",
     }),
     defineField({
       name: "introLayout",
-      title: "Header layout",
+      title: "Platzierung des Einstiegs",
       type: "textLayoutOptions",
       group: "layout",
-      description: "Controls position and alignment of the event header.",
+      description: "Steuert Position und Ausrichtung des Kopfbereichs.",
     }),
     defineField({
       name: "slug",
-      title: "Page link",
+      title: "Seitenadresse",
       type: "slug",
       group: "classification",
-      description: "This creates the website address for the event page.",
+      description: "Erzeugt die URL der Veranstaltungsseite unter /live/...",
       options: {
         source: (doc) => {
           const title = doc.title as { de?: string; en?: string } | undefined;
@@ -58,7 +74,7 @@ export const eventType = defineType({
     }),
     defineField({
       name: "status",
-      title: "Website status",
+      title: "Status auf der Website",
       type: "string",
       group: "classification",
       options: {
@@ -71,12 +87,12 @@ export const eventType = defineType({
       },
       initialValue: "upcoming",
       description:
-        "Use Sanity's draft and publish buttons for drafts. This field decides how the published event behaves on the website.",
+        "Entwürfe steuerst du über Sanitys Draft/Publish. Dieses Feld bestimmt, wie die veröffentlichte Veranstaltung auf der Website behandelt wird.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "siteVisibility",
-      title: "Public visibility",
+      title: "Öffentliche Sichtbarkeit",
       type: "string",
       group: "classification",
       options: {
@@ -88,52 +104,34 @@ export const eventType = defineType({
       },
       initialValue: "public",
       description:
-        "Hidden entries stay in Sanity but do not appear on the website, including overview lists and the event page.",
+        "Ausgeblendete Einträge bleiben in Sanity, erscheinen aber weder in Listen noch auf der Detailseite.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "summary",
-      title: "Short description",
+      title: "Kurzbeschreibung",
       type: "localizedText",
       group: "editorial",
-      description: "Short teaser copy for overview pages and cards.",
+      description: "Kurzer Teasertext für Übersichten, Karten und Vorschauen.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "body",
-      title: "Main text",
+      title: "Haupttext",
       group: "editorial",
       type: "localizedBlocks",
-      description: "Optional longer editorial text for future detail pages.",
-    }),
-    defineField({
-      name: "contentModules",
-      title: "Page sections",
-      group: "sections",
-      type: "array",
-      description:
-        "Optional modular sections for longer event pages with controlled text and media placement.",
-      of: [
-        defineArrayMember({ type: "textSection" }),
-        defineArrayMember({ type: "statementSection" }),
-        defineArrayMember({ type: "splitTextSection" }),
-        defineArrayMember({ type: "columnTextSection" }),
-        defineArrayMember({ type: "quoteSection" }),
-        defineArrayMember({ type: "imageBlock" }),
-        defineArrayMember({ type: "galleryBlock" }),
-        defineArrayMember({ type: "videoBlock" }),
-      ],
+      description: "Längerer redaktioneller Text für die Veranstaltungsseite.",
     }),
     defineField({
       name: "bodyLayout",
-      title: "Main text layout",
+      title: "Platzierung des Haupttexts",
       type: "textLayoutOptions",
       group: "layout",
-      description: "Controls position and alignment of the main text block.",
+      description: "Steuert Position und Ausrichtung des Haupttexts.",
     }),
     defineField({
       name: "eventType",
-      title: "Type of event",
+      title: "Art der Veranstaltung",
       type: "string",
       group: "classification",
       options: {
@@ -145,45 +143,45 @@ export const eventType = defineType({
           { title: "Other", value: "other" },
         ],
       },
-      description: "Used for presentation and filtering.",
+      description: "Hilft bei Darstellung und interner Einordnung.",
     }),
     defineField({
       name: "featuredCurrent",
-      title: "Show as current event on the live page",
+      title: "Als aktuelle Veranstaltung hervorheben",
       type: "boolean",
       group: "classification",
       initialValue: false,
       hidden: ({ document }) => document?.status === "past" || document?.status === "archived",
-      description: "Use to pin the current event for /live/aktuelle-ausstellung. Only relevant for upcoming events.",
+      description: "Hebt die Veranstaltung auf der Live-Seite als aktuellen Programmpunkt hervor. Nur für kommende Veranstaltungen relevant.",
     }),
     defineField({
       name: "externalUrl",
-      title: "External link (optional)",
+      title: "Externer Link (optional)",
       type: "url",
       group: "classification",
-      description: "Optional public source, for example an Instagram post or external announcement.",
+      description: "Optionaler öffentlicher Link, z. B. zu Instagram oder einer externen Ankündigung.",
     }),
     defineField({
       name: "startDate",
-      title: "Start date and time",
+      title: "Startdatum und Uhrzeit",
       type: "datetime",
       group: "schedule",
-      description: "Start date and time of the event.",
+      description: "Beginn der Veranstaltung.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "endDate",
-      title: "End date and time",
+      title: "Enddatum und Uhrzeit",
       type: "datetime",
       group: "schedule",
-      description: "Optional end date and time.",
+      description: "Optionales Ende der Veranstaltung.",
     }),
     defineField({
       name: "venue",
-      title: "Location",
+      title: "Ort",
       type: "string",
       group: "schedule",
-      description: "Venue or location, for example BOA Bunker of Art or another site in Aachen.",
+      description: "Veranstaltungsort, z. B. BOA Bunker of Art oder ein anderer Ort in Aachen.",
     }),
     defineField({
       name: "coverImage",
@@ -265,11 +263,11 @@ export const eventType = defineType({
     prepare({ de, en, legacyTitle, status, siteVisibility, media }) {
       const statusLabel =
         status === "past"
-          ? "Past"
+          ? "Vergangen"
           : status === "archived"
-            ? "Archived"
-            : "Upcoming";
-      const visibilityLabel = siteVisibility === "hidden" ? "Hidden" : "Visible";
+            ? "Archiviert"
+            : "Aktuell / kommend";
+      const visibilityLabel = siteVisibility === "hidden" ? "Ausgeblendet" : "Sichtbar";
       const resolvedLegacyTitle = typeof legacyTitle === "string" ? legacyTitle : undefined;
 
       return {

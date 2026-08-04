@@ -4,7 +4,10 @@ import { SimplePage } from "@/components/SimplePage";
 import { getLocale, Locale, text } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 import { maybeSanityFetch } from "@/sanity/lib/fetch";
-import { withInstagramFallbackForEventPreview } from "@/sanity/lib/eventInstagramFallbacks";
+import {
+  getCurrentInstagramEventFallback,
+  resolveCurrentInstagramAwareEvent,
+} from "@/sanity/lib/eventInstagramFallbacks";
 import { LIVE_CURRENT_EVENT_QUERY } from "@/sanity/lib/queries";
 import { formatEventMeta } from "@/sanity/lib/presenters";
 import type { SanityEventPreview } from "@/sanity/types";
@@ -15,8 +18,6 @@ export const metadata = pageMetadata({
     "Aktuelle Veranstaltung von The Base e.V. in Aachen mit Termin, Kontext und Beteiligten im BOA Bunker of Art.",
   path: "/live/aktuelle-ausstellung",
 });
-
-const THE_BASE_INSTAGRAM_URL = "https://www.instagram.com/the.base.ev/";
 
 type Entry = {
   title: string;
@@ -35,32 +36,19 @@ async function getResolvedEntries(locale: Locale): Promise<Entry[]> {
     revalidate: 300,
   });
 
-  if (!currentEvent) {
-    return [
-      {
-        title: text(locale, { de: "Aktuelle Veranstaltung", en: "Current event" }),
-        href: THE_BASE_INSTAGRAM_URL,
-        description: text(locale, {
-          de: "Die aktuelle Veranstaltung wird über Instagram veröffentlicht und laufend aktualisiert.",
-          en: "The current event is published and updated via Instagram.",
-        }),
-        meta: text(locale, { de: "Instagram", en: "Instagram" }),
-        external: true,
-        ctaLabel: text(locale, { de: "Zur Veranstaltung", en: "Open event" }),
-      },
-    ];
-  }
-
-  const resolvedEvent = withInstagramFallbackForEventPreview(locale, currentEvent);
+  const resolvedEvent = resolveCurrentInstagramAwareEvent(locale, currentEvent);
+  const instagramCurrentEvent = getCurrentInstagramEventFallback(locale);
 
   return [
     {
       title: resolvedEvent.title,
-      href: resolvedEvent.externalUrl || THE_BASE_INSTAGRAM_URL,
+      href: resolvedEvent.externalUrl || instagramCurrentEvent.externalUrl || "",
       description: resolvedEvent.summary,
-      meta: formatEventMeta(locale, resolvedEvent),
+      meta: resolvedEvent.startDate
+        ? formatEventMeta(locale, resolvedEvent)
+        : text(locale, { de: "Aktuell", en: "Current" }),
       external: true,
-      ctaLabel: text(locale, { de: "Zur Veranstaltung", en: "Open event" }),
+      ctaLabel: text(locale, { de: "Zum Instagram-Post", en: "Open Instagram post" }),
     },
   ];
 }

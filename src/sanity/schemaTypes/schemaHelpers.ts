@@ -84,6 +84,8 @@ export function createSeoField(group = "seo") {
     title: "SEO",
     type: "seoFields",
     group,
+    description:
+      "Meta-Titel und Meta-Beschreibung für Suchmaschinen und Linkvorschauen. In einzelnen Seitentypen wird dies schrittweise noch an die Website-Ausgabe angebunden.",
   });
 }
 

@@ -14,7 +14,9 @@ import {
   splitDisplayTitle,
   type SanitySectionLayout,
 } from "@/sanity/lib/content";
-import { withInstagramFallbackForEventPreview } from "@/sanity/lib/eventInstagramFallbacks";
+import {
+  resolveCurrentInstagramAwareEvent,
+} from "@/sanity/lib/eventInstagramFallbacks";
 import { urlForImage } from "@/sanity/lib/image";
 import type {
   SanityCtaBlock,
@@ -39,14 +41,6 @@ type HomeSectionsProps = {
   locale: Locale;
   currentEvent?: SanityEventPreview | null;
 };
-
-const HOME_QUICK_CURRENT_FALLBACK = {
-  title: {
-    de: "The Roots of All That Exists",
-    en: "The Roots of All That Exists",
-  },
-  href: "https://www.instagram.com/the.base.ev/p/DYcFhaxtS8G/",
-} as const;
 
 const HOME_STATEMENT_TITLE = {
   de: "Plattform zwischen Ausstellung, Programm und lokaler Szene",
@@ -188,10 +182,10 @@ function QuickLinksSection({
   const genericCurrentTitle = text(locale, { de: "Aktuelle Veranstaltung", en: "Current event" });
   const latestProjectMeta = text(locale, { de: "Letztes Projekt", en: "Latest project" });
   const latestProjectsMeta = text(locale, { de: "Letzte Projekte", en: "Latest projects" });
-  const resolvedCurrentEvent = currentEvent ? withInstagramFallbackForEventPreview(locale, currentEvent) : null;
-  const currentTitle = resolvedCurrentEvent?.title ?? text(locale, HOME_QUICK_CURRENT_FALLBACK.title);
-  const currentHref = resolvedCurrentEvent?.externalUrl ?? HOME_QUICK_CURRENT_FALLBACK.href;
-  const currentDescription = resolvedCurrentEvent?.summary ?? "";
+  const resolvedCurrentEvent = resolveCurrentInstagramAwareEvent(locale, currentEvent);
+  const currentTitle = resolvedCurrentEvent.title;
+  const currentHref = resolvedCurrentEvent.externalUrl ?? "";
+  const currentDescription = resolvedCurrentEvent.summary;
 
   if (!items.length) {
     return null;

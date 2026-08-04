@@ -16,24 +16,24 @@ export const metadata = pageMetadata({
 function getPrinciples(locale: Locale): string[] {
   return [
     text(locale, {
-      de: "Kulturplattform im ehemaligen Bunker an der Scheibenstraße 34 in Aachen.",
-      en: "Cultural platform in the former bunker at Scheibenstraße 34 in Aachen.",
+      de: "Kulturplattform im ehemaligen Hochbunker an der Scheibenstraße 34 in Aachen.",
+      en: "Cultural platform in the former air-raid bunker at Scheibenstraße 34 in Aachen.",
     }),
     text(locale, {
-      de: "Verbindet Kunst, Musik und kulturelle Praxis statt enger Spartentrennung.",
-      en: "Connects art, music, and cultural practice beyond narrow category boundaries.",
+      de: "Seit 2015 aus kollektiver Praxis gewachsen und seit der Kunstroute 2020 im BOA verankert.",
+      en: "Grown out of collective practice since 2015 and anchored in BOA since the 2020 Kunstroute.",
     }),
     text(locale, {
-      de: "Arbeitet mit Künstler:innen, Musiker:innen und Initiativen in offenen Formaten.",
-      en: "Works with artists, musicians, and initiatives in open formats.",
+      de: "Verbindet Ausstellung, Konzert, Workshop, Film, Archiv und Nachbarschaftsprojekte statt enger Spartentrennung.",
+      en: "Connects exhibitions, concerts, workshops, film, archive work, and neighbourhood projects instead of narrow categories.",
     }),
     text(locale, {
-      de: "Denkt den Raum als soziale Infrastruktur, nicht nur als Event-Location.",
-      en: "Treats the space as social infrastructure, not only as an event location.",
+      de: "Arbeitet mit Künstler:innen, Musiker:innen, Studierenden, Initiativen und zivilgesellschaftlichen Partnern.",
+      en: "Works with artists, musicians, students, initiatives, and civil-society partners.",
     }),
     text(locale, {
-      de: "Schafft Begegnung zwischen Menschen unterschiedlicher Hintergründe und kultureller Zusammenhänge.",
-      en: "Creates encounters between people from different backgrounds and cultural contexts.",
+      de: "Behandelt den Bunker als historischen Ort und kulturelle Infrastruktur zugleich.",
+      en: "Treats the bunker as a historical site and cultural infrastructure at the same time.",
     }),
   ];
 }
@@ -52,14 +52,14 @@ export default async function TheBasePage() {
   const description =
     page?.description ??
     text(locale, {
-      de: "The Base e.V. entwickelt den BOA Bunker of Art in Aachen als Kulturplattform, in der Ausstellungen, Konzerte, Workshops, Archiv und Community zusammenlaufen.",
-      en: "The Base e.V. develops the BOA Bunker of Art in Aachen as a cultural platform where exhibitions, concerts, workshops, archive practice, and community converge.",
+      de: "The Base e.V. entwickelt den BOA Bunker of Art in Aachen seit der Kunstroute 2020 als Kulturplattform, in der Ausstellungen, Konzerte, Workshops, Film, Archivarbeit und Community zusammenlaufen.",
+      en: "Since the Kunstroute in 2020, The Base e.V. has been developing the BOA Bunker of Art in Aachen as a cultural platform where exhibitions, concerts, workshops, film, archive work, and community converge.",
     });
   const note =
     page?.note ??
     text(locale, {
-      de: "Im Mittelpunkt stehen die Förderung kultureller Projekte, offene Formate und die Begegnung unterschiedlicher Menschen und Szenen in Aachen.",
-      en: "At the centre are the promotion of cultural projects, open formats, and the encounter of different people and scenes in Aachen.",
+      de: "Aus improvisierten, nomadischen Jahren ist ein Ort entstanden, der kulturelle Praxis mit Stadtgeschichte, Nachbarschaft und dauerhafter Infrastruktur verbindet.",
+      en: "Out of improvised, nomadic years, a site has emerged that links cultural practice with urban history, neighbourhood life, and durable infrastructure.",
     });
   return (
     <div className="editorial-fade page-flow-compact about-base-flow">
@@ -105,14 +105,26 @@ export default async function TheBasePage() {
             <>
               <p className="type-body max-w-[42rem] xl:max-w-[44rem]">
                 {text(locale, {
-                  de: "Der geschichtsträchtige Bunker wird nicht überdeckt, sondern bewusst als realer Kontext genutzt. Die Gemeinschaft füllt den Ort mit Ausstellungen, Konzerten, Open Calls, Workshops und kollaborativen Produktionen.",
-                  en: "The historical bunker is not concealed but intentionally used as a real context. The community fills the space with exhibitions, concerts, open calls, workshops, and collaborative productions.",
+                  de: "The Base entstand 2015 aus informellen, zunächst prekären Räumen und arbeitete danach mehrere Jahre nomadisch weiter. Reihen wie Voidspace, Kleinstadtecho, Parking:Art oder die Beteiligung an der Krachparade bauten Netzwerke auf und schärften das Interesse an dauerhaften Freiräumen in Aachen.",
+                  en: "The Base emerged in 2015 from informal and initially precarious spaces and then continued nomadically for several years. Series such as Voidspace, Kleinstadtecho, Parking:Art, and the involvement in Krachparade built networks and sharpened the search for durable free spaces in Aachen.",
                 })}
               </p>
               <p className="type-body max-w-[42rem] xl:max-w-[44rem]">
                 {text(locale, {
-                  de: "Ziel ist es, unterschiedliche kulturelle Positionen und Interessierte zusammenzubringen, Netzwerke zu stärken und kreative Impulse in eine langfristige kulturelle Infrastruktur zu überführen.",
-                  en: "The goal is to bring together different cultural positions and interested people, strengthen networks, and turn creative impulses into long-term cultural infrastructure.",
+                  de: "Mit dem Bunker an der Scheibenstraße fand der Verein 2020 einen Ort, an dem unterschiedliche Formate unter einem Dach zusammenkommen konnten. BOA ist seither Ausstellungsraum, Konzertort, Workshop- und Produktionskontext, Treffpunkt und Infrastruktur für jüngere Organisator:innen.",
+                  en: "With the bunker on Scheibenstraße, the association found a place in 2020 where different formats could come together under one roof. Since then, BOA has served as exhibition space, concert venue, workshop and production context, meeting point, and infrastructure for younger organisers.",
+                })}
+              </p>
+              <p className="type-body max-w-[42rem] xl:max-w-[44rem]">
+                {text(locale, {
+                  de: "Beispiele wie COMMON GROUND von Nathalie Bertrams, Viertelfoto, die DJ-Workshopreihe für Frauen, Concrete Garden / Odd Emotions oder Schutzraum mit der FH Aachen zeigen, wie künstlerische, soziale und bildungsbezogene Arbeit hier ineinandergreifen. Der Bunker wird dabei nicht überdeckt, sondern als historischer Ort bewusst mitgedacht.",
+                  en: "Examples such as COMMON GROUND by Nathalie Bertrams, Viertelfoto, the DJ workshop series for women, Concrete Garden / Odd Emotions, or Schutzraum with FH Aachen show how artistic, social, and educational work overlap here. The bunker is not covered over in the process but consciously considered as a historical site.",
+                })}
+              </p>
+              <p className="type-body max-w-[42rem] xl:max-w-[44rem]">
+                {text(locale, {
+                  de: "Die nächste Entwicklungsstufe betrifft deshalb weniger ein einzelnes Event als dauerhafte Bedingungen: Sicherheit, Technik, Lagerung, Luftqualität und eine rechtlich belastbare Nutzung. Aus viel Improvisation soll eine langfristig tragfähige kulturelle Infrastruktur werden.",
+                  en: "The next stage therefore concerns not one single event but durable conditions: safety, technical equipment, storage, air quality, and a legally reliable mode of use. Years of improvisation are meant to become long-term cultural infrastructure.",
                 })}
               </p>
             </>

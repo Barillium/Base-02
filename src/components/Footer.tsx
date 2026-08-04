@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { SocialLinks } from "@/components/SocialLinks";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { getLocale, text } from "@/lib/i18n";
@@ -13,7 +14,18 @@ export async function Footer() {
           <p className="type-meta text-[var(--muted)]">
             {text(locale, { de: "Verbinden", en: "Connect" })}
           </p>
-          <SocialLinks locale={locale} size="lg" tone="accent" />
+          <div className="flex items-center justify-between gap-4">
+            <SocialLinks locale={locale} size="lg" tone="accent" />
+            <Image
+              src="/footer/IMG_6428.PNG"
+              alt=""
+              aria-hidden="true"
+              width={556}
+              height={444}
+              sizes="3.5rem"
+              className="h-auto w-14 shrink-0"
+            />
+          </div>
         </div>
 
         <div className="content-stack-tight layout-copy-start lg:max-w-[44rem] xl:max-w-[46rem]">

@@ -1,7 +1,7 @@
 # Talents
 ## Verknuepfte Notizen
 
-- [[02-Content/Pages/talents-kuenstlerinnen|Kuenstler:innen]]
+- [[../talents-kuenstlerinnen|Kuenstler:innen]]
 - [[02-Content/Pages/talents-djs|DJs]]
 - [[03-UX/UI-Elements/page-intro|Page Intro]]
 - [[03-UX/UI-Elements/section-grid|Section Grid]]

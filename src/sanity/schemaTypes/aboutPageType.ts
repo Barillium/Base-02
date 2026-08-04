@@ -1,25 +1,22 @@
-import { defineArrayMember, defineField, defineType } from "sanity";
+import { defineField, defineType } from "sanity";
 import { LegacyAboutPageDocumentInput } from "@/sanity/components/LegacyStructuredDocumentInputs";
 import {
-  createModularSectionsField,
   createSeoField,
   formatLocalizedPreviewTitle,
 } from "@/sanity/schemaTypes/schemaHelpers";
 
 export const aboutPageType = defineType({
   name: "aboutPage",
-  title: "About Page",
+  title: "About",
   type: "document",
   components: {
     input: LegacyAboutPageDocumentInput,
   },
   groups: [
-    { name: "content", title: "Content", default: true },
-    { name: "profile", title: "Profile" },
-    { name: "teasers", title: "Teaser Sections" },
-    { name: "sections", title: "Sections" },
+    { name: "content", title: "Inhalt", default: true },
+    { name: "profile", title: "Profil" },
+    { name: "teasers", title: "Teaser-Bereiche" },
     { name: "layout", title: "Layout" },
-    { name: "media", title: "Media" },
     { name: "seo", title: "SEO" },
   ],
   fields: [
@@ -32,67 +29,47 @@ export const aboutPageType = defineType({
     }),
     defineField({
       name: "profileEyebrow",
-      title: "Small label above profile text",
+      title: "Kleine Überschrift über dem Profiltext",
       group: "profile",
       type: "localizedString",
     }),
     defineField({
       name: "profileTitle",
-      title: "Profile title",
+      title: "Profilüberschrift",
       group: "profile",
       type: "localizedText",
     }),
     defineField({
       name: "profileText",
-      title: "Profile text",
+      title: "Profiltext",
       group: "profile",
       type: "localizedBlocks",
     }),
     defineField({
-      name: "profileParagraphs",
-      title: "Profile paragraphs (optional structured version)",
-      group: "profile",
-      type: "array",
-      of: [defineArrayMember({ type: "localizedText" })],
-      description:
-        "Optional alternative to the rich text field above when the short profile should be edited paragraph by paragraph.",
-    }),
-    defineField({
       name: "profileTextLayout",
-      title: "Profile text layout",
+      title: "Platzierung des Profiltexts",
       group: "layout",
       type: "textLayoutOptions",
-      description: "Controls position and alignment of the profile text block.",
-    }),
-    defineField({
-      name: "profileImage",
-      title: "Profile image",
-      group: "media",
-      type: "imageFigure",
-      description: "Optional image for future use on the about page.",
+      description: "Steuert Position und Ausrichtung des Profiltexts.",
     }),
     defineField({
       name: "baseTeaserSection",
-      title: "Section: The Base",
+      title: "Bereich: The Base",
       group: "teasers",
       type: "teaserSection",
     }),
     defineField({
       name: "inquiryTeaserSection",
-      title: "Section: Anfragen",
+      title: "Bereich: Anfragen",
       group: "teasers",
       type: "teaserSection",
     }),
     defineField({
       name: "awarenessTeaserSection",
-      title: "Section: Awareness",
+      title: "Bereich: Awareness",
       group: "teasers",
       type: "teaserSection",
     }),
-    createModularSectionsField(
-      "sections",
-      "Zusätzliche Seitenbereiche",
-    ),
     createSeoField(),
   ],
   preview: {

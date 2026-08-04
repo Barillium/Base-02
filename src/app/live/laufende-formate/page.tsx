@@ -20,7 +20,7 @@ type Entry = {
   href: string;
   description: string;
   meta: string;
-  external: true;
+  external?: true;
   ctaLabel: string;
 };
 
@@ -48,6 +48,16 @@ function getAdditionalEntries(locale: Locale): Entry[] {
       external: true,
       ctaLabel: text(locale, { de: "Mehr dazu", en: "Learn more" }),
     },
+    {
+      title: text(locale, { de: "Krachparade", en: "Krachparade" }),
+      href: "/about/the-base",
+      description: text(locale, {
+        de: "Städtische Allianz für kulturelle Freiräume, an der The Base seit 2019 beteiligt ist und in der die Frage nach dauerhaft nutzbaren Orten öffentlich verhandelt wird.",
+        en: "A city-wide alliance for cultural free spaces in which The Base has been involved since 2019, making the question of durable venues public.",
+      }),
+      meta: text(locale, { de: "Laufendes Format", en: "Ongoing format" }),
+      ctaLabel: text(locale, { de: "Zum Kontext", en: "Open context" }),
+    },
   ];
 }
 
@@ -59,7 +69,7 @@ async function getResolvedEntries(locale: Locale): Promise<Entry[]> {
     revalidate: 300,
   });
 
-  const mappedEntries = formats
+  const mappedEntries: Entry[] = formats
     ?.filter((format) => Boolean(format.externalUrl))
     .map((format) => ({
       title: format.title,
@@ -72,12 +82,15 @@ async function getResolvedEntries(locale: Locale): Promise<Entry[]> {
 
   const additionalEntries = getAdditionalEntries(locale);
   const seenHrefs = new Set(mappedEntries.map((entry) => entry.href));
+  const seenTitles = new Set(mappedEntries.map((entry) => entry.title.toLowerCase()));
   const mergedEntries = [...mappedEntries];
 
   for (const entry of additionalEntries) {
-    if (!seenHrefs.has(entry.href)) {
+    const normalizedTitle = entry.title.toLowerCase();
+    if (!seenHrefs.has(entry.href) && !seenTitles.has(normalizedTitle)) {
       mergedEntries.push(entry);
       seenHrefs.add(entry.href);
+      seenTitles.add(normalizedTitle);
     }
   }
 
@@ -103,8 +116,8 @@ export default async function LaufendeFormatePage() {
       title={{ de: "Laufende Formate", en: "Ongoing formats" }}
       introClassName="layout-live-intro"
       description={{
-        de: "Diese Seite bündelt wiederkehrende Formate im Live-Programm, etwa Total Local oder die Beteiligung an der Aachener Kunstroute.",
-        en: "This page gathers recurring formats within the live programme, such as Total Local or the involvement in the Aachener Kunstroute.",
+        de: "Diese Seite bündelt wiederkehrende Formate im Live-Programm, etwa Total Local, die Beteiligung an der Aachener Kunstroute oder stadtbezogene Allianzen wie Krachparade.",
+        en: "This page gathers recurring formats within the live programme, such as Total Local, the involvement in the Aachener Kunstroute, or city-wide alliances such as Krachparade.",
       }}
       note={note}
     >

@@ -9,7 +9,10 @@ import {
   resolveLinkedDocumentHref,
   splitDisplayTitle,
 } from "@/sanity/lib/content";
-import { withInstagramFallbackForEventPreview } from "@/sanity/lib/eventInstagramFallbacks";
+import {
+  getCurrentInstagramEventFallback,
+  resolveCurrentInstagramAwareEvent,
+} from "@/sanity/lib/eventInstagramFallbacks";
 import { maybeSanityFetch } from "@/sanity/lib/fetch";
 import { formatEventMeta } from "@/sanity/lib/presenters";
 import { LIVE_CURRENT_EVENT_QUERY, LIVE_PAGE_QUERY } from "@/sanity/lib/queries";
@@ -21,8 +24,6 @@ const livePageMetadata = {
     "Das Live-Programm von The Base e.V. in Aachen bündelt Ausstellungen, Konzerte, Workshops und weitere Termine im BOA Bunker of Art.",
   path: "/live",
 } as const;
-
-const THE_BASE_INSTAGRAM_URL = "https://www.instagram.com/the.base.ev/";
 
 export const metadata = pageMetadata(livePageMetadata);
 
@@ -36,15 +37,15 @@ type Entry = {
 };
 
 function getCurrentAndUpcoming(locale: Locale): Entry[] {
+  const currentEvent = getCurrentInstagramEventFallback(locale);
+
   return [
     {
-      title: text(locale, { de: "Aktuelle Veranstaltung", en: "Current event" }),
-      href: THE_BASE_INSTAGRAM_URL,
-      description: text(locale, {
-        de: "Hier steht jeweils die aktuelle Veranstaltung, egal ob Ausstellung, Konzert oder ein anderes Format.",
-        en: "The current event appears here, whether it is an exhibition, concert, or another format.",
-      }),
+      title: currentEvent.title,
+      href: currentEvent.externalUrl ?? "",
+      description: currentEvent.summary,
       meta: text(locale, { de: "Aktuell", en: "Current" }),
+      ctaLabel: text(locale, { de: "Zum Instagram-Post", en: "Open Instagram post" }),
       external: true,
     },
   ];
@@ -56,8 +57,8 @@ function getPastEvents(locale: Locale): Entry[] {
       title: text(locale, { de: "Übersicht vergangener Veranstaltungen", en: "Past events overview" }),
       href: "/live/events",
       description: text(locale, {
-        de: "Hier liegen Rückblicke auf vergangene Veranstaltungen wie Total Local, 10 Jahre The Base oder Release-Shows im Umfeld des BOA.",
-        en: "This section gathers past events such as Total Local, 10 years of The Base, or release shows around the BOA.",
+        de: "Hier liegen die jüngsten dokumentierten Veranstaltungen wie UNDERGROUND, The Roots of All That Exists und Total Local mit direktem Verweis zum jeweiligen Instagram-Post.",
+        en: "This section gathers the latest documented events such as UNDERGROUND, The Roots of All That Exists, and Total Local, each linking directly to its Instagram post.",
       }),
       meta: text(locale, { de: "Archiv", en: "Archive" }),
     },
@@ -70,8 +71,8 @@ function getOngoingFormats(locale: Locale): Entry[] {
       title: text(locale, { de: "Laufende Formate", en: "Ongoing formats" }),
       href: "/live/laufende-formate",
       description: text(locale, {
-        de: "Die Übersicht bündelt wiederkehrende Reihen wie Total Local und die Beteiligung an der Aachener Kunstroute.",
-        en: "This overview gathers recurring strands such as Total Local and the contribution to the Aachener Kunstroute.",
+        de: "Die Übersicht bündelt wiederkehrende Reihen wie Total Local, die Beteiligung an der Aachener Kunstroute und stadtbezogene Allianzen wie Krachparade.",
+        en: "This overview gathers recurring strands such as Total Local, the contribution to the Aachener Kunstroute, and city-based alliances such as Krachparade.",
       }),
       meta: text(locale, { de: "Übersicht", en: "Overview" }),
     },
@@ -106,6 +107,20 @@ function isGenericCurrentEntry(entry: Entry, locale: Locale) {
   );
 }
 
+function isGenericPastEntry(entry: Entry, locale: Locale) {
+  return (
+    entry.title === text(locale, { de: "Übersicht vergangener Veranstaltungen", en: "Past events overview" })
+    || entry.meta === text(locale, { de: "Archiv", en: "Archive" })
+  );
+}
+
+function isGenericFormatsEntry(entry: Entry, locale: Locale) {
+  return (
+    entry.title === text(locale, { de: "Laufende Formate", en: "Ongoing formats" })
+    || entry.meta === text(locale, { de: "Übersicht", en: "Overview" })
+  );
+}
+
 export default async function LivePage() {
   const locale = await getLocale();
   const [livePage, currentEvent] = await Promise.all([
@@ -125,16 +140,18 @@ export default async function LivePage() {
   const resolvedCurrentEntries = livePage?.currentSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? [];
   const resolvedPastEvents = livePage?.archiveSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? [];
   const resolvedOngoingFormats = livePage?.formatsSection?.cards?.map(resolveTeaserCardEntry).filter(isEntry) ?? [];
-  const resolvedCurrentEvent = currentEvent ? withInstagramFallbackForEventPreview(locale, currentEvent) : null;
-  const currentFallbackEntry: Entry = resolvedCurrentEvent
-    ? {
-        title: resolvedCurrentEvent.title,
-        href: resolvedCurrentEvent.externalUrl || THE_BASE_INSTAGRAM_URL,
-        description: resolvedCurrentEvent.summary,
-        meta: formatEventMeta(locale, resolvedCurrentEvent),
-        external: true,
-      }
-    : getCurrentAndUpcoming(locale)[0];
+  const resolvedCurrentEvent = resolveCurrentInstagramAwareEvent(locale, currentEvent);
+  const instagramCurrentFallback = getCurrentAndUpcoming(locale)[0];
+  const currentFallbackEntry: Entry = {
+    title: resolvedCurrentEvent.title,
+    href: resolvedCurrentEvent.externalUrl || instagramCurrentFallback.href,
+    description: resolvedCurrentEvent.summary,
+    meta: resolvedCurrentEvent.startDate
+      ? formatEventMeta(locale, resolvedCurrentEvent)
+      : instagramCurrentFallback.meta,
+    ctaLabel: text(locale, { de: "Zum Instagram-Post", en: "Open Instagram post" }),
+    external: true,
+  };
   const currentAndUpcoming = resolvedCurrentEntries.length
     ? resolvedCurrentEntries.map((entry, index) =>
         index === 0 && isGenericCurrentEntry(entry, locale)
@@ -144,13 +161,40 @@ export default async function LivePage() {
               href: currentFallbackEntry.href,
               description: currentFallbackEntry.description,
               meta: currentFallbackEntry.meta,
+              ctaLabel: currentFallbackEntry.ctaLabel,
               external: currentFallbackEntry.external,
             }
           : entry,
       )
     : [currentFallbackEntry];
-  const pastEvents = resolvedPastEvents.length ? resolvedPastEvents : getPastEvents(locale);
-  const ongoingFormats = resolvedOngoingFormats.length ? resolvedOngoingFormats : getOngoingFormats(locale);
+  const pastFallbackEntry = getPastEvents(locale)[0];
+  const pastEvents = resolvedPastEvents.length
+    ? resolvedPastEvents.map((entry, index) =>
+        index === 0 && isGenericPastEntry(entry, locale)
+          ? {
+              ...entry,
+              title: pastFallbackEntry.title,
+              href: pastFallbackEntry.href,
+              description: pastFallbackEntry.description,
+              meta: pastFallbackEntry.meta,
+            }
+          : entry,
+      )
+    : [pastFallbackEntry];
+  const formatsFallbackEntry = getOngoingFormats(locale)[0];
+  const ongoingFormats = resolvedOngoingFormats.length
+    ? resolvedOngoingFormats.map((entry, index) =>
+        index === 0 && isGenericFormatsEntry(entry, locale)
+          ? {
+              ...entry,
+              title: formatsFallbackEntry.title,
+              href: formatsFallbackEntry.href,
+              description: formatsFallbackEntry.description,
+              meta: formatsFallbackEntry.meta,
+            }
+          : entry,
+      )
+    : [formatsFallbackEntry];
 
   return (
     <div className="editorial-fade page-flow">
@@ -204,7 +248,7 @@ export default async function LivePage() {
         eyebrow={livePage?.archiveSection?.eyebrow ?? text(locale, { de: "Rückblick", en: "Retrospective" })}
         title={livePage?.archiveSection?.title ?? text(locale, { de: "Eventarchiv", en: "Event archive" })}
         titleLines={splitDisplayTitle(livePage?.archiveSection?.displayTitle) ?? [text(locale, { de: "Eventarchiv", en: "Event archive" })]}
-        description={livePage?.archiveSection?.description ?? text(locale, {
+        description={text(locale, {
           de: "Das Eventarchiv führt zu einer Übersicht vergangener Veranstaltungen und versammelt Rückblicke auf Ausstellungen, Konzerte und Sonderformate.",
           en: "The event archive leads to an overview of past events and gathers retrospectives on exhibitions, concerts, and special formats.",
         })}
@@ -224,7 +268,7 @@ export default async function LivePage() {
           text(locale, { de: "Laufende", en: "Ongoing" }),
           text(locale, { de: "Formate", en: "formats" }),
         ]}
-        description={livePage?.formatsSection?.description ?? text(locale, {
+        description={text(locale, {
           de: "Hier werden wiederkehrende Programmlinien wie Total Local oder die Beteiligung an der Aachener Kunstroute gebündelt.",
           en: "Recurring programme lines such as Total Local or the involvement in the Aachener Kunstroute are gathered here.",
         })}

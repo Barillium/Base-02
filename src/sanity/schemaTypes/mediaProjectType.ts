@@ -3,46 +3,47 @@ import { LegacyMediaProjectDocumentInput } from "@/sanity/components/LegacyStruc
 
 export const mediaProjectType = defineType({
   name: "mediaProject",
-  title: "Media Project",
+  title: "Medienprojekt",
   type: "document",
   components: {
     input: LegacyMediaProjectDocumentInput,
   },
   groups: [
-    { name: "editorial", title: "Content", default: true },
-    { name: "sections", title: "Sections" },
+    { name: "editorial", title: "Inhalt", default: true },
     { name: "layout", title: "Layout" },
     { name: "classification", title: "Website" },
-    { name: "relationships", title: "Related Content" },
-    { name: "media", title: "Media" },
+    { name: "relationships", title: "Verknüpfungen" },
+    { name: "media", title: "Medien" },
     { name: "seo", title: "SEO" },
   ],
   fields: [
     defineField({
       name: "title",
-      title: "Project title",
+      title: "Projekttitel",
       group: "editorial",
       type: "localizedString",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "displayTitle",
-      title: "Large heading (optional)",
+      title: "Große Überschrift (optional)",
       group: "editorial",
       type: "localizedText",
     }),
     defineField({
       name: "introLayout",
-      title: "Header layout",
+      title: "Platzierung des Einstiegs",
       group: "layout",
       type: "textLayoutOptions",
-      description: "Controls position and alignment of the project header.",
+      description: "Steuert Position und Ausrichtung des Kopfbereichs.",
     }),
     defineField({
       name: "slug",
-      title: "Page link",
+      title: "Seitenadresse (optional)",
       group: "classification",
       type: "slug",
+      description:
+        "Derzeit erscheinen Medienprojekte als kuratierte Liste unter /media/produktionen. Eine eigene Detailseite ist noch nicht aktiv, daher ist dieses Feld optional.",
       options: {
         source: (doc) => {
           const title = doc.title as { de?: string; en?: string } | undefined;
@@ -50,49 +51,30 @@ export const mediaProjectType = defineType({
         },
         maxLength: 96,
       },
-      validation: (rule) => rule.required(),
     }),
     defineField({
       name: "summary",
-      title: "Short description",
+      title: "Kurzbeschreibung",
       group: "editorial",
       type: "localizedText",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "body",
-      title: "Main text",
+      title: "Haupttext",
       group: "editorial",
       type: "localizedBlocks",
     }),
     defineField({
-      name: "contentModules",
-      title: "Page sections",
-      group: "sections",
-      type: "array",
-      description:
-        "Optional modular sections for longer media pages with controlled text placement.",
-      of: [
-        defineArrayMember({ type: "textSection" }),
-        defineArrayMember({ type: "statementSection" }),
-        defineArrayMember({ type: "splitTextSection" }),
-        defineArrayMember({ type: "columnTextSection" }),
-        defineArrayMember({ type: "quoteSection" }),
-        defineArrayMember({ type: "imageBlock" }),
-        defineArrayMember({ type: "galleryBlock" }),
-        defineArrayMember({ type: "videoBlock" }),
-      ],
-    }),
-    defineField({
       name: "bodyLayout",
-      title: "Main text layout",
+      title: "Platzierung des Haupttexts",
       group: "layout",
       type: "textLayoutOptions",
-      description: "Controls position and alignment of the main text block.",
+      description: "Steuert Position und Ausrichtung des Haupttexts.",
     }),
     defineField({
       name: "status",
-      title: "Website status",
+      title: "Status auf der Website",
       group: "classification",
       type: "string",
       options: {
@@ -104,12 +86,12 @@ export const mediaProjectType = defineType({
       },
       initialValue: "published",
       description:
-        "Use Sanity's draft and publish buttons for drafts. Archive a media project here when it should stay in Sanity but drop out of current website listings.",
+        "Entwürfe steuerst du über Sanitys Draft/Publish. Archivierte Projekte bleiben in Sanity, verschwinden aber aus den regulären Website-Listen.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "siteVisibility",
-      title: "Public visibility",
+      title: "Öffentliche Sichtbarkeit",
       group: "classification",
       type: "string",
       options: {
@@ -121,12 +103,12 @@ export const mediaProjectType = defineType({
       },
       initialValue: "public",
       description:
-        "Hidden entries stay in Sanity but do not appear on the website.",
+        "Ausgeblendete Einträge bleiben in Sanity, erscheinen aber nicht auf der Website.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "mediaType",
-      title: "Type of media",
+      title: "Medientyp",
       group: "classification",
       type: "string",
       options: {
@@ -143,13 +125,13 @@ export const mediaProjectType = defineType({
     }),
     defineField({
       name: "date",
-      title: "Date",
+      title: "Datum",
       group: "classification",
       type: "date",
     }),
     defineField({
       name: "externalUrl",
-      title: "External link (optional)",
+      title: "Externer Link (optional)",
       group: "classification",
       type: "url",
     }),
@@ -225,8 +207,8 @@ export const mediaProjectType = defineType({
       media: "coverImage.image",
     },
     prepare({ de, en, legacyTitle, status, siteVisibility, media }) {
-      const statusLabel = status === "archived" ? "Archived" : "Published";
-      const visibilityLabel = siteVisibility === "hidden" ? "Hidden" : "Visible";
+      const statusLabel = status === "archived" ? "Archiviert" : "Veröffentlicht";
+      const visibilityLabel = siteVisibility === "hidden" ? "Ausgeblendet" : "Sichtbar";
       const resolvedLegacyTitle = typeof legacyTitle === "string" ? legacyTitle : undefined;
 
       return {

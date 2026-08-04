@@ -3,47 +3,47 @@ import { LegacyArchiveEntryDocumentInput } from "@/sanity/components/LegacyStruc
 
 export const archiveEntryType = defineType({
   name: "archiveEntry",
-  title: "Archive Exhibition",
+  title: "Archiveintrag",
   type: "document",
   components: {
     input: LegacyArchiveEntryDocumentInput,
   },
   groups: [
-    { name: "editorial", title: "Content", default: true },
-    { name: "sections", title: "Sections" },
+    { name: "editorial", title: "Inhalt", default: true },
     { name: "layout", title: "Layout" },
     { name: "classification", title: "Website" },
-    { name: "relationships", title: "Related Content" },
-    { name: "media", title: "Media" },
+    { name: "relationships", title: "Verknüpfungen" },
+    { name: "media", title: "Medien" },
     { name: "seo", title: "SEO" },
   ],
   fields: [
     defineField({
       name: "title",
-      title: "Exhibition title",
+      title: "Titel",
       group: "editorial",
       type: "localizedString",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "displayTitle",
-      title: "Large heading (optional)",
+      title: "Große Überschrift (optional)",
       group: "editorial",
       type: "localizedText",
-      description: "Optional title with manual line breaks for large headings.",
+      description: "Optionaler Titel mit manuellen Zeilenumbrüchen für große Überschriften.",
     }),
     defineField({
       name: "introLayout",
-      title: "Header layout",
+      title: "Platzierung des Einstiegs",
       group: "layout",
       type: "textLayoutOptions",
-      description: "Controls position and alignment of the archive header.",
+      description: "Steuert Position und Ausrichtung des Kopfbereichs.",
     }),
     defineField({
       name: "slug",
-      title: "Page link",
+      title: "Seitenadresse",
       group: "classification",
       type: "slug",
+      description: "Erzeugt die URL des Archiveintrags unter /archive/...",
       options: {
         source: (doc) => {
           const title = doc.title as { de?: string; en?: string } | undefined;
@@ -55,7 +55,7 @@ export const archiveEntryType = defineType({
     }),
     defineField({
       name: "status",
-      title: "Website status",
+      title: "Status auf der Website",
       group: "classification",
       type: "string",
       options: {
@@ -67,12 +67,12 @@ export const archiveEntryType = defineType({
       },
       initialValue: "published",
       description:
-        "Use Sanity's draft and publish buttons for drafts. Archive an entry here when it should stay in Sanity but drop out of normal website listings.",
+        "Entwürfe steuerst du über Sanitys Draft/Publish. Archivierte Einträge bleiben in Sanity, verschwinden aber aus den regulären Website-Listen.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "siteVisibility",
-      title: "Public visibility",
+      title: "Öffentliche Sichtbarkeit",
       group: "classification",
       type: "string",
       options: {
@@ -84,50 +84,32 @@ export const archiveEntryType = defineType({
       },
       initialValue: "public",
       description:
-        "Hidden entries stay in Sanity but do not appear on the website, including overview lists and detail pages.",
+        "Ausgeblendete Einträge bleiben in Sanity, erscheinen aber weder in Übersichten noch auf Detailseiten.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "summary",
-      title: "Short description",
+      title: "Kurzbeschreibung",
       group: "editorial",
       type: "localizedText",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "body",
-      title: "Main text",
+      title: "Haupttext",
       group: "editorial",
       type: "localizedBlocks",
     }),
     defineField({
-      name: "contentModules",
-      title: "Page sections",
-      group: "sections",
-      type: "array",
-      description:
-        "Optional modular sections for longer archive pages with controlled text placement.",
-      of: [
-        defineArrayMember({ type: "textSection" }),
-        defineArrayMember({ type: "statementSection" }),
-        defineArrayMember({ type: "splitTextSection" }),
-        defineArrayMember({ type: "columnTextSection" }),
-        defineArrayMember({ type: "quoteSection" }),
-        defineArrayMember({ type: "imageBlock" }),
-        defineArrayMember({ type: "galleryBlock" }),
-        defineArrayMember({ type: "videoBlock" }),
-      ],
-    }),
-    defineField({
       name: "bodyLayout",
-      title: "Main text layout",
+      title: "Platzierung des Haupttexts",
       group: "layout",
       type: "textLayoutOptions",
-      description: "Controls position and alignment of the main text block.",
+      description: "Steuert Position und Ausrichtung des Haupttexts.",
     }),
     defineField({
       name: "archiveCategory",
-      title: "Section",
+      title: "Bereich",
       group: "classification",
       type: "string",
       options: {
@@ -141,7 +123,7 @@ export const archiveEntryType = defineType({
     }),
     defineField({
       name: "archiveType",
-      title: "Type",
+      title: "Typ",
       group: "classification",
       type: "string",
       options: {
@@ -156,13 +138,13 @@ export const archiveEntryType = defineType({
     }),
     defineField({
       name: "date",
-      title: "Date",
+      title: "Datum",
       group: "classification",
       type: "date",
     }),
     defineField({
       name: "externalUrl",
-      title: "External link (optional)",
+      title: "Externer Link (optional)",
       group: "classification",
       type: "url",
     }),
@@ -238,8 +220,8 @@ export const archiveEntryType = defineType({
       media: "coverImage.image",
     },
     prepare({ de, en, legacyTitle, status, siteVisibility, media }) {
-      const statusLabel = status === "archived" ? "Archived" : "Published";
-      const visibilityLabel = siteVisibility === "hidden" ? "Hidden" : "Visible";
+      const statusLabel = status === "archived" ? "Archiviert" : "Veröffentlicht";
+      const visibilityLabel = siteVisibility === "hidden" ? "Ausgeblendet" : "Sichtbar";
       const resolvedLegacyTitle = typeof legacyTitle === "string" ? legacyTitle : undefined;
 
       return {

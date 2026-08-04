@@ -10,10 +10,10 @@ export const homePageType = defineType({
     input: LegacyHomePageDocumentInput,
   },
   groups: [
-    { name: "content", title: "Content", default: true },
-    { name: "sections", title: "Sections" },
+    { name: "content", title: "Inhalt", default: true },
+    { name: "sections", title: "Bereiche" },
     { name: "links", title: "Links" },
-    { name: "legacy", title: "Legacy Migration" },
+    { name: "legacy", title: "Altbestand / Migration" },
     { name: "seo", title: "SEO" },
   ],
   fields: [
@@ -41,9 +41,10 @@ export const homePageType = defineType({
     }),
     defineField({
       name: "quickLinks",
-      title: "Featured links at the top of the homepage",
+      title: "Alte Schnelleinstiege",
       group: "links",
-      description: "Legacy fallback. Keep until the homepage has been migrated into sections[].",
+      hidden: ({ document }) => Array.isArray(document?.sections) && document.sections.length > 0,
+      description: "Alter Fallback aus der Vor-Migrationsphase. Sobald die Hauptseite über Bereiche gepflegt wird, bleibt dieses Feld ausgeblendet.",
       type: "array",
       validation: (rule) => rule.max(3),
       of: [
@@ -118,33 +119,37 @@ export const homePageType = defineType({
     }),
     defineField({
       name: "statement",
-      title: "Main intro text",
+      title: "Alter Introtext",
       group: "legacy",
-      description: "Legacy fallback for the old homepage statement panel.",
+      hidden: ({ document }) => Array.isArray(document?.sections) && document.sections.length > 0,
+      description: "Nur noch für Altbestand. Die aktuelle Hauptseite sollte über Bereiche gepflegt werden.",
       type: "localizedText",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "note",
-      title: "Additional note",
+      title: "Alte Zusatznotiz",
       group: "legacy",
-      description: "Legacy fallback for the old homepage statement panel.",
+      hidden: ({ document }) => Array.isArray(document?.sections) && document.sections.length > 0,
+      description: "Nur noch für Altbestand. Die aktuelle Hauptseite sollte über Bereiche gepflegt werden.",
       type: "localizedText",
     }),
     defineField({
       name: "milestones",
-      title: "Bullet points",
+      title: "Alte Stichpunkte",
       group: "legacy",
       type: "localizedBlocks",
-      description: "Legacy fallback for the old homepage statement panel.",
+      hidden: ({ document }) => Array.isArray(document?.sections) && document.sections.length > 0,
+      description: "Nur noch für Altbestand. Die aktuelle Hauptseite sollte über Bereiche gepflegt werden.",
     }),
     defineField({
       name: "featuredAbout",
-      title: "Featured about links",
+      title: "Alte About-Links",
       group: "links",
+      hidden: ({ document }) => Array.isArray(document?.sections) && document.sections.length > 0,
       type: "array",
       description:
-        "Controls the curated links shown in the lower part of the homepage.",
+        "Alter Fallback aus der Vor-Migrationsphase. Sobald die Hauptseite über Bereiche gepflegt wird, bleibt dieses Feld ausgeblendet.",
       validation: (rule) => rule.max(3),
       of: [
         defineArrayMember({

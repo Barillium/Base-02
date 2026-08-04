@@ -166,11 +166,11 @@ export const programmeSeriesType = defineType({
     prepare({ de, en, legacyTitle, status, siteVisibility, media }) {
       const statusLabel =
         status === "paused"
-          ? "Paused"
+          ? "Pausiert"
           : status === "archived"
-            ? "Archived"
-            : "Active";
-      const visibilityLabel = siteVisibility === "hidden" ? "Hidden" : "Visible";
+            ? "Archiviert"
+            : "Aktiv";
+      const visibilityLabel = siteVisibility === "hidden" ? "Ausgeblendet" : "Sichtbar";
       const resolvedLegacyTitle = typeof legacyTitle === "string" ? legacyTitle : undefined;
 
       return {

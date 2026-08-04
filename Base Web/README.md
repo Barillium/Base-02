@@ -45,6 +45,9 @@ Der Vault ist bewusst nah am Projekt aufgebaut. Er dokumentiert nicht abstrakt, 
 - `07-Meetings/`  
   Gespraeche, Abstimmungen, Feedback-Runden
 
+- `08-Redaktion/`  
+  redaktioneller Arbeitsraum fuer Entwuerfe, Recherche, inhaltliche Beziehungen und Sanity-Uebergaben
+
 - `99-Templates/`  
   wiederverwendbare Vorlagen fuer neue Notes
 
@@ -95,6 +98,7 @@ Am schnellsten findet man sich ueber diese Bereiche zurecht:
 
 - [02-Content/Pages/](</Users/stanynyssen/Documents/Base 002 3/Base Web/02-Content/Pages>)
 - [03-UX/UI-Elements/](</Users/stanynyssen/Documents/Base 002 3/Base Web/03-UX/UI-Elements>)
+- [08-Redaktion/README.md](/Users/stanynyssen/Documents/Base 002 3/Base Web/08-Redaktion/README.md)
 - [05-Codex/Agents/](</Users/stanynyssen/Documents/Base 002 3/Base Web/05-Codex/Agents>)
 - [docs/obsidian-local-setup.md](/Users/stanynyssen/Documents/Base%20002%203/docs/obsidian-local-setup.md)
 

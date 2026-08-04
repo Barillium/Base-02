@@ -2,7 +2,7 @@
 ## Verknuepfte Notizen
 
 - [[02-Content/Pages/label-releases|Releases]]
-- [[02-Content/Pages/talents-kuenstlerinnen|Kuenstler:innen]]
+- [[../talents-kuenstlerinnen|Kuenstler:innen]]
 - [[03-UX/UI-Elements/page-intro|Page Intro]]
 - [[03-UX/UI-Elements/section-grid|Section Grid]]
 - [[03-UX/UI-Elements/card-rows|Card Rows]]

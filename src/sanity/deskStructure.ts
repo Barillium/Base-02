@@ -33,10 +33,10 @@ export const deskStructure: StructureResolver = (S) =>
     .title("The Base Studio")
     .items([
       S.listItem()
-        .title("Seiten")
+        .title("Hauptseiten")
         .child(
           S.list()
-            .title("Seiten")
+            .title("Hauptseiten")
             .items([
               singletonItem(S, "Hauptseite", "homePage", "homePage"),
               singletonItem(S, "Live", "livePage", "livePage"),
@@ -52,10 +52,10 @@ export const deskStructure: StructureResolver = (S) =>
             .title("Unterseiten")
             .items([
               S.listItem()
-                .title("About")
+                .title("About-Unterseiten")
                 .child(
                   S.list()
-                    .title("About")
+                    .title("About-Unterseiten")
                     .items([
                       singletonItem(S, "The Base", "staticPage", "page.about-the-base"),
                       singletonItem(S, "Code of Conduct", "staticPage", "page.about-code-of-conduct"),
@@ -70,10 +70,10 @@ export const deskStructure: StructureResolver = (S) =>
                     ]),
                 ),
               S.listItem()
-                .title("Media")
+                .title("Media-Unterseiten")
                 .child(
                   S.list()
-                    .title("Media")
+                    .title("Media-Unterseiten")
                     .items([
                       singletonItem(S, "Buchung", "staticPage", "page.media-buchung"),
                       singletonItem(S, "Produktionen", "staticPage", "page.media-produktionen"),
@@ -218,10 +218,10 @@ export const deskStructure: StructureResolver = (S) =>
             .items([singletonItem(S, "Formulartexte", "formContent", "formContent")]),
         ),
       S.listItem()
-        .title("Globale Einstellungen")
+        .title("Globale Inhalte")
         .child(
           S.list()
-            .title("Globale Einstellungen")
+            .title("Globale Inhalte")
             .items([singletonItem(S, "Website", "siteSettings", "siteSettings")]),
         ),
     ]);

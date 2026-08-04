@@ -9,6 +9,7 @@ type LocalizedValue = {
 type EventInstagramFallback = {
   externalUrl: string;
   slug?: string;
+  status?: SanityEventPreview["status"];
   title: LocalizedValue;
   summary: LocalizedValue;
   eventType?: SanityEventPreview["eventType"];
@@ -18,6 +19,38 @@ type EventInstagramFallback = {
 };
 
 const INSTAGRAM_EVENT_FALLBACKS: EventInstagramFallback[] = [
+  {
+    externalUrl: "https://www.instagram.com/filmfestaachen/p/Dban1wVDenc/",
+    slug: "filmfest-aachen-kunstroute-open-call-2026",
+    status: "upcoming",
+    title: {
+      de: "Filmfest Aachen x Kunstroute",
+      en: "Filmfest Aachen x Kunstroute",
+    },
+    summary: {
+      de: "Gemeinsame Ausschreibung von Filmfest Aachen, Aachener Kunstroute und The Base für Beiträge zu einer Ausstellung im BOA.",
+      en: "A joint call by Filmfest Aachen, Aachener Kunstroute, and The Base for contributions to an exhibition at BOA.",
+    },
+    eventType: "other",
+    venue: "Bunker of Art, Scheibenstraße 34, 52070 Aachen",
+  },
+  {
+    externalUrl: "https://www.instagram.com/the.base.ev/p/DaLxTpvjVhi/",
+    slug: "underground-2026",
+    status: "past",
+    title: {
+      de: "UNDERGROUND",
+      en: "UNDERGROUND",
+    },
+    summary: {
+      de: "Ausstellung des Master of Interior Architecture Maastricht über Schutzräume, Überleben unter der Oberfläche und das Entwerfen für eine unsichere Zukunft.",
+      en: "An exhibition by the Master of Interior Architecture Maastricht on shelters, survival below the surface, and designing for an uncertain future.",
+    },
+    eventType: "exhibition",
+    venue: "Bunker of Art, Scheibenstraße 34, 52070 Aachen",
+    startDate: "2026-07-04T18:00:00.000Z",
+    endDate: "2026-07-07T20:00:00.000Z",
+  },
   {
     externalUrl: "https://www.instagram.com/the.base.ev/p/DYcFhaxtS8G/",
     slug: "the-roots-of-all-that-exists-2026",
@@ -30,6 +63,7 @@ const INSTAGRAM_EVENT_FALLBACKS: EventInstagramFallback[] = [
       en: "Multi-day exhibition at the BOA Bunker of Art with vernissage, live acts, and different artistic positions from 29 to 31 May 2026.",
     },
     eventType: "exhibition",
+    status: "past",
     venue: "Bunker of Art, Scheibenstraße 34, 52070 Aachen",
     startDate: "2026-05-29T18:00:00.000Z",
     endDate: "2026-05-31T20:00:00.000Z",
@@ -46,6 +80,7 @@ const INSTAGRAM_EVENT_FALLBACKS: EventInstagramFallback[] = [
       en: "Exhibition with 18 artists from The Base's immediate surroundings, shaped by exchange, trust, and shared practice at the BOA.",
     },
     eventType: "exhibition",
+    status: "past",
     venue: "Bunker of Art, Aachen",
     startDate: "2026-05-02T18:00:00.000Z",
     endDate: "2026-05-05T21:00:00.000Z",
@@ -62,6 +97,7 @@ const INSTAGRAM_EVENT_FALLBACKS: EventInstagramFallback[] = [
       en: "Guest appearance by The Base at Open Ground on 23 April 2026.",
     },
     eventType: "concert",
+    status: "past",
     venue: "Open Ground",
     startDate: "2026-04-23T00:00:00.000Z",
   },
@@ -77,6 +113,7 @@ const INSTAGRAM_EVENT_FALLBACKS: EventInstagramFallback[] = [
       en: "Club night at the Autonomes Zentrum Aachen with several b2b sets by The Base and Kreisstrich on 21 March at 23:00.",
     },
     eventType: "concert",
+    status: "past",
     venue: "Autonomes Zentrum Aachen",
     startDate: "2026-03-21T23:00:00.000Z",
   },
@@ -92,6 +129,7 @@ const INSTAGRAM_EVENT_FALLBACKS: EventInstagramFallback[] = [
       en: "For its tenth anniversary, The Base brings together a two-day programme of exhibition, live concerts, and Klubnacht.",
     },
     eventType: "other",
+    status: "past",
   },
   {
     externalUrl: "https://www.instagram.com/p/DRZD7eNjcom/",
@@ -105,9 +143,56 @@ const INSTAGRAM_EVENT_FALLBACKS: EventInstagramFallback[] = [
       en: "Release show for RRADE's EP \"Rhythmic Resonance\" with EP, vinyl, and music video premiere, live performance, and aftershow.",
     },
     eventType: "release-show",
+    status: "past",
     startDate: "2025-11-29T00:00:00.000Z",
   },
 ];
+
+function toEventPreview(locale: Locale, entry: EventInstagramFallback): SanityEventPreview {
+  return {
+    _id: `instagram-${entry.slug ?? entry.externalUrl}`,
+    slug: entry.slug,
+    status: entry.status,
+    title: entry.title[locale],
+    summary: entry.summary[locale],
+    eventType: entry.eventType,
+    venue: entry.venue,
+    startDate: entry.startDate,
+    endDate: entry.endDate,
+    externalUrl: entry.externalUrl,
+  };
+}
+
+export function getCurrentInstagramEventFallback(locale: Locale): SanityEventPreview {
+  const currentEntry = INSTAGRAM_EVENT_FALLBACKS.find((entry) => entry.status === "upcoming");
+
+  if (!currentEntry) {
+    throw new Error("Missing current Instagram event fallback");
+  }
+
+  return toEventPreview(locale, currentEntry);
+}
+
+export function getPastInstagramEventFallbacks(locale: Locale): SanityEventPreview[] {
+  return INSTAGRAM_EVENT_FALLBACKS
+    .filter((entry) => entry.status === "past")
+    .map((entry) => toEventPreview(locale, entry));
+}
+
+export function resolveCurrentInstagramAwareEvent(
+  locale: Locale,
+  event?: SanityEventPreview | null,
+): SanityEventPreview {
+  if (!event) {
+    return getCurrentInstagramEventFallback(locale);
+  }
+
+  const resolvedEvent = withInstagramFallbackForEventPreview(locale, event);
+  const eventBoundary = resolvedEvent.endDate ?? resolvedEvent.startDate;
+  const eventHasEnded = eventBoundary ? new Date(eventBoundary).getTime() < Date.now() : false;
+
+  return eventHasEnded ? getCurrentInstagramEventFallback(locale) : resolvedEvent;
+}
 
 function normalizeUrl(value?: string) {
   return value?.replace(/\/+$/, "").toLowerCase();
@@ -125,6 +210,7 @@ function getFallback(locale: Locale, event: Pick<SanityEventPreview, "slug" | "e
       venue: bySlug.venue,
       startDate: bySlug.startDate,
       endDate: bySlug.endDate,
+      status: bySlug.status,
     };
   }
 
@@ -143,6 +229,7 @@ function getFallback(locale: Locale, event: Pick<SanityEventPreview, "slug" | "e
     venue: byUrl.venue,
     startDate: byUrl.startDate,
     endDate: byUrl.endDate,
+    status: byUrl.status,
   };
 }
 
@@ -171,6 +258,7 @@ export function withInstagramFallbackForEventPreview(locale: Locale, event: Sani
     venue: event.venue || fallback.venue,
     startDate: event.startDate || fallback.startDate,
     endDate: event.endDate || fallback.endDate,
+    status: event.status || fallback.status,
   };
 }
 

@@ -6,7 +6,7 @@ Wichtige Entscheidungen mit kurzem Grund festhalten.
 
 ## Bisherige Entscheidungen
 
-- Deployment ueber Cloudflare Workers mit OpenNext
+- neutraler Next.js-Build- und Dev-Workflow ohne plattformspezifische Hosting-Bindings
 - reduzierte, editorial geordnete Startseite statt vollstaendiger Bereichsuebersicht
 - groessere Inhalte auf Unterseiten statt auf der Homepage verdichten
 - gestalterische Zurueckhaltung statt klassischer Marketingstruktur

@@ -2,14 +2,12 @@ import { Card } from "@/components/Card";
 import { Eyebrow } from "@/components/Eyebrow";
 import { PageJsonLd } from "@/components/PageJsonLd";
 import { PageIntro } from "@/components/PageIntro";
-import { PortableTextContent } from "@/components/PortableTextContent";
 import { SectionGrid } from "@/components/SectionGrid";
 import { getLocale, Locale, text } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 import { maybeSanityFetch } from "@/sanity/lib/fetch";
 import { ABOUT_PAGE_QUERY } from "@/sanity/lib/queries";
 import {
-  portableTextToTextLines,
   resolveLinkFieldHref,
   resolveLinkedDocumentHref,
   splitDisplayTitle,
@@ -121,29 +119,32 @@ export default async function AboutPage() {
   const awarenessEntries = resolvedAwarenessEntries.length ? resolvedAwarenessEntries : getAwarenessEntries(locale);
   const contributionEntries =
     resolvedContributionEntries.length ? resolvedContributionEntries : getContributionEntries(locale);
-  const introDescription =
-    aboutPage?.description ??
+  const introDescription = text(locale, {
+    de: "The Base e.V. ist ein gemeinnütziger Kulturverein und interdisziplinäres Kollektiv in Aachen. Im BOA Bunker of Art entwickelt der Verein seit 2020 einen Kulturort für Ausstellungen, Konzerte, Workshops, filmische Produktionen und öffentliche Praxis.",
+    en: "The Base e.V. is a non-profit cultural association and interdisciplinary collective in Aachen. Since 2020 it has been developing the BOA Bunker of Art as a cultural site for exhibitions, concerts, workshops, moving-image productions, and public practice.",
+  });
+  const introNote = text(locale, {
+    de: "Aus improvisierten, nomadischen Jahren ist ein Ort entstanden, der kulturelle Praxis mit Stadtgeschichte, Nachbarschaft und dauerhafter Infrastruktur verbindet.",
+    en: "Out of improvised, nomadic years, a site has emerged that links cultural practice with urban history, neighbourhood life, and durable infrastructure.",
+  });
+  const profileParagraphs = [
     text(locale, {
-      de: "The Base e.V. ist ein gemeinnütziger Kulturverein und interdisziplinäres Kollektiv in Aachen. Im BOA Bunker of Art organisiert der Verein einen sozialen und kulturellen Raum für Austausch, künstlerische Praxis und öffentliche Formate.",
-      en: "The Base e.V. is a non-profit cultural association and interdisciplinary collective in Aachen. It organises the BOA Bunker of Art as a social and cultural space for exchange, artistic practice, and public formats.",
-    });
-  const introNote = aboutPage?.note;
-  const profileParagraphs = portableTextToTextLines(aboutPage?.profileText).length
-    ? portableTextToTextLines(aboutPage?.profileText)
-    : [
-        text(locale, {
-          de: "The Base e.V. wurde 2015 in Aachen gegründet und arbeitet als Kollektiv junger Kulturarbeiter:innen, Gestalter:innen und Organisator:innen mit dem Ziel, unabhängige kulturelle Strukturen vor Ort zu stärken.",
-          en: "The Base e.V. was founded in Aachen in 2015 and works as a collective of young cultural practitioners, creatives, and organisers with the aim of strengthening independent cultural structures locally.",
-        }),
-        text(locale, {
-          de: "Ein zentrales Projekt ist BOA, ein seit September 2020 entwickelter Kulturraum in einem ehemaligen Hochbunker, in dem regionale, nationale und internationale Positionen sowie junge und etablierte Praktiker:innen aufeinandertreffen.",
-          en: "A central project is BOA, a cultural space developed since September 2020 inside a former bunker, where regional, national, and international positions meet alongside emerging and established practitioners.",
-        }),
-        text(locale, {
-          de: "Im Mittelpunkt stehen offene, niedrigschwellige Formate an der Schnittstelle von Kunst, Musik, Design und sozialer Praxis; der Bunker wird dabei nicht nur genutzt, sondern als historisch und städtisch geprägter Ort bewusst weitergedacht.",
-          en: "At its core are open, low-threshold formats at the intersection of art, music, design, and social practice; the bunker is not merely used as a venue, but consciously developed further as a historically and urbanly marked place.",
-        }),
-      ];
+      de: "The Base e.V. wurde 2015 in Aachen gegründet. Aus ersten improvisierten Räumen und nomadischen Jahren entstand ein Netzwerk zwischen Kunst, Musik, Design, Bildung und sozialer Praxis.",
+      en: "The Base e.V. was founded in Aachen in 2015. Out of early improvised spaces and nomadic years, it built a network across art, music, design, education, and social practice.",
+    }),
+    text(locale, {
+      de: "Seit der Aachener Kunstroute 2020 wird der ehemalige Hochbunker an der Scheibenstraße als BOA Bunker of Art schrittweise zu einer unabhängigen Kulturplattform entwickelt.",
+      en: "Since the Aachener Kunstroute in 2020, the former bunker on Scheibenstraße has been developed step by step into an independent cultural platform called BOA Bunker of Art.",
+    }),
+    text(locale, {
+      de: "Der Ort versteht sich nicht als neutrale Hülle: Die Geschichte des Bunkers bleibt sichtbar, während Ausstellungen, Konzerte, Workshops, Nachbarschaftsprojekte und Kooperationen mit Hochschulen und Initiativen neue öffentliche Nutzungen erproben.",
+      en: "The site is not treated as a neutral shell: the bunker’s history remains visible while exhibitions, concerts, workshops, neighbourhood projects, and collaborations with universities and initiatives test new public uses.",
+    }),
+    text(locale, {
+      de: "Langfristig geht es darum, aus viel Improvisation eine tragfähige Infrastruktur zu machen: mit sicheren, rechtlich belastbaren und technisch verlässlichen Bedingungen für künstlerische Arbeit und Publikum.",
+      en: "In the long term, the aim is to turn years of improvisation into durable infrastructure, with safe, legally reliable, and technically dependable conditions for artistic work and audiences.",
+    }),
+  ];
 
   return (
     <div className="editorial-fade page-flow">
@@ -185,18 +186,11 @@ export default async function AboutPage() {
           </h2>
         </div>
         <div className="layout-overview-copy-start content-stack lg:max-w-[44rem] lg:pt-3">
-          {aboutPage?.profileText?.length ? (
-            <PortableTextContent
-              blocks={aboutPage.profileText}
-              layout={aboutPage.profileTextLayout}
-            />
-          ) : (
-            profileParagraphs.map((paragraph) => (
-              <p key={paragraph} className="type-body-lg max-w-3xl text-[var(--ink)]">
-                {paragraph}
-              </p>
-            ))
-          )}
+          {profileParagraphs.map((paragraph) => (
+            <p key={paragraph} className="type-body-lg max-w-3xl text-[var(--ink)]">
+              {paragraph}
+            </p>
+          ))}
         </div>
       </section>
 

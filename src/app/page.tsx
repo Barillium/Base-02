@@ -12,7 +12,10 @@ import {
   resolveStaticPageHref,
 } from "@/sanity/lib/content";
 import { maybeSanityFetch } from "@/sanity/lib/fetch";
-import { withInstagramFallbackForEventPreview } from "@/sanity/lib/eventInstagramFallbacks";
+import {
+  getCurrentInstagramEventFallback,
+  resolveCurrentInstagramAwareEvent,
+} from "@/sanity/lib/eventInstagramFallbacks";
 import { HOME_PAGE_QUERY, LIVE_CURRENT_EVENT_QUERY } from "@/sanity/lib/queries";
 import type { SanityEventPreview, SanityHomePage } from "@/sanity/types";
 
@@ -21,15 +24,6 @@ const homePageMetadata = {
   description:
     "The Base e.V. im BOA Bunker of Art Aachen verbindet Ausstellungen, Konzerte, Workshops, Archiv und Community-Arbeit.",
   path: "/",
-} as const;
-
-const THE_BASE_INSTAGRAM_URL = "https://www.instagram.com/the.base.ev/";
-const CURRENT_EVENT_FALLBACK = {
-  title: {
-    de: "The Roots of All That Exists",
-    en: "The Roots of All That Exists",
-  },
-  href: "https://www.instagram.com/the.base.ev/p/DYcFhaxtS8G/",
 } as const;
 
 export const metadata = pageMetadata(homePageMetadata);
@@ -41,11 +35,42 @@ type Entry = {
   meta: string;
 };
 
+function orderAboutEntries(entries: Entry[]): Entry[] {
+  const preferredOrder = [
+    "/about/the-base",
+    "/about/code-of-conduct",
+    "/mitmachen",
+    "/about/foerdermitgliedschaft",
+    "/about/kontakt",
+  ];
+
+  return [...entries].sort((left, right) => {
+    const leftIndex = preferredOrder.indexOf(left.href);
+    const rightIndex = preferredOrder.indexOf(right.href);
+
+    if (leftIndex === -1 && rightIndex === -1) {
+      return 0;
+    }
+
+    if (leftIndex === -1) {
+      return 1;
+    }
+
+    if (rightIndex === -1) {
+      return -1;
+    }
+
+    return leftIndex - rightIndex;
+  });
+}
+
 function getQuickEntries(locale: Locale, currentEvent?: Pick<Entry, "title" | "href">): Entry[] {
+  const instagramCurrentEvent = getCurrentInstagramEventFallback(locale);
+
   return [
     {
-      title: currentEvent?.title ?? text(locale, CURRENT_EVENT_FALLBACK.title),
-      href: currentEvent?.href ?? CURRENT_EVENT_FALLBACK.href,
+      title: currentEvent?.title ?? instagramCurrentEvent.title,
+      href: currentEvent?.href ?? instagramCurrentEvent.externalUrl ?? "",
       description: text(locale, {
         de: "Die nächste sichtbare Arbeit, Ausstellung oder musikalische Einladung im Programm.",
         en: "The next visible work, exhibition, or musical invitation in the programme.",
@@ -81,10 +106,10 @@ function getResolvedQuickEntries(
   const currentMeta = text(locale, { de: "Aktuell", en: "Current" });
   const genericCurrentTitle = text(locale, { de: "Aktuelle Veranstaltung", en: "Current event" });
   const latestProjectsMeta = text(locale, { de: "Letzte Projekte", en: "Latest projects" });
-  const resolvedCurrentEvent = currentEvent ? withInstagramFallbackForEventPreview(locale, currentEvent) : null;
+  const resolvedCurrentEvent = resolveCurrentInstagramAwareEvent(locale, currentEvent);
   const fallbackCurrentEvent = {
-    title: resolvedCurrentEvent?.title ?? text(locale, CURRENT_EVENT_FALLBACK.title),
-    href: resolvedCurrentEvent?.externalUrl ?? CURRENT_EVENT_FALLBACK.href,
+    title: resolvedCurrentEvent.title,
+    href: resolvedCurrentEvent.externalUrl ?? "",
   };
   const fallbackEntries = getQuickEntries(locale, fallbackCurrentEvent);
 
@@ -92,15 +117,15 @@ function getResolvedQuickEntries(
     ?.map((entry) => ({
       title:
         entry.meta === currentMeta
-          ? resolvedCurrentEvent?.title || (entry.title === genericCurrentTitle ? fallbackCurrentEvent.title : entry.title)
+          ? resolvedCurrentEvent.title || (entry.title === genericCurrentTitle ? fallbackCurrentEvent.title : entry.title)
           : entry.title,
       href:
         entry.meta === currentMeta
-          ? resolvedCurrentEvent?.externalUrl || entry.externalUrl || fallbackCurrentEvent.href || THE_BASE_INSTAGRAM_URL
+          ? resolvedCurrentEvent.externalUrl || entry.externalUrl || fallbackCurrentEvent.href
           : entry.externalUrl || entry.internalPath || resolveLinkedDocumentHref(entry.linkedDocument) || "",
       description:
         entry.meta === currentMeta
-          ? resolvedCurrentEvent?.summary || entry.description || ""
+          ? resolvedCurrentEvent.summary || entry.description || ""
           : entry.description ?? "",
       meta: entry.meta === text(locale, { de: "Letztes Projekt", en: "Latest project" }) ? latestProjectsMeta : entry.meta,
     }))
@@ -132,6 +157,15 @@ function getAboutEntries(locale: Locale): Entry[] {
         en: "Principles for respectful spaces, discrimination-sensitive cultural work, and shared conduct in the bunker.",
       }),
       meta: text(locale, { de: "Safe Space", en: "Safe Space" }),
+    },
+    {
+      title: text(locale, { de: "Open Call", en: "Open call" }),
+      href: "/mitmachen",
+      description: text(locale, {
+        de: "Anfragen für Ausstellungen, ortsspezifische Arbeiten und andere Formate im BOA-Kontext.",
+        en: "Inquiry for exhibitions, site-specific works, and other formats that could be developed or presented in the BOA context.",
+      }),
+      meta: text(locale, { de: "Open Call", en: "Open call" }),
     },
     {
       title: text(locale, { de: "Kontakt aufnehmen", en: "Get in touch" }),
@@ -176,7 +210,7 @@ function getResolvedAboutEntries(locale: Locale, homePage?: SanityHomePage | nul
     .filter((entry) => Boolean(entry.href));
 
   if (!entries?.length) {
-    return fallbackEntries;
+    return orderAboutEntries(fallbackEntries);
   }
 
   const mergedEntries = [...entries];
@@ -187,7 +221,7 @@ function getResolvedAboutEntries(locale: Locale, homePage?: SanityHomePage | nul
     }
   }
 
-  return mergedEntries;
+  return orderAboutEntries(mergedEntries);
 }
 
 function HomeAboutSection({ locale, entries }: { locale: Locale; entries: Entry[] }) {

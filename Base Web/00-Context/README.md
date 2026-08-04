@@ -8,7 +8,7 @@ Projektkontext, Zielbild, Rahmenbedingungen und aktuelle Einordnung.
 
 - Projekt: Website fuer The Base e.V.
 - Basis: Next.js App Router, React, TypeScript, Tailwind CSS v4
-- Deployment: Cloudflare Workers ueber OpenNext
+- Betrieb: framework-nativer Next.js-Workflow fuer lokale Entwicklung und Build
 - Stil: editorial, reduziert, full-width
 - oeffentlich aktive Bereiche: `Live`, `Archive`, `Media`, `About`
 - Fokus: kulturelles Programm, BOA Bunker of Art, lokale Szene, Archiv, Medienproduktion und Vereinskontext

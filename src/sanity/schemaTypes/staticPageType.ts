@@ -1,7 +1,6 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 import { LegacyStaticPageDocumentInput } from "@/sanity/components/LegacyStructuredDocumentInputs";
 import {
-  createModularSectionsField,
   createSeoField,
   formatLocalizedPreviewTitle,
   staticPageRouteOptions,
@@ -9,29 +8,30 @@ import {
 
 export const staticPageType = defineType({
   name: "staticPage",
-  title: "Fixed Page",
+  title: "Feste Unterseite",
   type: "document",
   components: {
     input: LegacyStaticPageDocumentInput,
   },
   groups: [
-    { name: "content", title: "Content", default: true },
-    { name: "sections", title: "Sections" },
+    { name: "content", title: "Inhalt", default: true },
     { name: "layout", title: "Layout" },
     { name: "links", title: "Links" },
-    { name: "publishing", title: "Page Settings" },
+    { name: "publishing", title: "Seitenzuordnung" },
     { name: "seo", title: "SEO" },
   ],
   fields: [
     defineField({
       name: "routeKey",
-      title: "Page name",
+      title: "Welche feste Unterseite ist das?",
       group: "publishing",
       type: "string",
       options: {
         list: staticPageRouteOptions,
       },
       validation: (rule) => rule.required(),
+      description:
+        "Diese Auswahl ist fest mit einer bestehenden Website-Route verbunden. Neue Unterseiten entstehen derzeit nicht direkt im Studio, sondern werden von Entwickler:innen ergänzt.",
     }),
     defineField({
       name: "intro",
@@ -48,20 +48,19 @@ export const staticPageType = defineType({
     }),
     defineField({
       name: "bodyLayout",
-      title: "Body text layout",
+      title: "Platzierung des Fließtexts",
       group: "layout",
       type: "textLayoutOptions",
-      description: "Controls position and alignment of the body text block.",
+      description: "Steuert Position und Ausrichtung des Fließtexts innerhalb der festen Seitentypografie.",
     }),
     defineField({
       name: "keyPoints",
-      title: "Key Points",
+      title: "Stichpunkte",
       group: "content",
       type: "array",
       of: [defineArrayMember({ type: "localizedString" })],
     }),
-    createModularSectionsField(),
-    createSeoField(),
+    createSeoField("seo"),
   ],
   orderings: [
     {
